@@ -113,8 +113,7 @@ For support, please visit [LRob](https://www.lrob.fr/)
 
 ## Credits
 
-**Developed by [LRob](https://www.lrob.fr/)**  
-Hébergeur web spécialiste WordPress
+**Developed by [LRob, Hébergeur web spécialiste WordPress](https://www.lrob.fr/)**  
 
 ## License
 

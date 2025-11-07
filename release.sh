@@ -152,17 +152,18 @@ create_archive() {
     # Remove old archive if exists
     [ -f "../releases/$archive_name" ] && rm "../releases/$archive_name"
 
-    # Create zip excluding development files
-    zip -r "../releases/$archive_name" \
-        . \
-        -x "*.git*" \
-        -x "*node_modules*" \
-        -x "*.sh" \
-        -x "releases/*" \
-        -x "*.po" \
-        -x "*.pot" \
-        -x "example-export.json" \
+    # Create zip with proper folder structure, excluding development files
+    cd ..
+    zip -r "releases/$archive_name" \
+        "${PLUGIN_SLUG}/" \
+        -x "${PLUGIN_SLUG}/*.git*" \
+        -x "${PLUGIN_SLUG}/*node_modules*" \
+        -x "${PLUGIN_SLUG}/*.sh" \
+        -x "${PLUGIN_SLUG}/*.po" \
+        -x "${PLUGIN_SLUG}/*.pot" \
+        -x "${PLUGIN_SLUG}/example-export.json" \
         >/dev/null
+    cd "${PLUGIN_SLUG}"
 
     if [ $? -eq 0 ]; then
         local size=$(du -h "../releases/$archive_name" | cut -f1)
