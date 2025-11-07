@@ -1,0 +1,562 @@
+.lrob-carte-wrapper {
+    --lrob-cols-desktop: 2;
+    --lrob-cols-mobile: 1;
+    --lrob-border-radius: 12px;
+    --lrob-border-width: 1px;
+    --lrob-card-padding: 20px;
+    --lrob-card-gap: 30px;
+    --lrob-border-color: currentColor;
+    --lrob-accent-color: currentColor;
+    --lrob-badge-bg: #e0e0e0;
+    --lrob-badge-text: #333;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: inherit;
+}
+
+/* Editor preview */
+.lrob-carte-block-editor .lrob-carte-preview {
+    padding: 60px 20px;
+    text-align: center;
+    background: #f9f9f9;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+}
+
+.lrob-carte-preview .lrob-carte-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.lrob-carte-preview p {
+    color: #646970;
+    font-size: 16px;
+}
+
+/* Navigation */
+.lrob-carte-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.lrob-carte-nav.lrob-carte-nav-bottom {
+    margin-top: 40px;
+    margin-bottom: 0;
+}
+
+.lrob-carte-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: transparent;
+    border: 2px solid var(--lrob-border-color);
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+    opacity: 0.6;
+    color: inherit;
+}
+
+.lrob-carte-nav-item:hover,
+.lrob-carte-nav-item.active {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+.lrob-carte-nav-icon {
+    font-size: 20px;
+}
+
+/* Category */
+.lrob-carte-category {
+    margin-bottom: 60px;
+}
+
+.lrob-carte-category.hidden {
+    display: none;
+}
+
+.lrob-carte-category-header {
+    margin-bottom: 30px;
+}
+
+.lrob-carte-category-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--lrob-border-color);
+    opacity: 0.85;
+    color: inherit;
+}
+
+/* Subcategory filters */
+.lrob-carte-subcategory-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.lrob-subcategory-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--lrob-badge-bg);
+    color: var(--lrob-badge-text);
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    opacity: 0.6;
+}
+
+.lrob-subcategory-badge:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+}
+
+.lrob-subcategory-badge.active {
+    opacity: 1;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.lrob-subcategory-badge-icon {
+    font-size: 14px;
+}
+
+/* Subcategory section */
+.lrob-carte-subcategory {
+    margin-top: 30px;
+}
+
+.lrob-carte-subcategory.hidden {
+    display: none;
+}
+
+.lrob-carte-subcategory-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: inherit;
+    opacity: 0.8;
+}
+
+.lrob-carte-category-icon {
+    font-size: 36px;
+}
+
+/* Subcategory */
+.lrob-carte-subcategory {
+    margin-top: 40px;
+}
+
+.lrob-carte-subcategory-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--lrob-border-color);
+    opacity: 0.75;
+    color: inherit;
+}
+
+/* Products grid */
+.lrob-carte-products {
+    display: grid;
+    grid-template-columns: repeat(var(--lrob-cols-desktop), 1fr);
+    gap: var(--lrob-card-gap);
+}
+
+@media (max-width: 768px) {
+    .lrob-carte-products {
+        grid-template-columns: repeat(var(--lrob-cols-mobile), 1fr);
+    }
+
+    .lrob-carte-category-title {
+        font-size: 24px;
+    }
+
+    .lrob-carte-nav-item {
+        font-size: 14px;
+        padding: 10px 18px;
+    }
+}
+
+/* Product card */
+.lrob-carte-product {
+    background: transparent;
+    border: var(--lrob-border-width) solid var(--lrob-border-color);
+    border-radius: var(--lrob-border-radius);
+    overflow: hidden;
+    opacity: 0.85;
+    transition: transform 0.3s, opacity 0.3s;
+    color: inherit;
+}
+
+.lrob-carte-product:hover {
+    transform: translateY(-4px);
+    opacity: 1;
+}
+
+.lrob-carte-product.lrob-unavailable {
+    opacity: 0.4;
+}
+
+.lrob-carte-product-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.lrob-carte-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.lrob-carte-product:hover .lrob-carte-product-image img {
+    transform: scale(1.05);
+}
+
+.lrob-carte-product-content {
+    padding: var(--lrob-card-padding);
+}
+
+/* LAYOUT COMPACT - Titre à gauche, variations à droite, prix en dessous */
+.lrob-layout-compact .lrob-carte-product-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    margin-bottom: 6px;
+}
+
+.lrob-layout-compact .lrob-carte-product-name {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: inherit;
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.lrob-layout-compact .lrob-carte-product-prices {
+    display: flex;
+    gap: 15px;
+    grid-column: 2;
+    grid-row: 1 / 3;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.lrob-layout-compact .lrob-carte-price {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.lrob-layout-compact .lrob-carte-price-label {
+    display: block;
+    font-size: 11px;
+    opacity: 0.6;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: inherit;
+    margin-bottom: 3px;
+    white-space: nowrap;
+}
+
+.lrob-layout-compact .lrob-carte-price-amount {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--lrob-accent-color);
+    white-space: nowrap;
+}
+
+/* LAYOUT CLASSIC - Prix séparés en bas */
+.lrob-layout-classic .lrob-carte-product-header {
+    margin-bottom: 12px;
+}
+
+.lrob-layout-classic .lrob-carte-product-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    color: inherit;
+}
+
+.lrob-layout-classic .lrob-carte-product-prices {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--lrob-border-color);
+    opacity: 0.3;
+}
+
+.lrob-layout-classic .lrob-carte-price {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.lrob-layout-classic .lrob-carte-price-label {
+    font-size: 13px;
+    opacity: 0.7;
+    font-weight: 600;
+    color: inherit;
+}
+
+.lrob-layout-classic .lrob-carte-price-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--lrob-accent-color);
+}
+
+.lrob-carte-product-description {
+    opacity: 0.7;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 8px 0 0 0;
+    color: inherit;
+}
+
+.lrob-carte-product-allergens {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--lrob-border-color);
+    opacity: 0.25;
+}
+
+.lrob-carte-product-allergens small {
+    color: inherit;
+    font-size: 12px;
+}
+
+/* Badges */
+.lrob-carte-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    background: var(--lrob-badge-bg, #e0e0e0);
+    color: var(--lrob-badge-text, #333);
+}
+
+/* Badges spécifiques (peut être override par les variables) */
+.lrob-badge-unavailable {
+    background: #d63638;
+    color: #fff;
+}
+
+.lrob-badge-nouveau {
+    background: #00a32a;
+    color: #fff;
+}
+
+.lrob-badge-coup_coeur {
+    background: #d63638;
+    color: #fff;
+}
+
+.lrob-badge-vegetarien,
+.lrob-badge-vegan {
+    background: #00a32a;
+    color: #fff;
+}
+
+.lrob-badge-bio {
+    background: #00a32a;
+    color: #fff;
+}
+
+.lrob-badge-fait_maison {
+    background: #2271b1;
+    color: #fff;
+}
+
+.lrob-badge-sans_gluten {
+    background: #dba617;
+    color: #fff;
+}
+
+.lrob-badge-epicé {
+    background: #d63638;
+    color: #fff;
+}
+
+/* Images personnalisées pour icônes */
+.lrob-nav-custom-icon,
+.lrob-title-custom-icon,
+.lrob-subtitle-custom-icon,
+.lrob-badge-custom-icon {
+    display: inline-block;
+    vertical-align: middle;
+    object-fit: contain;
+}
+
+.lrob-nav-custom-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.lrob-title-custom-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.lrob-subtitle-custom-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.lrob-badge-custom-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Single column adjustments */
+.lrob-carte-products[style*="--lrob-cols-desktop: 1"] .lrob-carte-product {
+    display: flex;
+    gap: 20px;
+}
+
+.lrob-carte-products[style*="--lrob-cols-desktop: 1"] .lrob-carte-product-image {
+    width: 250px;
+    height: 180px;
+    flex-shrink: 0;
+}
+
+.lrob-carte-products[style*="--lrob-cols-desktop: 1"] .lrob-carte-product-content {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .lrob-carte-products[style*="--lrob-cols-desktop: 1"] .lrob-carte-product {
+        flex-direction: column;
+    }
+
+    .lrob-carte-products[style*="--lrob-cols-desktop: 1"] .lrob-carte-product-image {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .lrob-layout-compact .lrob-carte-product-header {
+        grid-template-columns: 1fr;
+    }
+    
+    .lrob-layout-compact .lrob-carte-product-prices {
+        grid-column: 1;
+        grid-row: 2;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+    
+    .lrob-layout-compact .lrob-carte-price {
+        text-align: left;
+    }
+}
+
+/* Happy Hour styles for frontend */
+.lrob-carte-price.lrob-price-happy {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-left: 3px solid #ffc107;
+    padding: 6px 10px;
+    border-radius: 4px;
+    position: relative;
+}
+
+.lrob-price-happy-icon {
+    font-size: 1.1em;
+    margin-left: 6px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.lrob-carte-product-prices {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lrob-carte-price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Drill-down hierarchy styles */
+.lrob-carte-root-category {
+    margin-bottom: 40px;
+}
+
+.lrob-carte-child-category {
+    margin-top: 24px;
+    margin-left: 20px;
+    padding-left: 20px;
+    border-left: 3px solid var(--lrob-accent-color, #2271b1);
+}
+
+.lrob-carte-child-category[data-level="1"] {
+    margin-left: 20px;
+}
+
+.lrob-carte-child-category[data-level="2"] {
+    margin-left: 40px;
+}
+
+.lrob-carte-child-category[data-level="3"] {
+    margin-left: 60px;
+}
+
+.lrob-carte-subcategories-container {
+    margin-top: 20px;
+}
+
+.lrob-subcategory-badge {
+    transition: all 0.3s ease;
+}
+
+.lrob-subcategory-badge.active {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}

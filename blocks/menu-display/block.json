@@ -1,0 +1,98 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "lrob-carte/menu-display",
+  "version": "1.0.0",
+  "title": "La Carte",
+  "category": "widgets",
+  "icon": "food",
+  "description": "Affiche votre carte de bar ou restaurant",
+  "keywords": ["menu", "carte", "restaurant", "bar", "food"],
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"]
+  },
+  "attributes": {
+    "displayMode": {
+      "type": "string",
+      "default": "all"
+    },
+    "selectedCategory": {
+      "type": "number",
+      "default": 0
+    },
+    "categoryNavPosition": {
+      "type": "string",
+      "default": "top"
+    },
+    "layoutStyle": {
+      "type": "string",
+      "default": "compact"
+    },
+    "textColor": {
+      "type": "string",
+      "default": ""
+    },
+    "borderColor": {
+      "type": "string",
+      "default": ""
+    },
+    "accentColor": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeBgColor": {
+      "type": "string",
+      "default": ""
+    },
+    "badgeTextColor": {
+      "type": "string",
+      "default": ""
+    },
+    "cardBorderRadius": {
+      "type": "number",
+      "default": 12
+    },
+    "cardBorderWidth": {
+      "type": "number",
+      "default": 1
+    },
+    "cardPadding": {
+      "type": "number",
+      "default": 20
+    },
+    "cardGap": {
+      "type": "number",
+      "default": 30
+    },
+    "fontSize": {
+      "type": "number",
+      "default": 16
+    },
+    "fontFamily": {
+      "type": "string",
+      "default": "system"
+    },
+    "showImages": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDescriptions": {
+      "type": "boolean",
+      "default": true
+    },
+    "showAllergens": {
+      "type": "boolean",
+      "default": true
+    },
+    "columnsDesktop": {
+      "type": "number",
+      "default": 2
+    },
+    "columnsMobile": {
+      "type": "number",
+      "default": 1
+    }
+  },
+  "textdomain": "lrob-la-carte"
+}
