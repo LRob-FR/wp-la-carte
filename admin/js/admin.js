@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-    
+
     $('.lrob-color-picker').wpColorPicker();
 
     // Modal management
@@ -25,18 +25,18 @@ jQuery(document).ready(function($) {
 
     $('#lrob-add-product').on('click', function() {
         resetProductForm();
-        $('#lrob-modal-title').text('Ajouter un produit');
+        $('#lrob-modal-title').text('Add Product');
         openModal('lrob-product-modal');
     });
-    
-    // Synchroniser le select de catégorie avec le champ caché
+
+    // Synchronize category select with hidden field
     $(document).on('change', '#product-category-select', function() {
         $('#product-category').val($(this).val());
     });
 
     $('.lrob-edit-product').on('click', function() {
         var productId = $(this).data('id');
-        
+
         $.ajax({
             url: lrobCarte.ajaxurl,
             type: 'POST',
@@ -48,7 +48,7 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     populateProductForm(response.data.product, response.data.prices);
-                    $('#lrob-modal-title').text('Modifier le produit');
+                    $('#lrob-modal-title').text('Edit Product');
                     openModal('lrob-product-modal');
                 }
             }
@@ -56,10 +56,10 @@ jQuery(document).ready(function($) {
     });
 
     $('.lrob-delete-product').on('click', function() {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
-        
+        if (!confirm('Are you sure you want to delete this product?')) return;
+
         var productId = $(this).data('id');
-        
+
         $.ajax({
             url: lrobCarte.ajaxurl,
             type: 'POST',
@@ -76,7 +76,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Boutons Haut/Bas pour les produits
+    // Up/Down buttons for products
     $('.lrob-move-product-up').on('click', function() {
         var $item = $(this).closest('.lrob-product-item');
         var $prev = $item.prev('.lrob-product-item');
@@ -167,28 +167,28 @@ jQuery(document).ready(function($) {
 
     // Media uploader
     var mediaUploader;
-    
+
     $('#product-upload-image').on('click', function(e) {
         e.preventDefault();
-        
+
         if (mediaUploader) {
             mediaUploader.open();
             return;
         }
-        
+
         mediaUploader = wp.media({
-            title: 'Choisir une image',
-            button: { text: 'Utiliser cette image' },
+            title: 'Choose Image',
+            button: { text: 'Use This Image' },
             multiple: false
         });
-        
+
         mediaUploader.on('select', function() {
             var attachment = mediaUploader.state().get('selection').first().toJSON();
             $('#product-image-id').val(attachment.id);
             $('#product-image-preview').html('<img src="' + attachment.url + '">');
             $('#product-remove-image').show();
         });
-        
+
         mediaUploader.open();
     });
 
@@ -200,7 +200,7 @@ jQuery(document).ready(function($) {
 
     // Price management avec suggestions
     var usedPriceLabels = new Set();
-    
+
     // Collecter les labels existants au chargement
     function collectExistingPriceLabels() {
         usedPriceLabels.clear();
@@ -211,42 +211,42 @@ jQuery(document).ready(function($) {
             }
         });
     }
-    
+
     collectExistingPriceLabels();
-    
+
     function createPriceRow(isHappyHour = false) {
         var mode = $('#product-mode-hidden').val() || 'restaurant';
         var happyHourCheckbox = '';
-        
+
         if (mode === 'bar') {
             happyHourCheckbox = '<label class="lrob-happy-hour-label">' +
                 '<input type="checkbox" class="price-happy-hour"' + (isHappyHour ? ' checked' : '') + '> Happy Hour' +
                 '</label>';
         }
-        
+
         var newRow = '<div class="lrob-price-row' + (isHappyHour ? ' lrob-happy-hour-row' : '') + '">' +
             '<input type="text" class="price-label" placeholder="Ex: Verre (12cl)" list="price-labels-suggestions">' +
             '<input type="number" class="price-amount" placeholder="0.00" step="0.01" min="0">' +
             happyHourCheckbox +
             '<button type="button" class="button lrob-remove-price">−</button>' +
             '</div>';
-        
+
         return newRow;
     }
-    
+
     function updatePriceLabelsSuggestions() {
         var existingDatalist = $('#price-labels-suggestions');
         if (existingDatalist.length === 0) {
             $('body').append('<datalist id="price-labels-suggestions"></datalist>');
             existingDatalist = $('#price-labels-suggestions');
         }
-        
+
         existingDatalist.empty();
         usedPriceLabels.forEach(function(label) {
             existingDatalist.append('<option value="' + label + '">');
         });
     }
-    
+
     $(document).on('blur', '.price-label', function() {
         var label = $(this).val().trim();
         if (label) {
@@ -254,7 +254,7 @@ jQuery(document).ready(function($) {
             updatePriceLabelsSuggestions();
         }
     });
-    
+
     $(document).on('change', '.price-happy-hour', function() {
         var $row = $(this).closest('.lrob-price-row');
         if ($(this).is(':checked')) {
@@ -263,7 +263,7 @@ jQuery(document).ready(function($) {
             $row.removeClass('lrob-happy-hour-row');
         }
     });
-    
+
     $('#lrob-add-price').on('click', function() {
         var newRow = createPriceRow(false);
         $('#product-prices-wrapper').append(newRow);
@@ -285,7 +285,7 @@ jQuery(document).ready(function($) {
         $('#product-remove-image').hide();
         $('#product-availability').val('available');
         $('.allergen-checkbox, .badge-checkbox').prop('checked', false);
-        
+
         $('#product-prices-wrapper').html(createPriceRow(false));
         updatePriceLabelsSuggestions();
     }
@@ -344,7 +344,7 @@ jQuery(document).ready(function($) {
         } else {
             $('#product-prices-wrapper').html(createPriceRow(false));
         }
-        
+
         updatePriceLabelsSuggestions();
     }
 
@@ -352,8 +352,37 @@ jQuery(document).ready(function($) {
 
     $('#lrob-add-category').on('click', function() {
         resetCategoryForm();
-        $('#lrob-category-modal-title').text('Ajouter une catégorie');
+        $('#lrob-category-modal-title').text('Add Category');
         openModal('lrob-category-modal');
+    });
+
+    // Create default categories button
+    $('#lrob-create-default-categories').on('click', function() {
+        if (!confirm('Create default categories based on your site language?')) return;
+
+        var $button = $(this);
+        $button.prop('disabled', true).text('Creating...');
+
+        $.ajax({
+            url: lrobCarte.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'lrob_create_default_categories',
+                nonce: lrobCarte.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert(response.data.message || 'Error creating categories');
+                    $button.prop('disabled', false).text('Create Default Categories');
+                }
+            },
+            error: function() {
+                alert('Error creating categories');
+                $button.prop('disabled', false).text('Create Default Categories');
+            }
+        });
     });
 
     $('.lrob-edit-category').on('click', function() {
@@ -370,7 +399,7 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     populateCategoryForm(response.data);
-                    $('#lrob-category-modal-title').text('Modifier la catégorie');
+                    $('#lrob-category-modal-title').text('Edit Category');
                     openModal('lrob-category-modal');
                 }
             }
@@ -378,10 +407,10 @@ jQuery(document).ready(function($) {
     });
 
     $('.lrob-delete-category').on('click', function() {
-        if (!confirm('Êtes-vous sûr ? Tous les produits de cette catégorie seront supprimés.')) return;
-        
+        if (!confirm('Are you sure? All products in this category will be deleted.')) return;
+
         var catId = $(this).data('id');
-        
+
         $.ajax({
             url: lrobCarte.ajaxurl,
             type: 'POST',
@@ -402,7 +431,7 @@ jQuery(document).ready(function($) {
         var $btn = $(this);
         var catId = $btn.data('id');
         var isActive = $btn.data('active');
-        
+
         $.ajax({
             url: lrobCarte.ajaxurl,
             type: 'POST',
@@ -420,7 +449,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert('Erreur lors de la mise à jour');
+                alert('Error during update');
             }
         });
     });
@@ -430,11 +459,11 @@ jQuery(document).ready(function($) {
         var $item = $(this).closest('.lrob-category-item');
         var catId = $item.data('id');
         var level = $item.data('level');
-        
-        // Trouver l'élément précédent de même niveau
+
+        // Find previous element at same level
         var $prev = null;
         var $check = $item.prev('.lrob-category-item');
-        
+
         while ($check.length) {
             if ($check.data('level') < level) {
                 // On a atteint un niveau supérieur, pas de déplacement possible
@@ -446,24 +475,24 @@ jQuery(document).ready(function($) {
             }
             $check = $check.prev('.lrob-category-item');
         }
-        
+
         if ($prev) {
-            // Collecter l'élément et tous ses enfants
+            // Collect element and all its children
             var $toMove = $item;
             var $children = $();
             var $next = $item.next('.lrob-category-item');
-            
+
             while ($next.length && $next.data('level') > level) {
                 $children = $children.add($next);
                 $next = $next.next('.lrob-category-item');
             }
-            
-            // Déplacer l'élément parent et ses enfants avant le précédent de même niveau
+
+            // Move parent element and its children before the previous at same level
             $prev.before($toMove);
             if ($children.length) {
                 $toMove.after($children);
             }
-            
+
             updateCategoryPositions();
         }
     });
@@ -472,20 +501,20 @@ jQuery(document).ready(function($) {
         var $item = $(this).closest('.lrob-category-item');
         var catId = $item.data('id');
         var level = $item.data('level');
-        
+
         // Collecter tous les enfants de cet élément
         var $children = $();
         var $check = $item.next('.lrob-category-item');
-        
+
         while ($check.length && $check.data('level') > level) {
             $children = $children.add($check);
             $check = $check.next('.lrob-category-item');
         }
-        
-        // Trouver l'élément suivant de même niveau (après tous les enfants)
+
+        // Find next element at same level (after all children)
         var $next = null;
         $check = $children.length ? $children.last().next('.lrob-category-item') : $item.next('.lrob-category-item');
-        
+
         while ($check.length) {
             if ($check.data('level') < level) {
                 // On a atteint un niveau supérieur, pas de déplacement possible
@@ -497,24 +526,24 @@ jQuery(document).ready(function($) {
             }
             $check = $check.next('.lrob-category-item');
         }
-        
+
         if ($next) {
             // Collecter les enfants du suivant
             var $nextChildren = $();
             $check = $next.next('.lrob-category-item');
-            
+
             while ($check.length && $check.data('level') > level) {
                 $nextChildren = $nextChildren.add($check);
                 $check = $check.next('.lrob-category-item');
             }
-            
+
             // Déplacer après le suivant et tous ses enfants
             var $insertAfter = $nextChildren.length ? $nextChildren.last() : $next;
             $insertAfter.after($item);
             if ($children.length) {
                 $item.after($children);
             }
-            
+
             updateCategoryPositions();
         }
     });
@@ -542,14 +571,14 @@ jQuery(document).ready(function($) {
         var $item = $(this).closest('.lrob-category-item');
         var catId = $item.data('id');
         var $prev = $item.prev('.lrob-category-item');
-        
+
         if (!$prev.length) {
-            alert('Impossible de créer une sous-catégorie ici');
+            alert('Cannot create a subcategory here');
             return;
         }
-        
+
         var newParentId = $prev.data('id');
-        
+
         $.ajax({
             url: lrobCarte.ajaxurl,
             type: 'POST',
@@ -573,11 +602,11 @@ jQuery(document).ready(function($) {
         var $item = $(this).closest('.lrob-category-item');
         var catId = $item.data('id');
         var currentParent = $item.data('parent');
-        
+
         // Trouver le grand-parent
         var $parentItem = $('.lrob-category-item[data-id="' + currentParent + '"]');
         var newParentId = $parentItem.length ? ($parentItem.data('parent') || 0) : 0;
-        
+
         $.ajax({
             url: lrobCarte.ajaxurl,
             type: 'POST',
@@ -602,7 +631,7 @@ jQuery(document).ready(function($) {
 
         var iconType = $('input[name="icon-type"]:checked').val();
         var iconValue;
-        
+
         if (iconType === 'emoji') {
             iconValue = $('#category-emoji').val();
         } else if (iconType === 'image') {
@@ -646,7 +675,7 @@ jQuery(document).ready(function($) {
     $('input[name="icon-type"]').on('change', function() {
         var iconType = $(this).val();
         $('#icon-emoji-row, #icon-image-row, #icon-fa-row').hide();
-        
+
         if (iconType === 'emoji') {
             $('#icon-emoji-row').show();
         } else if (iconType === 'image') {
@@ -662,29 +691,29 @@ jQuery(document).ready(function($) {
 
     // Media uploader pour icône personnalisée
     var categoryIconUploader;
-    
+
     $('#category-upload-icon-image').on('click', function(e) {
         e.preventDefault();
-        
+
         if (categoryIconUploader) {
             categoryIconUploader.open();
             return;
         }
-        
+
         categoryIconUploader = wp.media({
-            title: 'Choisir une icône',
-            button: { text: 'Utiliser cette image' },
+            title: 'Choose Icon',
+            button: { text: 'Use This Image' },
             multiple: false,
             library: { type: 'image' }
         });
-        
+
         categoryIconUploader.on('select', function() {
             var attachment = categoryIconUploader.state().get('selection').first().toJSON();
             $('#category-icon-image-id').val(attachment.id);
             $('#category-icon-image-preview').html('<img src="' + attachment.url + '" style="max-width: 50px; max-height: 50px;">');
             $('#category-remove-icon-image').show();
         });
-        
+
         categoryIconUploader.open();
     });
 
@@ -723,7 +752,7 @@ jQuery(document).ready(function($) {
         } else if (category.icon_type === 'image') {
             $('input[name="icon-type"][value="image"]').prop('checked', true);
             $('#category-icon-image-id').val(category.icon_value);
-            
+
             if (category.icon_value) {
                 $.ajax({
                     url: lrobCarte.ajaxurl,
@@ -744,7 +773,7 @@ jQuery(document).ready(function($) {
             $('input[name="icon-type"][value="fa"]').prop('checked', true);
             $('#category-fa').val(category.icon_value);
         }
-        
+
         $('input[name="icon-type"]:checked').trigger('change');
     }
 

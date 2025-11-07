@@ -3,23 +3,23 @@
 if (!defined('ABSPATH')) exit;
 
 class LRob_Carte_Import_Export {
-    
+
     public function export() {
         $data = array(
             'version' => LROB_CARTE_VERSION,
             'exported_at' => current_time('mysql'),
-            'settings' => array(
-                'mode' => get_option('lrob_carte_mode'),
-                'primary_color' => get_option('lrob_carte_primary_color'),
-                'secondary_color' => get_option('lrob_carte_secondary_color'),
-                'out_of_stock_display' => get_option('lrob_carte_out_of_stock_display'),
-            ),
-            'categories' => array(),
-            'products' => array()
+                      'settings' => array(
+                          'mode' => get_option('lrob_carte_mode'),
+                                          'primary_color' => get_option('lrob_carte_primary_color'),
+                                          'secondary_color' => get_option('lrob_carte_secondary_color'),
+                                          'out_of_stock_display' => get_option('lrob_carte_out_of_stock_display'),
+                      ),
+                      'categories' => array(),
+                      'products' => array()
         );
 
         $categories = LRob_Carte_Database::get_categories();
-        
+
         foreach ($categories as $cat) {
             $data['categories'][] = array(
                 'name' => $cat->name,
@@ -31,19 +31,19 @@ class LRob_Carte_Import_Export {
         }
 
         $products = LRob_Carte_Database::get_products();
-        
+
         foreach ($products as $product) {
             $prices = LRob_Carte_Database::get_product_prices($product->id);
-            
+
             $product_data = array(
                 'category_slug' => $this->get_category_slug($product->category_id),
-                'name' => $product->name,
-                'description' => $product->description,
-                'allergens' => $product->allergens,
-                'badges' => $product->badges,
-                'availability' => $product->availability,
-                'position' => $product->position,
-                'prices' => array()
+                                  'name' => $product->name,
+                                  'description' => $product->description,
+                                  'allergens' => $product->allergens,
+                                  'badges' => $product->badges,
+                                  'availability' => $product->availability,
+                                  'position' => $product->position,
+                                  'prices' => array()
             );
 
             if ($product->image_id) {
@@ -158,14 +158,14 @@ class LRob_Carte_Import_Export {
         require_once(ABSPATH . 'wp-admin/includes/image.php');
 
         $tmp = download_url($url);
-        
+
         if (is_wp_error($tmp)) {
             return 0;
         }
 
         $file_array = array(
             'name' => basename($url),
-            'tmp_name' => $tmp
+                            'tmp_name' => $tmp
         );
 
         $id = media_handle_sideload($file_array, 0);

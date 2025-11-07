@@ -1,33 +1,131 @@
 # LRob - La Carte
 
-Plugin WordPress pour gérer et afficher la carte de votre bar ou restaurant.
+A professional menu management plugin for bars and restaurants on WordPress.
+
+## Features
+
+- **Product Management**: Organize your menu items by categories
+- **Hierarchical Categories**: Support for nested categories
+- **Multiple Prices**: Set different prices per product (size, format, etc.)
+- **Happy Hour**: Mark special pricing with visual indicators
+- **Allergen Information**: Display allergen warnings
+- **Badges**: Highlight special items (new, recommended, spicy, etc.)
+- **Availability Status**: Mark items as available, out of stock, or on request
+- **Gutenberg Block**: Display your menu with customizable styling
+- **Multilingual Ready**: Full i18n support (English + French included)
+- **Import/Export**: Backup and restore your menu data
 
 ## Installation
 
-1. Télécharger le dossier `lrob-la-carte`
-2. Le placer dans `/wp-content/plugins/`
-3. Activer le plugin dans WordPress
+1. Download the latest release ZIP
+2. Upload to WordPress via Plugins → Add New → Upload Plugin
+3. Activate the plugin
+4. Go to Menu → Categories to create your first categories
 
-## Fonctionnalités
+## Usage
 
-- Gestion des catégories avec icônes (emoji ou Font Awesome)
-- Ajout de produits avec images, descriptions, prix multiples
-- Gestion des allergènes et badges (Nouveau, Bio, Végétarien, etc.)
-- Disponibilité des produits (rupture de stock)
-- Block Gutenberg responsive avec navigation par tabs
-- Import/Export JSON
-- Couleurs personnalisables
-- Mobile-friendly
-- Téléchargement de Font Awesome depuis l'admin
+### Creating Categories
 
-## Utilisation
+1. Navigate to **Menu → Categories**
+2. Click **"Create Default Categories"** for a quick start, or
+3. Click **"Add Category"** to create custom categories
+4. Organize with drag & drop, add icons (emoji, image, or Font Awesome)
 
-1. Aller dans "La Carte" > "Catégories" pour créer vos catégories
-2. Aller dans "La Carte" > "Produits" pour ajouter vos produits
-3. Personnaliser les couleurs dans "La Carte" > "Réglages"
-4. Si vous utilisez des icônes Font Awesome, cliquez sur "Télécharger Font Awesome" dans les réglages
-5. Ajouter le block "La Carte" dans une page Gutenberg
+### Adding Products
 
-## Développé par
+1. Go to **Menu → Products**
+2. Click **"Add Product"**
+3. Fill in product details:
+   - Name and description
+   - Category
+   - Image (optional)
+   - Prices (add multiple if needed)
+   - Allergens and badges
+   - Availability status
 
-LRob - https://www.lrob.fr/
+### Display Your Menu
+
+1. Edit any page or post
+2. Add the **"Menu Display"** block
+3. Configure display options:
+   - Show full menu or single category
+   - Layout style (compact or classic)
+   - Colors and typography
+   - Show/hide images, descriptions, allergens
+
+## Development
+
+### Building a Release
+
+Requirements:
+- PHP CLI
+- WP-CLI
+- gettext (msgfmt)
+- zip
+
+```bash
+# Install dependencies (Fedora/RHEL)
+sudo dnf install php-cli php-mbstring wp-cli gettext zip
+
+# Build release
+cd lrob-la-carte/
+./release.sh
+```
+
+The script will:
+1. Generate translation template (.pot)
+2. Compile translations (.po → .mo)
+3. Create a clean ZIP in `../releases/`
+
+### Translation
+
+The plugin is translation-ready with English as the default language.
+
+**Included translations:**
+- French (fr_FR)
+
+**Adding a new language:**
+
+```bash
+# Create translation file
+cp languages/lrob-la-carte-fr_FR.po languages/lrob-la-carte-es_ES.po
+
+# Edit the file and translate msgstr values
+nano languages/lrob-la-carte-es_ES.po
+
+# Build release (automatically compiles all .po files)
+./release.sh
+```
+
+## Technical Details
+
+- **WordPress Version**: 5.0+
+- **PHP Version**: 7.4+
+- **Text Domain**: `lrob-la-carte`
+- **Database Tables**: 
+  - `wp_lrob_categories`
+  - `wp_lrob_products`
+  - `wp_lrob_product_prices`
+
+## Support
+
+For support, please visit [LRob](https://www.lrob.fr/)
+
+## Credits
+
+**Developed by [LRob](https://www.lrob.fr/)**  
+Hébergeur web spécialiste WordPress
+
+## License
+
+This plugin is proprietary software developed by LRob.
+
+## Changelog
+
+### 1.0.0
+- Initial release
+- Complete English translation with i18n support
+- French translation included
+- Smart category creation (user-controlled, language-aware)
+- Professional release build system
+- No breaking changes from 1.x

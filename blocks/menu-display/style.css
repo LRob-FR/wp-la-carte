@@ -474,11 +474,11 @@
         width: 100%;
         height: 200px;
     }
-    
+
     .lrob-layout-compact .lrob-carte-product-header {
         grid-template-columns: 1fr;
     }
-    
+
     .lrob-layout-compact .lrob-carte-product-prices {
         grid-column: 1;
         grid-row: 2;
@@ -486,7 +486,7 @@
         align-items: flex-start;
         justify-content: flex-start;
     }
-    
+
     .lrob-layout-compact .lrob-carte-price {
         text-align: left;
     }

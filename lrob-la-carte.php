@@ -2,7 +2,7 @@
 /**
  * Plugin Name: LRob - La Carte
  * Plugin URI: https://www.lrob.fr/
- * Description: Gestionnaire de carte pour bars et restaurants
+ * Description: Menu manager for bars and restaurants
  * Version: 1.0.0
  * Author: LRob
  * Author URI: https://www.lrob.fr/
@@ -32,7 +32,7 @@ class LRob_La_Carte {
 
     private function __construct() {
         register_activation_hook(__FILE__, array('LRob_Carte_Database', 'create_tables'));
-        
+
         add_action('init', array($this, 'init'));
         add_action('admin_init', array($this, 'check_database_version'));
         add_action('admin_enqueue_scripts', array($this, 'admin_assets'));
@@ -41,8 +41,8 @@ class LRob_La_Carte {
 
     public function check_database_version() {
         $db_version = get_option('lrob_carte_db_version', '0');
-        $current_version = '1.2'; // Version avec happy_hour
-        
+        $current_version = '1.2'; // Version with happy_hour
+
         if (version_compare($db_version, $current_version, '<')) {
             LRob_Carte_Database::migrate_database();
             update_option('lrob_carte_db_version', $current_version);
@@ -53,9 +53,9 @@ class LRob_La_Carte {
         if (is_admin()) {
             new LRob_Carte_Admin();
         }
-        
+
         add_action('enqueue_block_editor_assets', array($this, 'enqueue_block_editor_assets'));
-        
+
         register_block_type(
             LROB_CARTE_PATH . 'blocks/menu-display',
             array(
@@ -69,12 +69,12 @@ class LRob_La_Carte {
             'lrob-carte-block-editor',
             LROB_CARTE_URL . 'blocks/menu-display/index.js',
             array('wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n'),
-            LROB_CARTE_VERSION
+                          LROB_CARTE_VERSION
         );
 
         $categories = LRob_Carte_Database::get_categories();
-        $categories_options = array(array('label' => __('Choisir une catégorie', 'lrob-la-carte'), 'value' => 0));
-        
+        $categories_options = array(array('label' => __('Choose a category', 'lrob-la-carte'), 'value' => 0));
+
         foreach ($categories as $cat) {
             $categories_options[] = array(
                 'label' => $cat->name,
@@ -90,7 +90,7 @@ class LRob_La_Carte {
             'lrob-carte-block-editor-style',
             LROB_CARTE_URL . 'blocks/menu-display/style.css',
             array(),
-            LROB_CARTE_VERSION
+                         LROB_CARTE_VERSION
         );
     }
 
@@ -109,13 +109,13 @@ class LRob_La_Carte {
 
         wp_enqueue_style('wp-color-picker');
         wp_enqueue_script('jquery-ui-sortable');
-        
+
         wp_enqueue_style('lrob-carte-admin', LROB_CARTE_URL . 'admin/css/admin.css', array(), LROB_CARTE_VERSION);
         wp_enqueue_script('lrob-carte-admin', LROB_CARTE_URL . 'admin/js/admin.js', array('jquery', 'wp-color-picker', 'jquery-ui-sortable'), LROB_CARTE_VERSION, true);
-        
+
         wp_localize_script('lrob-carte-admin', 'lrobCarte', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('lrob_carte_nonce')
+                                                                  'nonce' => wp_create_nonce('lrob_carte_nonce')
         ));
     }
 
@@ -124,7 +124,7 @@ class LRob_La_Carte {
             if (get_option('lrob_carte_load_fontawesome', false)) {
                 wp_enqueue_style('font-awesome', LROB_CARTE_URL . 'assets/fontawesome/css/all.min.css', array(), '6.5.1');
             }
-            
+
             wp_enqueue_style('lrob-carte-frontend', LROB_CARTE_URL . 'blocks/menu-display/style.css', array(), LROB_CARTE_VERSION);
             wp_enqueue_script('lrob-carte-frontend', LROB_CARTE_URL . 'assets/js/frontend.js', array(), LROB_CARTE_VERSION, true);
         }

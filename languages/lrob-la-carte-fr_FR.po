@@ -1,0 +1,471 @@
+# French translations for LRob La Carte
+# Copyright (C) 2025 LRob
+# This file is distributed under the same license as the LRob La Carte package.
+msgid ""
+msgstr ""
+"Project-Id-Version: LRob La Carte 1.0.0\n"
+"Report-Msgid-Bugs-To: https://www.lrob.fr/\n"
+"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"PO-Revision-Date: 2025-01-01 00:00+0000\n"
+"Last-Translator: LRob <contact@lrob.fr>\n"
+"Language-Team: French\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: lrob-la-carte.php
+msgid "Menu manager for bars and restaurants"
+msgstr "Gestionnaire de carte pour bars et restaurants"
+
+#: includes/class-admin.php
+msgid "Menu"
+msgstr "La Carte"
+
+msgid "Products"
+msgstr "Produits"
+
+msgid "Categories"
+msgstr "Catégories"
+
+msgid "Settings"
+msgstr "Réglages"
+
+msgid "Import/Export"
+msgstr "Import/Export"
+
+#: admin/views/products.php
+msgid "Add Product"
+msgstr "Ajouter un produit"
+
+msgid "Edit Product"
+msgstr "Modifier le produit"
+
+msgid "No categories found. Please create categories first."
+msgstr "Aucune catégorie trouvée. Veuillez d'abord créer des catégories."
+
+msgid "All Categories"
+msgstr "Toutes les catégories"
+
+msgid "Search for a product..."
+msgstr "Rechercher un produit..."
+
+msgid "Choose a category"
+msgstr "Choisir une catégorie"
+
+#: admin/views/categories.php
+msgid "Add Category"
+msgstr "Ajouter une catégorie"
+
+msgid "Edit Category"
+msgstr "Modifier la catégorie"
+
+msgid "Create Default Categories"
+msgstr "Créer les catégories par défaut"
+
+msgid "Default categories created"
+msgstr "Catégories par défaut créées"
+
+msgid "Default categories created successfully"
+msgstr "Catégories par défaut créées avec succès"
+
+msgid "Move Up"
+msgstr "Monter"
+
+msgid "Move Down"
+msgstr "Descendre"
+
+msgid "Disabled"
+msgstr "Désactivée"
+
+msgid "Disable"
+msgstr "Désactiver"
+
+msgid "Enable"
+msgstr "Activer"
+
+msgid "Active category (visible on site)"
+msgstr "Catégorie active (visible sur le site)"
+
+#: includes/class-admin.php
+msgid "Settings saved."
+msgstr "Réglages enregistrés."
+
+msgid "Categories added."
+msgstr "Catégories ajoutées."
+
+msgid "Unauthorized"
+msgstr "Non autorisé"
+
+msgid "Category name is required"
+msgstr "Le nom de la catégorie est requis"
+
+msgid "A category cannot be its own parent"
+msgstr "Une catégorie ne peut pas être son propre parent"
+
+msgid "Error during update"
+msgstr "Erreur lors de la mise à jour"
+
+msgid "Error during creation"
+msgstr "Erreur lors de la création"
+
+msgid "Category saved"
+msgstr "Catégorie enregistrée"
+
+msgid "Invalid ID"
+msgstr "ID invalide"
+
+msgid "Error during deletion"
+msgstr "Erreur lors de la suppression"
+
+msgid "Category deleted"
+msgstr "Catégorie supprimée"
+
+msgid "Category not found"
+msgstr "Catégorie introuvable"
+
+msgid "Category enabled"
+msgstr "Catégorie activée"
+
+msgid "Category disabled"
+msgstr "Catégorie désactivée"
+
+msgid "Invalid category"
+msgstr "Catégorie invalide"
+
+msgid "Product saved"
+msgstr "Produit enregistré"
+
+msgid "Product name is required"
+msgstr "Le nom du produit est requis"
+
+msgid "Product deleted"
+msgstr "Produit supprimé"
+
+msgid "Product not found"
+msgstr "Produit introuvable"
+
+msgid "Positions updated"
+msgstr "Positions mises à jour"
+
+#: admin/views/settings.php
+msgid "Display Mode"
+msgstr "Mode d'affichage"
+
+msgid "Restaurant"
+msgstr "Restaurant"
+
+msgid "Bar"
+msgstr "Bar"
+
+msgid "Primary Color"
+msgstr "Couleur principale"
+
+msgid "Secondary Color"
+msgstr "Couleur secondaire"
+
+msgid "Out of Stock Display"
+msgstr "Affichage des produits indisponibles"
+
+msgid "Hide Completely"
+msgstr "Masquer complètement"
+
+msgid "Show Grayed Out"
+msgstr "Afficher en grisé"
+
+msgid "Show Normally"
+msgstr "Afficher normalement"
+
+msgid "Load Font Awesome"
+msgstr "Charger Font Awesome"
+
+msgid "Enable if your theme doesn't load Font Awesome"
+msgstr "Activer si votre thème ne charge pas Font Awesome"
+
+msgid "Save Changes"
+msgstr "Enregistrer les modifications"
+
+msgid "Add missing default categories"
+msgstr "Ajouter les catégories par défaut manquantes"
+
+#: admin/views/products.php
+msgid "Product Name"
+msgstr "Nom du produit"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Category"
+msgstr "Catégorie"
+
+msgid "Image"
+msgstr "Image"
+
+msgid "Choose Image"
+msgstr "Choisir une image"
+
+msgid "Use This Image"
+msgstr "Utiliser cette image"
+
+msgid "Allergens"
+msgstr "Allergènes"
+
+msgid "Badges"
+msgstr "Badges"
+
+msgid "Availability"
+msgstr "Disponibilité"
+
+msgid "Available"
+msgstr "Disponible"
+
+msgid "Out of Stock"
+msgstr "Indisponible"
+
+msgid "On Request"
+msgstr "Sur demande"
+
+msgid "Prices"
+msgstr "Prix"
+
+msgid "Label"
+msgstr "Libellé"
+
+msgid "Price"
+msgstr "Prix"
+
+msgid "Happy Hour"
+msgstr "Happy Hour"
+
+msgid "Add Price"
+msgstr "Ajouter un prix"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+#: admin/views/categories.php
+msgid "Category Name"
+msgstr "Nom de la catégorie"
+
+msgid "Slug"
+msgstr "Slug"
+
+msgid "Parent Category"
+msgstr "Catégorie parente"
+
+msgid "None (root category)"
+msgstr "Aucune (catégorie racine)"
+
+msgid "Icon Type"
+msgstr "Type d'icône"
+
+msgid "Emoji"
+msgstr "Emoji"
+
+msgid "Font Awesome"
+msgstr "Font Awesome"
+
+msgid "Icon Value"
+msgstr "Valeur de l'icône"
+
+msgid "Choose Icon"
+msgstr "Choisir une icône"
+
+msgid "Active"
+msgstr "Active"
+
+#: blocks/menu-display/block.json
+msgid "Menu Display"
+msgstr "Affichage du Menu"
+
+msgid "Display your bar or restaurant menu"
+msgstr "Affiche votre carte de bar ou restaurant"
+
+#: blocks/menu-display/index.js
+msgid "Display"
+msgstr "Affichage"
+
+msgid "Full Menu"
+msgstr "Toute la carte"
+
+msgid "Single Category"
+msgstr "Une catégorie"
+
+msgid "Navigation Position"
+msgstr "Position de la navigation"
+
+msgid "Top"
+msgstr "En haut"
+
+msgid "Bottom"
+msgstr "En bas"
+
+msgid "Top and Bottom"
+msgstr "En haut et en bas"
+
+msgid "Layout Style"
+msgstr "Style de mise en page"
+
+msgid "Compact (price on title line)"
+msgstr "Compact (prix sur ligne titre)"
+
+msgid "Classic (separate prices)"
+msgstr "Classique (prix séparés)"
+
+msgid "Show Images"
+msgstr "Afficher les images"
+
+msgid "Show Descriptions"
+msgstr "Afficher les descriptions"
+
+msgid "Show Allergens"
+msgstr "Afficher les allergènes"
+
+msgid "Typography"
+msgstr "Typographie"
+
+msgid "Font Size"
+msgstr "Taille de police"
+
+msgid "Font Family"
+msgstr "Famille de police"
+
+msgid "System"
+msgstr "Système"
+
+msgid "Columns"
+msgstr "Colonnes"
+
+msgid "Desktop"
+msgstr "Bureau"
+
+msgid "Mobile"
+msgstr "Mobile"
+
+msgid "Colors"
+msgstr "Couleurs"
+
+msgid "Text Color"
+msgstr "Couleur du texte"
+
+msgid "Border Color"
+msgstr "Couleur des bordures"
+
+msgid "Accent Color"
+msgstr "Couleur d'accent"
+
+msgid "Badge Background"
+msgstr "Fond des badges"
+
+msgid "Badge Text"
+msgstr "Texte des badges"
+
+msgid "Spacing"
+msgstr "Espacement"
+
+msgid "Border Radius"
+msgstr "Rayon des bordures"
+
+msgid "Border Width"
+msgstr "Épaisseur des bordures"
+
+msgid "Inner Padding"
+msgstr "Padding intérieur"
+
+msgid "Card Gap"
+msgstr "Espacement entre cartes"
+
+#: admin/views/import-export.php
+msgid "Export Data"
+msgstr "Exporter les données"
+
+msgid "Download Export File"
+msgstr "Télécharger le fichier d'export"
+
+msgid "Import Data"
+msgstr "Importer des données"
+
+msgid "JSON File"
+msgstr "Fichier JSON"
+
+msgid "Import"
+msgstr "Importer"
+
+msgid "Data exported successfully"
+msgstr "Les données ont été exportées avec succès"
+
+msgid "Data imported successfully"
+msgstr "Les données ont été importées avec succès"
+
+msgid "Error during import"
+msgstr "Erreur lors de l'import"
+
+msgid "Invalid file"
+msgstr "Fichier invalide"
+
+#: includes/class-database.php - Default Categories Restaurant
+msgid "Starters"
+msgstr "Entrées"
+
+msgid "Main Courses"
+msgstr "Plats"
+
+msgid "Burgers"
+msgstr "Burgers"
+
+msgid "Pizzas"
+msgstr "Pizzas"
+
+msgid "Pasta"
+msgstr "Pâtes"
+
+msgid "Desserts"
+msgstr "Desserts"
+
+msgid "Drinks"
+msgstr "Boissons"
+
+#: includes/class-database.php - Default Categories Bar
+msgid "Beers"
+msgstr "Bières"
+
+msgid "Wines"
+msgstr "Vins"
+
+msgid "Cocktails"
+msgstr "Cocktails"
+
+msgid "Spirits"
+msgstr "Spiritueux"
+
+msgid "Aperitifs"
+msgstr "Apéritifs"
+
+msgid "Digestifs"
+msgstr "Digestifs"
+
+msgid "Soft Drinks"
+msgstr "Softs"
+
+msgid "Coffee & Tea"
+msgstr "Cafés & Thés"
+
+msgid "Snacks"
+msgstr "Snacks"
+
+#: admin/js/admin.js - JavaScript Strings
+msgid "Are you sure you want to delete this product?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce produit ?"
+
+msgid "Are you sure? All products in this category will be deleted."
+msgstr "Êtes-vous sûr ? Tous les produits de cette catégorie seront supprimés."
+
+msgid "Error saving"
+msgstr "Erreur lors de l'enregistrement"
+
+msgid "Cannot create a subcategory here"
+msgstr "Impossible de créer une sous-catégorie ici"

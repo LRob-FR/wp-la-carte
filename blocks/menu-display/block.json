@@ -3,10 +3,10 @@
   "apiVersion": 3,
   "name": "lrob-carte/menu-display",
   "version": "1.0.0",
-  "title": "La Carte",
+  "title": "Menu Display",
   "category": "widgets",
   "icon": "food",
-  "description": "Affiche votre carte de bar ou restaurant",
+  "description": "Display your bar or restaurant menu",
   "keywords": ["menu", "carte", "restaurant", "bar", "food"],
   "supports": {
     "html": false,

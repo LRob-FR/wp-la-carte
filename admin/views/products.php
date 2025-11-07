@@ -1,14 +1,14 @@
 <div class="wrap lrob-carte-admin">
-    <h1><?php _e('Produits', 'lrob-la-carte'); ?></h1>
+    <h1><?php _e('Products', 'lrob-la-carte'); ?></h1>
 
     <?php if (empty($categories)): ?>
         <div class="notice notice-warning">
             <p><?php _e('Aucune catégorie trouvée. Veuillez d\'abord créer des catégories.', 'lrob-la-carte'); ?></p>
         </div>
     <?php else: ?>
-        
+
         <?php
-        // Breadcrumb de navigation
+        // Navigation breadcrumb
         $breadcrumb_cats = array();
         if ($current_cat && $current_cat !== 'all') {
             $cat = LRob_Carte_Database::get_category($current_cat);
@@ -27,10 +27,10 @@
             }
         }
         ?>
-        
+
         <div class="lrob-breadcrumb">
             <a href="?page=lrob-carte&cat=all" class="lrob-breadcrumb-item <?php echo $current_cat === 'all' ? 'active' : ''; ?>">
-                📁 <?php _e('Toutes les catégories', 'lrob-la-carte'); ?>
+                📁 <?php _e('All Categories', 'lrob-la-carte'); ?>
             </a>
             <?php foreach ($breadcrumb_cats as $bc): ?>
                 <span class="lrob-breadcrumb-separator">›</span>
@@ -42,11 +42,11 @@
 
         <div class="lrob-products-header">
             <div class="lrob-search-box">
-                <input type="text" id="lrob-product-search" placeholder="<?php _e('Rechercher un produit...', 'lrob-la-carte'); ?>" class="regular-text">
+                <input type="text" id="lrob-product-search" placeholder="<?php _e('Search for a product...', 'lrob-la-carte'); ?>" class="regular-text">
                 <span class="lrob-search-count"></span>
             </div>
             <button class="button button-primary" id="lrob-add-product">
-                <?php _e('Ajouter un produit', 'lrob-la-carte'); ?>
+                <?php _e('Add Product', 'lrob-la-carte'); ?>
             </button>
         </div>
 
@@ -62,14 +62,14 @@
                     return $cat->parent_id == $current_cat;
                 });
             }
-            
+
             if (!empty($child_categories)):
                 foreach ($child_categories as $child_cat):
                     $child_products_count = count(LRob_Carte_Database::get_products_recursive($child_cat->id));
             ?>
                 <a href="?page=lrob-carte&cat=<?php echo $child_cat->id; ?>" class="lrob-category-card">
                     <div class="lrob-category-card-icon">
-                        <?php 
+                        <?php
                         if ($child_cat->icon_type === 'emoji') {
                             echo esc_html($child_cat->icon_value);
                         } elseif ($child_cat->icon_type === 'image' && $child_cat->icon_value) {
@@ -82,15 +82,15 @@
                     <div class="lrob-category-card-name"><?php echo esc_html($child_cat->name); ?></div>
                     <div class="lrob-category-card-count"><?php echo $child_products_count; ?> produit<?php echo $child_products_count > 1 ? 's' : ''; ?></div>
                 </a>
-            <?php 
+            <?php
                 endforeach;
             endif;
             ?>
         </div>
 
-        <?php 
+        <?php
         // 2. ENSUITE afficher les produits (si on est dans une catégorie OU si on est sur "all")
-        if (!empty($products) || $current_cat === 'all'): 
+        if (!empty($products) || $current_cat === 'all'):
             // Si on est sur "all", récupérer tous les produits
             if ($current_cat === 'all') {
                 $products = LRob_Carte_Database::get_products();
@@ -98,17 +98,17 @@
         ?>
             <?php if (!empty($products)): ?>
                 <h2 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px;">
-                    <?php 
+                    <?php
                     if ($current_cat === 'all') {
                         _e('Tous les produits', 'lrob-la-carte');
                     } else {
-                        _e('Produits', 'lrob-la-carte');
+                        _e('Products', 'lrob-la-carte');
                     }
                     ?>
                 </h2>
                 <div id="lrob-products-grid">
-                    <?php 
-                    foreach ($products as $product): 
+                    <?php
+                    foreach ($products as $product):
                         $prices = LRob_Carte_Database::get_product_prices($product->id);
                         $availability_class = $product->availability !== 'available' ? 'lrob-unavailable' : '';
                         $product_category = LRob_Carte_Database::get_category($product->category_id);
@@ -134,7 +134,7 @@
                                         <?php if ($product->availability !== 'available'): ?>
                                             <span class="lrob-badge lrob-badge-unavailable"><?php _e('Rupture', 'lrob-la-carte'); ?></span>
                                         <?php endif; ?>
-                                        <?php if ($product->badges): 
+                                        <?php if ($product->badges):
                                             $badges = explode(',', $product->badges);
                                             foreach ($badges as $badge): ?>
                                                 <span class="lrob-badge lrob-badge-<?php echo esc_attr($badge); ?>">
@@ -144,11 +144,11 @@
                                         endif; ?>
                                     </div>
                                 </div>
-                                
+
                                 <?php if ($product->description): ?>
                                     <div class="lrob-product-card-desc"><?php echo esc_html($product->description); ?></div>
                                 <?php endif; ?>
-                                
+
                                 <?php if (!empty($prices)): ?>
                                     <div class="lrob-product-card-prices">
                                         <?php foreach ($prices as $price): ?>
@@ -164,7 +164,7 @@
                                         <?php endforeach; ?>
                                     </div>
                                 <?php endif; ?>
-                                
+
                                 <?php if ($product->allergens): ?>
                                     <div class="lrob-product-card-allergens">
                                         <small>⚠️ <?php echo esc_html($product->allergens); ?></small>
@@ -196,8 +196,8 @@
 <div id="lrob-product-modal" class="lrob-modal" style="display:none;">
     <div class="lrob-modal-content">
         <span class="lrob-modal-close">&times;</span>
-        <h2 id="lrob-modal-title"><?php _e('Ajouter un produit', 'lrob-la-carte'); ?></h2>
-        
+        <h2 id="lrob-modal-title"><?php _e('Add Product', 'lrob-la-carte'); ?></h2>
+
         <form id="lrob-product-form">
             <input type="hidden" id="product-id" value="">
             <input type="hidden" id="product-category" value="<?php echo $current_cat !== 'all' ? $current_cat : ''; ?>">
@@ -206,14 +206,14 @@
 
             <table class="form-table">
                 <tr>
-                    <th><label for="product-category-select"><?php _e('Catégorie', 'lrob-la-carte'); ?> *</label></th>
+                    <th><label for="product-category-select"><?php _e('Category', 'lrob-la-carte'); ?> *</label></th>
                     <td>
                         <select id="product-category-select" class="regular-text" required>
-                            <option value=""><?php _e('Choisir une catégorie', 'lrob-la-carte'); ?></option>
-                            <?php 
+                            <option value=""><?php _e('Choose a category', 'lrob-la-carte'); ?></option>
+                            <?php
                             $categories_tree = LRob_Carte_Database::get_categories_tree(true);
                             function render_category_options($categories, $selected_id, $level = 0) {
-                                foreach ($categories as $cat): 
+                                foreach ($categories as $cat):
                                     $indent = str_repeat('└─ ', $level);
                             ?>
                                 <option value="<?php echo $cat->id; ?>" <?php selected($selected_id, $cat->id); ?>>
@@ -243,12 +243,12 @@
                     <td>
                         <div id="product-image-preview"></div>
                         <input type="hidden" id="product-image-id" value="0">
-                        <button type="button" class="button" id="product-upload-image"><?php _e('Choisir une image', 'lrob-la-carte'); ?></button>
+                        <button type="button" class="button" id="product-upload-image"><?php _e('Choose Image', 'lrob-la-carte'); ?></button>
                         <button type="button" class="button" id="product-remove-image" style="display:none;"><?php _e('Retirer', 'lrob-la-carte'); ?></button>
                     </td>
                 </tr>
                 <tr>
-                    <th><label><?php _e('Prix', 'lrob-la-carte'); ?></label></th>
+                    <th><label><?php _e('Price', 'lrob-la-carte'); ?></label></th>
                     <td>
                         <p class="description"><?php _e('Label (optionnel) : spécifiez une variante (ex: "Verre (12cl)", "Pinte", "Bouteille").<br>Les labels déjà utilisés vous seront proposés automatiquement.', 'lrob-la-carte'); ?></p>
                         <div id="product-prices-wrapper">
@@ -258,11 +258,11 @@
                                 <button type="button" class="button lrob-remove-price">−</button>
                             </div>
                         </div>
-                        <button type="button" class="button" id="lrob-add-price"><?php _e('Ajouter un prix', 'lrob-la-carte'); ?></button>
+                        <button type="button" class="button" id="lrob-add-price"><?php _e('Add Price', 'lrob-la-carte'); ?></button>
                     </td>
                 </tr>
                 <tr>
-                    <th><label><?php _e('Allergènes', 'lrob-la-carte'); ?></label></th>
+                    <th><label><?php _e('Allergens', 'lrob-la-carte'); ?></label></th>
                     <td>
                         <div class="lrob-checkboxes">
                             <?php foreach (LRob_Carte_Settings::get_allergens() as $key => $label): ?>
@@ -288,10 +288,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="product-availability"><?php _e('Disponibilité', 'lrob-la-carte'); ?></label></th>
+                    <th><label for="product-availability"><?php _e('Availability', 'lrob-la-carte'); ?></label></th>
                     <td>
                         <select id="product-availability">
-                            <option value="available"><?php _e('Disponible', 'lrob-la-carte'); ?></option>
+                            <option value="available"><?php _e('Available', 'lrob-la-carte'); ?></option>
                             <option value="unavailable"><?php _e('En rupture', 'lrob-la-carte'); ?></option>
                         </select>
                     </td>
@@ -299,8 +299,8 @@
             </table>
 
             <p class="submit">
-                <button type="submit" class="button button-primary"><?php _e('Enregistrer', 'lrob-la-carte'); ?></button>
-                <button type="button" class="button lrob-modal-close"><?php _e('Annuler', 'lrob-la-carte'); ?></button>
+                <button type="submit" class="button button-primary"><?php _e('Save', 'lrob-la-carte'); ?></button>
+                <button type="button" class="button lrob-modal-close"><?php _e('Cancel', 'lrob-la-carte'); ?></button>
             </p>
         </form>
     </div>

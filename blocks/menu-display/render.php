@@ -23,28 +23,27 @@ $columns_mobile = $attributes['columnsMobile'] ?? 1;
 
 $out_of_stock_display = get_option('lrob_carte_out_of_stock_display', 'show');
 
-$all_categories = $display_mode === 'single' && $selected_category 
-    ? array(LRob_Carte_Database::get_category($selected_category))
-    : LRob_Carte_Database::get_categories('position', 'ASC', true);
+$all_categories = $display_mode === 'single' && $selected_category
+	? array(LRob_Carte_Database::get_category($selected_category))
+	: LRob_Carte_Database::get_categories('position', 'ASC', true);
 
-// Organiser par hiérarchie
 $categories_by_parent = array();
 foreach ($all_categories as $cat) {
-    if (!$cat) continue;
-    $parent_id = $cat->parent_id ?? 0;
-    if (!isset($categories_by_parent[$parent_id])) {
-        $categories_by_parent[$parent_id] = array();
-    }
-    $categories_by_parent[$parent_id][] = $cat;
+	if (!$cat) continue;
+	$parent_id = $cat->parent_id ?? 0;
+	if (!isset($categories_by_parent[$parent_id])) {
+		$categories_by_parent[$parent_id] = array();
+	}
+	$categories_by_parent[$parent_id][] = $cat;
 }
 
 $wrapper_attributes = get_block_wrapper_attributes(array(
-    'class' => 'lrob-carte-wrapper lrob-layout-' . esc_attr($layout_style)
+	'class' => 'lrob-carte-wrapper lrob-layout-' . esc_attr($layout_style)
 ));
 
-$resolved_font_family = $font_family === 'system' 
-    ? '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif'
-    : $font_family;
+$resolved_font_family = $font_family === 'system'
+	? '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif'
+	: $font_family;
 
 $inline_style = "--lrob-cols-desktop: {$columns_desktop}; --lrob-cols-mobile: {$columns_mobile}; --lrob-border-radius: {$card_border_radius}px; --lrob-border-width: {$card_border_width}px; --lrob-card-padding: {$card_padding}px; --lrob-card-gap: {$card_gap}px; font-size: {$font_size}px; font-family: {$resolved_font_family};";
 
@@ -56,172 +55,171 @@ if ($badge_text_color) $inline_style .= " --lrob-badge-text: {$badge_text_color}
 
 $parent_categories = $categories_by_parent[0] ?? array();
 
-// Fonction pour afficher une catégorie et ses enfants (déclarée une seule fois)
 if (!function_exists('lrob_render_category_drill_down')) {
-    function lrob_render_category_drill_down($category, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, $level = 0) {
-        $has_children = isset($categories_by_parent[$category->id]) && !empty($categories_by_parent[$category->id]);
-        $direct_products = LRob_Carte_Database::get_products($category->id);
-        
-        if (empty($direct_products) && !$has_children) return;
-        
-        $is_root = $level === 0;
-        ?>
-        <div class="lrob-carte-category <?php echo $is_root ? 'lrob-carte-root-category' : 'lrob-carte-child-category'; ?>" 
-             data-category-id="<?php echo $category->id; ?>" 
-             data-level="<?php echo $level; ?>">
-            
-            <div class="lrob-carte-category-header">
-                <h<?php echo min($level + 2, 6); ?> class="lrob-carte-category-title">
-                    <span class="lrob-carte-category-icon">
-                        <?php 
-                        if ($category->icon_type === 'emoji') {
-                            echo esc_html($category->icon_value);
-                        } elseif ($category->icon_type === 'image' && $category->icon_value) {
-                            echo wp_get_attachment_image($category->icon_value, array(32, 32));
-                        } else {
-                            echo '<i class="' . esc_attr($category->icon_value) . '"></i>';
-                        }
-                        ?>
-                    </span>
-                    <?php echo esc_html($category->name); ?>
-                </h<?php echo min($level + 2, 6); ?>>
-            </div>
+	function lrob_render_category_drill_down($category, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, $level = 0) {
+		$has_children = isset($categories_by_parent[$category->id]) && !empty($categories_by_parent[$category->id]);
+		$direct_products = LRob_Carte_Database::get_products($category->id);
 
-            <?php if ($has_children): ?>
-                <div class="lrob-carte-subcategory-filters" data-parent-category="<?php echo $category->id; ?>">
-                    <?php foreach ($categories_by_parent[$category->id] as $child_cat): ?>
-                        <button class="lrob-subcategory-badge" 
-                                data-subcategory="<?php echo $child_cat->id; ?>" 
-                                data-parent="<?php echo $category->id; ?>">
-                            <span class="lrob-subcategory-badge-icon">
-                                <?php 
-                                if ($child_cat->icon_type === 'emoji') {
-                                    echo esc_html($child_cat->icon_value);
-                                } elseif ($child_cat->icon_type === 'image' && $child_cat->icon_value) {
-                                    echo wp_get_attachment_image($child_cat->icon_value, array(16, 16));
-                                } else {
-                                    echo '<i class="' . esc_attr($child_cat->icon_value) . '"></i>';
-                                }
-                                ?>
-                            </span>
-                            <?php echo esc_html($child_cat->name); ?>
-                        </button>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+		if (empty($direct_products) && !$has_children) return;
 
-            <?php if (!empty($direct_products)): ?>
-                <div class="lrob-carte-products" data-category-products="<?php echo $category->id; ?>">
-                    <?php foreach ($direct_products as $product): 
-                        if ($product->availability !== 'available' && $out_of_stock_display === 'hide') continue;
-                        
-                        $prices = LRob_Carte_Database::get_product_prices($product->id);
-                        $is_unavailable = $product->availability !== 'available';
-                    ?>
-                        <div class="lrob-carte-product <?php echo $is_unavailable ? 'lrob-unavailable' : ''; ?>">
-                            <?php if ($show_images && $product->image_id): ?>
-                                <div class="lrob-carte-product-image">
-                                    <?php echo wp_get_attachment_image($product->image_id, 'medium', false, array('loading' => 'lazy')); ?>
-                                </div>
-                            <?php endif; ?>
+		$is_root = $level === 0;
+		?>
+		<div class="lrob-carte-category <?php echo $is_root ? 'lrob-carte-root-category' : 'lrob-carte-child-category'; ?>"
+			 data-category-id="<?php echo $category->id; ?>"
+			 data-level="<?php echo $level; ?>">
 
-                            <div class="lrob-carte-product-content">
-                                <div class="lrob-carte-product-header">
-                                    <h4 class="lrob-carte-product-name">
-                                        <span class="lrob-carte-product-name-text"><?php echo esc_html($product->name); ?></span>
-                                        
-                                        <?php if ($is_unavailable): ?>
-                                            <span class="lrob-carte-badge lrob-badge-unavailable">
-                                                <?php _e('Rupture', 'lrob-la-carte'); ?>
-                                            </span>
-                                        <?php endif; ?>
+			<div class="lrob-carte-category-header">
+				<h<?php echo min($level + 2, 6); ?> class="lrob-carte-category-title">
+					<span class="lrob-carte-category-icon">
+						<?php
+						if ($category->icon_type === 'emoji') {
+							echo esc_html($category->icon_value);
+						} elseif ($category->icon_type === 'image' && $category->icon_value) {
+							echo wp_get_attachment_image($category->icon_value, array(32, 32));
+						} else {
+							echo '<i class="' . esc_attr($category->icon_value) . '"></i>';
+						}
+						?>
+					</span>
+					<?php echo esc_html($category->name); ?>
+				</h<?php echo min($level + 2, 6); ?>>
+			</div>
 
-                                        <?php if ($product->badges): 
-                                            $badges = explode(',', $product->badges);
-                                            foreach ($badges as $badge): ?>
-                                                <span class="lrob-carte-badge lrob-badge-<?php echo esc_attr($badge); ?>">
-                                                    <?php echo esc_html(LRob_Carte_Settings::get_badges()[$badge] ?? $badge); ?>
-                                                </span>
-                                            <?php endforeach;
-                                        endif; ?>
-                                    </h4>
+			<?php if ($has_children): ?>
+				<div class="lrob-carte-subcategory-filters" data-parent-category="<?php echo $category->id; ?>">
+					<?php foreach ($categories_by_parent[$category->id] as $child_cat): ?>
+						<button class="lrob-subcategory-badge"
+								data-subcategory="<?php echo $child_cat->id; ?>"
+								data-parent="<?php echo $category->id; ?>">
+							<span class="lrob-subcategory-badge-icon">
+								<?php
+								if ($child_cat->icon_type === 'emoji') {
+									echo esc_html($child_cat->icon_value);
+								} elseif ($child_cat->icon_type === 'image' && $child_cat->icon_value) {
+									echo wp_get_attachment_image($child_cat->icon_value, array(16, 16));
+								} else {
+									echo '<i class="' . esc_attr($child_cat->icon_value) . '"></i>';
+								}
+								?>
+							</span>
+							<?php echo esc_html($child_cat->name); ?>
+						</button>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
 
-                                    <?php if (!empty($prices)): ?>
-                                        <div class="lrob-carte-product-prices">
-                                            <?php foreach ($prices as $price): ?>
-                                                <div class="lrob-carte-price <?php echo $price->happy_hour ? 'lrob-price-happy' : ''; ?>">
-                                                    <?php if ($price->label): ?>
-                                                        <span class="lrob-carte-price-label"><?php echo esc_html($price->label); ?></span>
-                                                    <?php endif; ?>
-                                                    <span class="lrob-carte-price-amount"><?php echo number_format($price->price, 2, ',', ' '); ?> €</span>
-                                                    <?php if ($price->happy_hour): ?>
-                                                        <span class="lrob-price-happy-icon">🍹</span>
-                                                    <?php endif; ?>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
+			<?php if (!empty($direct_products)): ?>
+				<div class="lrob-carte-products" data-category-products="<?php echo $category->id; ?>">
+					<?php foreach ($direct_products as $product):
+						if ($product->availability !== 'available' && $out_of_stock_display === 'hide') continue;
 
-                                <?php if ($show_descriptions && $product->description): ?>
-                                    <p class="lrob-carte-product-description">
-                                        <?php echo esc_html($product->description); ?>
-                                    </p>
-                                <?php endif; ?>
+						$prices = LRob_Carte_Database::get_product_prices($product->id);
+						$is_unavailable = $product->availability !== 'available';
+					?>
+						<div class="lrob-carte-product <?php echo $is_unavailable ? 'lrob-unavailable' : ''; ?>">
+							<?php if ($show_images && $product->image_id): ?>
+								<div class="lrob-carte-product-image">
+									<?php echo wp_get_attachment_image($product->image_id, 'medium', false, array('loading' => 'lazy')); ?>
+								</div>
+							<?php endif; ?>
 
-                                <?php if ($show_allergens && $product->allergens): ?>
-                                    <div class="lrob-carte-product-allergens">
-                                        <small>⚠️ <?php echo esc_html($product->allergens); ?></small>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+							<div class="lrob-carte-product-content">
+								<div class="lrob-carte-product-header">
+									<h4 class="lrob-carte-product-name">
+										<span class="lrob-carte-product-name-text"><?php echo esc_html($product->name); ?></span>
 
-            <?php if ($has_children): ?>
-                <div class="lrob-carte-subcategories-container" data-parent="<?php echo $category->id; ?>">
-                    <?php 
-                    foreach ($categories_by_parent[$category->id] as $child_cat) {
-                        lrob_render_category_drill_down($child_cat, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, $level + 1);
-                    }
-                    ?>
-                </div>
-            <?php endif; ?>
-        </div>
-    <?php
-    }
+										<?php if ($is_unavailable): ?>
+											<span class="lrob-carte-badge lrob-badge-unavailable">
+												<?php _e('Out of Stock', 'lrob-la-carte'); ?>
+											</span>
+										<?php endif; ?>
+
+										<?php if ($product->badges):
+											$badges = explode(',', $product->badges);
+											foreach ($badges as $badge): ?>
+												<span class="lrob-carte-badge lrob-badge-<?php echo esc_attr($badge); ?>">
+													<?php echo esc_html(LRob_Carte_Settings::get_badges()[$badge] ?? $badge); ?>
+												</span>
+											<?php endforeach;
+										endif; ?>
+									</h4>
+
+									<?php if (!empty($prices)): ?>
+										<div class="lrob-carte-product-prices">
+											<?php foreach ($prices as $price): ?>
+												<div class="lrob-carte-price <?php echo $price->happy_hour ? 'lrob-price-happy' : ''; ?>">
+													<?php if ($price->label): ?>
+														<span class="lrob-carte-price-label"><?php echo esc_html($price->label); ?></span>
+													<?php endif; ?>
+													<span class="lrob-carte-price-amount"><?php echo number_format($price->price, 2, ',', ' '); ?> €</span>
+													<?php if ($price->happy_hour): ?>
+														<span class="lrob-price-happy-icon">🍹</span>
+													<?php endif; ?>
+												</div>
+											<?php endforeach; ?>
+										</div>
+									<?php endif; ?>
+								</div>
+
+								<?php if ($show_descriptions && $product->description): ?>
+									<p class="lrob-carte-product-description">
+										<?php echo esc_html($product->description); ?>
+									</p>
+								<?php endif; ?>
+
+								<?php if ($show_allergens && $product->allergens): ?>
+									<div class="lrob-carte-product-allergens">
+										<small>⚠️ <?php echo esc_html($product->allergens); ?></small>
+									</div>
+								<?php endif; ?>
+							</div>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+
+			<?php if ($has_children): ?>
+				<div class="lrob-carte-subcategories-container" data-parent="<?php echo $category->id; ?>">
+					<?php
+					foreach ($categories_by_parent[$category->id] as $child_cat) {
+						lrob_render_category_drill_down($child_cat, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, $level + 1);
+					}
+					?>
+				</div>
+			<?php endif; ?>
+		</div>
+	<?php
+	}
 }
 ?>
 
 <div <?php echo $wrapper_attributes; ?> style="<?php echo esc_attr($inline_style); ?>" data-carte-wrapper>
-    
-    <?php if ($display_mode === 'all' && count($parent_categories) > 1): ?>
-        <div class="lrob-carte-nav">
-            <?php foreach ($parent_categories as $cat): ?>
-                <button class="lrob-carte-nav-item" data-category="<?php echo $cat->id; ?>">
-                    <span class="lrob-carte-nav-icon">
-                        <?php 
-                        if ($cat->icon_type === 'emoji') {
-                            echo esc_html($cat->icon_value);
-                        } elseif ($cat->icon_type === 'image' && $cat->icon_value) {
-                            echo wp_get_attachment_image($cat->icon_value, array(24, 24));
-                        } else {
-                            echo '<i class="' . esc_attr($cat->icon_value) . '"></i>';
-                        }
-                        ?>
-                    </span>
-                    <span class="lrob-carte-nav-label"><?php echo esc_html($cat->name); ?></span>
-                </button>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
 
-    <?php 
-    foreach ($parent_categories as $parent_cat) {
-        lrob_render_category_drill_down($parent_cat, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, 0);
-    }
-    ?>
+	<?php if ($display_mode === 'all' && count($parent_categories) > 1): ?>
+		<div class="lrob-carte-nav">
+			<?php foreach ($parent_categories as $cat): ?>
+				<button class="lrob-carte-nav-item" data-category="<?php echo $cat->id; ?>">
+					<span class="lrob-carte-nav-icon">
+						<?php
+						if ($cat->icon_type === 'emoji') {
+							echo esc_html($cat->icon_value);
+						} elseif ($cat->icon_type === 'image' && $cat->icon_value) {
+							echo wp_get_attachment_image($cat->icon_value, array(24, 24));
+						} else {
+							echo '<i class="' . esc_attr($cat->icon_value) . '"></i>';
+						}
+						?>
+					</span>
+					<span class="lrob-carte-nav-label"><?php echo esc_html($cat->name); ?></span>
+				</button>
+			<?php endforeach; ?>
+		</div>
+	<?php endif; ?>
+
+	<?php
+	foreach ($parent_categories as $parent_cat) {
+		lrob_render_category_drill_down($parent_cat, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, 0);
+	}
+	?>
 
 </div>

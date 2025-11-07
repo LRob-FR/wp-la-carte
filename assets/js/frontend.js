@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     cat.style.display = 'none';
                 }
             });
-            
+
             navItems[0].classList.add('active');
 
             navItems.forEach(item => {
@@ -41,17 +41,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Gestion des badges de sous-catégories avec multi-sélection
         const subcategoryBadges = wrapper.querySelectorAll('.lrob-subcategory-badge');
-        
+
         subcategoryBadges.forEach(badge => {
             badge.addEventListener('click', function(e) {
                 e.preventDefault();
-                
+
                 const subcategoryId = this.getAttribute('data-subcategory');
                 const parentId = this.getAttribute('data-parent');
-                
+
                 const parentCategory = wrapper.querySelector(`.lrob-carte-category[data-category-id="${parentId}"]`);
                 if (!parentCategory) return;
-                
+
                 // Toggle ce badge
                 this.classList.toggle('active');
 
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     // Filtrer : afficher uniquement les catégories des badges actifs
                     const activeIds = activeBadges.map(b => b.getAttribute('data-subcategory'));
-                    
+
                     allSubcats.forEach(subcat => {
                         const subcatId = subcat.getAttribute('data-category-id');
                         subcat.style.display = activeIds.includes(subcatId) ? 'block' : 'none';
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Désactiver tous les badges
             const badges = categoryElement.querySelectorAll('.lrob-subcategory-badge');
             badges.forEach(b => b.classList.remove('active'));
-            
+
             // Afficher tous les conteneurs et sous-catégories
             const containers = categoryElement.querySelectorAll('.lrob-carte-subcategories-container');
             containers.forEach(c => {

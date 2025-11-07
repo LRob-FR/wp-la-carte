@@ -1,5 +1,5 @@
 <div class="wrap lrob-carte-admin">
-    <h1><?php _e('Réglages', 'lrob-la-carte'); ?></h1>
+    <h1><?php _e('Settings', 'lrob-la-carte'); ?></h1>
 
     <form method="post" action="">
         <?php wp_nonce_field('lrob_carte_settings', 'lrob_carte_settings_nonce'); ?>
@@ -26,13 +26,13 @@
 
             <tr>
                 <th scope="row">
-                    <label><?php _e('Catégories', 'lrob-la-carte'); ?></label>
+                    <label><?php _e('Categories', 'lrob-la-carte'); ?></label>
                 </th>
                 <td>
                     <form method="post" action="" style="display:inline;">
                         <?php wp_nonce_field('lrob_add_categories', 'lrob_add_categories_nonce'); ?>
                         <button type="submit" class="button">
-                            <?php _e('Ajouter les catégories par défaut manquantes', 'lrob-la-carte'); ?>
+                            <?php _e('Add missing default categories', 'lrob-la-carte'); ?>
                         </button>
                     </form>
                     <p class="description">
@@ -43,22 +43,22 @@
 
             <tr>
                 <th scope="row">
-                    <label for="primary_color"><?php _e('Couleur principale', 'lrob-la-carte'); ?></label>
+                    <label for="primary_color"><?php _e('Primary Color', 'lrob-la-carte'); ?></label>
                 </th>
                 <td>
-                    <input type="text" name="primary_color" id="primary_color" 
-                           value="<?php echo esc_attr(get_option('lrob_carte_primary_color', '#2c3e50')); ?>" 
+                    <input type="text" name="primary_color" id="primary_color"
+                           value="<?php echo esc_attr(get_option('lrob_carte_primary_color', '#2c3e50')); ?>"
                            class="lrob-color-picker">
                 </td>
             </tr>
 
             <tr>
                 <th scope="row">
-                    <label for="secondary_color"><?php _e('Couleur secondaire', 'lrob-la-carte'); ?></label>
+                    <label for="secondary_color"><?php _e('Secondary Color', 'lrob-la-carte'); ?></label>
                 </th>
                 <td>
-                    <input type="text" name="secondary_color" id="secondary_color" 
-                           value="<?php echo esc_attr(get_option('lrob_carte_secondary_color', '#e74c3c')); ?>" 
+                    <input type="text" name="secondary_color" id="secondary_color"
+                           value="<?php echo esc_attr(get_option('lrob_carte_secondary_color', '#e74c3c')); ?>"
                            class="lrob-color-picker">
                 </td>
             </tr>
@@ -73,7 +73,7 @@
                             <?php _e('Afficher avec badge "Rupture"', 'lrob-la-carte'); ?>
                         </option>
                         <option value="hide" <?php selected(get_option('lrob_carte_out_of_stock_display'), 'hide'); ?>>
-                            <?php _e('Masquer complètement', 'lrob-la-carte'); ?>
+                            <?php _e('Hide Completely', 'lrob-la-carte'); ?>
                         </option>
                     </select>
                 </td>

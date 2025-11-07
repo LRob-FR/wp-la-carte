@@ -7,13 +7,13 @@
     registerBlockType('lrob-carte/menu-display', {
         edit: function(props) {
             const { attributes, setAttributes } = props;
-            const { 
-                displayMode, selectedCategory, categoryNavPosition, layoutStyle, 
+            const {
+                displayMode, selectedCategory, categoryNavPosition, layoutStyle,
                 textColor, borderColor, accentColor, badgeBgColor, badgeTextColor,
-                cardBorderRadius, cardBorderWidth, cardPadding, cardGap, 
+                cardBorderRadius, cardBorderWidth, cardPadding, cardGap,
                 fontSize, fontFamily,
-                showImages, showDescriptions, showAllergens, 
-                columnsDesktop, columnsMobile 
+                showImages, showDescriptions, showAllergens,
+                columnsDesktop, columnsMobile
             } = attributes;
 
             const blockProps = useBlockProps({
@@ -21,7 +21,7 @@
             });
 
             const fontFamilyOptions = [
-                { label: __('Système', 'lrob-la-carte'), value: 'system' },
+                { label: __('System', 'lrob-la-carte'), value: 'system' },
                 { label: 'Arial', value: 'Arial, sans-serif' },
                 { label: 'Helvetica', value: 'Helvetica, sans-serif' },
                 { label: 'Times New Roman', value: 'Times New Roman, serif' },
@@ -39,66 +39,66 @@
                 wp.element.createElement(
                     InspectorControls,
                     null,
-                    
-                    // Panneau Affichage
+
+                    // Display Panel
                     wp.element.createElement(
                         PanelBody,
-                        { title: __('Affichage', 'lrob-la-carte'), initialOpen: true },
+                        { title: __('Display', 'lrob-la-carte'), initialOpen: true },
                         wp.element.createElement(SelectControl, {
                             label: __('Mode d\'affichage', 'lrob-la-carte'),
                             value: displayMode,
                             options: [
-                                { label: __('Toute la carte', 'lrob-la-carte'), value: 'all' },
-                                { label: __('Une catégorie', 'lrob-la-carte'), value: 'single' }
+                                { label: __('Full Menu', 'lrob-la-carte'), value: 'all' },
+                                { label: __('Single Category', 'lrob-la-carte'), value: 'single' }
                             ],
                             onChange: function(value) { setAttributes({ displayMode: value }); }
                         }),
                         displayMode === 'single' && wp.element.createElement(SelectControl, {
-                            label: __('Catégorie', 'lrob-la-carte'),
+                            label: __('Category', 'lrob-la-carte'),
                             value: selectedCategory,
-                            options: window.lrobCarteEditor?.categories || [{ label: __('Choisir une catégorie', 'lrob-la-carte'), value: 0 }],
+                            options: window.lrobCarteEditor?.categories || [{ label: __('Choose a category', 'lrob-la-carte'), value: 0 }],
                             onChange: function(value) { setAttributes({ selectedCategory: parseInt(value) }); }
                         }),
                         displayMode === 'all' && wp.element.createElement(SelectControl, {
-                            label: __('Position de la navigation', 'lrob-la-carte'),
+                            label: __('Navigation Position', 'lrob-la-carte'),
                             value: categoryNavPosition,
                             options: [
-                                { label: __('En haut', 'lrob-la-carte'), value: 'top' },
-                                { label: __('En bas', 'lrob-la-carte'), value: 'bottom' },
-                                { label: __('En haut et en bas', 'lrob-la-carte'), value: 'both' }
+                                { label: __('Top', 'lrob-la-carte'), value: 'top' },
+                                { label: __('Bottom', 'lrob-la-carte'), value: 'bottom' },
+                                { label: __('Top and Bottom', 'lrob-la-carte'), value: 'both' }
                             ],
                             onChange: function(value) { setAttributes({ categoryNavPosition: value }); }
                         }),
                         wp.element.createElement(SelectControl, {
-                            label: __('Style de mise en page', 'lrob-la-carte'),
+                            label: __('Layout Style', 'lrob-la-carte'),
                             value: layoutStyle,
                             options: [
-                                { label: __('Compact (prix sur ligne titre)', 'lrob-la-carte'), value: 'compact' },
-                                { label: __('Classique (prix séparés)', 'lrob-la-carte'), value: 'classic' }
+                                { label: __('Compact (price on title line)', 'lrob-la-carte'), value: 'compact' },
+                                { label: __('Classic (separate prices)', 'lrob-la-carte'), value: 'classic' }
                             ],
                             onChange: function(value) { setAttributes({ layoutStyle: value }); }
                         }),
                         wp.element.createElement(ToggleControl, {
-                            label: __('Afficher les images', 'lrob-la-carte'),
+                            label: __('Show Images', 'lrob-la-carte'),
                             checked: showImages,
                             onChange: function(value) { setAttributes({ showImages: value }); }
                         }),
                         wp.element.createElement(ToggleControl, {
-                            label: __('Afficher les descriptions', 'lrob-la-carte'),
+                            label: __('Show Descriptions', 'lrob-la-carte'),
                             checked: showDescriptions,
                             onChange: function(value) { setAttributes({ showDescriptions: value }); }
                         }),
                         wp.element.createElement(ToggleControl, {
-                            label: __('Afficher les allergènes', 'lrob-la-carte'),
+                            label: __('Show Allergens', 'lrob-la-carte'),
                             checked: showAllergens,
                             onChange: function(value) { setAttributes({ showAllergens: value }); }
                         })
                     ),
-                    
-                    // Panneau Typographie
+
+                    // Typography Panel
                     wp.element.createElement(
                         PanelBody,
-                        { title: __('Typographie', 'lrob-la-carte'), initialOpen: false },
+                        { title: __('Typography', 'lrob-la-carte'), initialOpen: false },
                         wp.element.createElement(RangeControl, {
                             label: __('Taille de police (px)', 'lrob-la-carte'),
                             value: fontSize,
@@ -117,7 +117,7 @@
                             __('La taille de police affecte tout le texte de la carte.', 'lrob-la-carte')
                         )
                     ),
-                    
+
                     // Panneau Style des cartes
                     wp.element.createElement(
                         PanelBody,
@@ -151,11 +151,11 @@
                             max: 60
                         })
                     ),
-                    
-                    // Panneau Colonnes
+
+                    // Columns Panel
                     wp.element.createElement(
                         PanelBody,
-                        { title: __('Colonnes', 'lrob-la-carte'), initialOpen: false },
+                        { title: __('Columns', 'lrob-la-carte'), initialOpen: false },
                         wp.element.createElement(RangeControl, {
                             label: __('Colonnes (Desktop)', 'lrob-la-carte'),
                             value: columnsDesktop,
@@ -171,21 +171,21 @@
                             max: 2
                         })
                     ),
-                    
-                    // Panneau Couleurs
+
+                    // Colors Panel
                     wp.element.createElement(PanelColorSettings, {
-                        title: __('Couleurs', 'lrob-la-carte'),
+                        title: __('Colors', 'lrob-la-carte'),
                         initialOpen: false,
                         colorSettings: [
                             {
                                 value: textColor,
                                 onChange: function(value) { setAttributes({ textColor: value }); },
-                                label: __('Couleur du texte', 'lrob-la-carte')
+                                label: __('Text Color', 'lrob-la-carte')
                             },
                             {
                                 value: borderColor,
                                 onChange: function(value) { setAttributes({ borderColor: value }); },
-                                label: __('Couleur des bordures', 'lrob-la-carte')
+                                label: __('Border Color', 'lrob-la-carte')
                             },
                             {
                                 value: accentColor,
@@ -195,24 +195,24 @@
                             {
                                 value: badgeBgColor,
                                 onChange: function(value) { setAttributes({ badgeBgColor: value }); },
-                                label: __('Fond des badges', 'lrob-la-carte')
+                                label: __('Badge Background', 'lrob-la-carte')
                             },
                             {
                                 value: badgeTextColor,
                                 onChange: function(value) { setAttributes({ badgeTextColor: value }); },
-                                label: __('Texte des badges', 'lrob-la-carte')
+                                label: __('Badge Text', 'lrob-la-carte')
                             }
                         ]
                     })
                 ),
-                
+
                 // Aperçu dans l'éditeur
                 wp.element.createElement(
                     'div',
                     blockProps,
                     wp.element.createElement(
                         'div',
-                        { 
+                        {
                             className: 'lrob-carte-preview',
                             style: {
                                 fontFamily: fontFamily === 'system' ? '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif' : fontFamily,
@@ -223,7 +223,7 @@
                         wp.element.createElement(
                             'p',
                             { style: { marginTop: '12px', fontSize: '14px' } },
-                            displayMode === 'all' 
+                            displayMode === 'all'
                                 ? __('Toute la carte sera affichée ici', 'lrob-la-carte')
                                 : __('La catégorie sélectionnée sera affichée ici', 'lrob-la-carte')
                         ),
