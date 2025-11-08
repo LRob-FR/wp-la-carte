@@ -15,6 +15,9 @@ A professional menu management plugin for bars and restaurants on WordPress.
 - **Multilingual Ready**: Full i18n support (English + French included)
 - **Import/Export**: Backup and restore your menu data
 
+## Prerequisite
+- **Gutenberg Page**: We only provide a Gutenberg block. No shortcode.
+
 ## Installation
 
 1. Download the latest release ZIP
@@ -124,7 +127,22 @@ This plugin is proprietary software developed by LRob.
 ### 1.0.0
 - Initial release
 - Complete English translation with i18n support
+- Fixed front sorting, products hirerarchy and rendering
 - French translation included
 - Smart category creation (user-controlled, language-aware)
 - Professional release build system
-- No breaking changes from 1.x
+
+### 1.1.0
+- Clean unused FontAwesome code
+- Fixed product image management (overhaul)
+- Removed not working product search in product management panel
+- Made product management panel navigation similar to frontend
+- Adapted product image to be a miniature image
+- Improve product cards display by avoiding blank spaces
+
+
+## Todo List
+- Make caracteristics such as allergen or badges fully customizable
+- Fix the "Unavailable" product's logic (currently doesn't make sense)
+- Add other modes for general services with presets (my be used for any kind of service)
+- Provide more customization options in Gutenberg editor

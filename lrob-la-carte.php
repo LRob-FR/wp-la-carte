@@ -3,7 +3,7 @@
  * Plugin Name: LRob - La Carte
  * Plugin URI: https://www.lrob.fr/
  * Description: Menu manager for bars and restaurants
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: LRob
  * Author URI: https://www.lrob.fr/
  * Text Domain: lrob-la-carte
@@ -11,7 +11,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('LROB_CARTE_VERSION', '1.0.0');
+define('LROB_CARTE_VERSION', '1.1.0');
 define('LROB_CARTE_PATH', plugin_dir_path(__FILE__));
 define('LROB_CARTE_URL', plugin_dir_url(__FILE__));
 
@@ -108,9 +108,8 @@ class LRob_La_Carte {
     public function admin_assets($hook) {
         if (strpos($hook, 'lrob-carte') === false) return;
 
-        if (get_option('lrob_carte_load_fontawesome', false)) {
-            wp_enqueue_style('font-awesome', LROB_CARTE_URL . 'assets/fontawesome/css/all.min.css', array(), '6.5.1');
-        }
+        // Enqueue WordPress media library
+        wp_enqueue_media();
 
         wp_enqueue_style('wp-color-picker');
         wp_enqueue_script('jquery-ui-sortable');
@@ -126,10 +125,6 @@ class LRob_La_Carte {
 
     public function frontend_assets() {
         if (has_block('lrob-carte/menu-display')) {
-            if (get_option('lrob_carte_load_fontawesome', false)) {
-                wp_enqueue_style('font-awesome', LROB_CARTE_URL . 'assets/fontawesome/css/all.min.css', array(), '6.5.1');
-            }
-
             wp_enqueue_style('lrob-carte-frontend', LROB_CARTE_URL . 'blocks/menu-display/style.css', array(), LROB_CARTE_VERSION);
             wp_enqueue_script('lrob-carte-frontend', LROB_CARTE_URL . 'assets/js/frontend.js', array(), LROB_CARTE_VERSION, true);
         }

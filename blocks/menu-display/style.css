@@ -232,38 +232,19 @@
     opacity: 0.4;
 }
 
-.lrob-carte-product-image {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-}
-
-.lrob-carte-product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s;
-}
-
-.lrob-carte-product:hover .lrob-carte-product-image img {
-    transform: scale(1.05);
-}
-
 .lrob-carte-product-content {
     padding: var(--lrob-card-padding);
 }
 
-/* LAYOUT COMPACT - Titre à gauche, variations à droite, prix en dessous */
+/* LAYOUT COMPACT - Two main columns: (Title + Image/Description) | Prices */
 .lrob-layout-compact .lrob-carte-product-header {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 15px;
-    margin-bottom: 6px;
 }
 
 .lrob-layout-compact .lrob-carte-product-name {
-    font-weight: 700;
-    margin: 0;
+    margin: 0 0 0 0;
     color: inherit;
     grid-column: 1;
     grid-row: 1;
@@ -273,6 +254,7 @@
     flex-wrap: wrap;
 }
 
+/* Prices on right side - spanning both rows */
 .lrob-layout-compact .lrob-carte-product-prices {
     display: flex;
     gap: 15px;
@@ -306,6 +288,42 @@
     font-weight: 700;
     color: var(--lrob-accent-color);
     white-space: nowrap;
+}
+
+.lrob-layout-compact .lrob-carte-product-content {
+    padding: var(--lrob-card-padding);
+}
+
+/* Image + Description side by side in column 1, row 2 */
+.lrob-layout-compact .lrob-carte-product-main {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.lrob-layout-compact .lrob-carte-product-image {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.lrob-layout-compact .lrob-carte-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.lrob-layout-compact .lrob-carte-product-description {
+    opacity: 0.7;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+    color: inherit;
+    flex: 1;
 }
 
 /* LAYOUT CLASSIC - Prix séparés en bas */
@@ -348,6 +366,7 @@
     color: var(--lrob-accent-color);
 }
 
+/* Classic layout product description (fallback) */
 .lrob-carte-product-description {
     opacity: 0.7;
     font-size: 14px;

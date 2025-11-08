@@ -1,5 +1,10 @@
 <div class="wrap lrob-carte-admin">
-    <h1><?php _e('Products', 'lrob-la-carte'); ?></h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0;"><?php _e('Products', 'lrob-la-carte'); ?></h1>
+        <button class="button button-primary" id="lrob-add-product">
+            <?php _e('Add Product', 'lrob-la-carte'); ?>
+        </button>
+    </div>
 
     <?php if (empty($categories)): ?>
         <div class="notice notice-warning">
@@ -8,130 +13,165 @@
     <?php else: ?>
 
         <?php
-        // Navigation breadcrumb
-        $breadcrumb_cats = array();
-        if ($current_cat && $current_cat !== 'all') {
-            $cat = LRob_Carte_Database::get_category($current_cat);
-            if ($cat) {
-                $breadcrumb_cats[] = $cat;
-                $parent_id = $cat->parent_id;
-                while ($parent_id > 0) {
-                    $parent = LRob_Carte_Database::get_category($parent_id);
-                    if ($parent) {
-                        array_unshift($breadcrumb_cats, $parent);
-                        $parent_id = $parent->parent_id;
-                    } else {
+        // Build categories hierarchy for filtering
+        $categories_by_parent = array();
+        foreach ($categories as $cat) {
+            if (!$cat) continue;
+            $parent_id = $cat->parent_id ?? 0;
+            if (!isset($categories_by_parent[$parent_id])) {
+                $categories_by_parent[$parent_id] = array();
+            }
+            $categories_by_parent[$parent_id][] = $cat;
+        }
+
+        // Get all products for display
+        $all_products = LRob_Carte_Database::get_products();
+
+        // Organize products by root category for filtering
+        $root_categories = $categories_by_parent[0] ?? array();
+        ?>
+
+        <?php if (!empty($root_categories)): ?>
+            <!-- Root category navigation (horizontal tabs) -->
+            <div class="lrob-category-tabs" data-admin-filter-wrapper>
+                <?php foreach ($root_categories as $root_cat):
+                    $root_products = LRob_Carte_Database::get_products_recursive($root_cat->id);
+                    if (empty($root_products)) continue;
+                ?>
+                    <button class="lrob-tab lrob-admin-root-tab" data-root-category="<?php echo $root_cat->id; ?>">
+                        <span class="lrob-cat-icon">
+                            <?php
+                            if ($root_cat->icon_type === 'emoji') {
+                                echo esc_html($root_cat->icon_value);
+                            } elseif ($root_cat->icon_type === 'image' && $root_cat->icon_value) {
+                                echo wp_get_attachment_image($root_cat->icon_value, array(24, 24));
+                            }
+                            ?>
+                        </span>
+                        <?php echo esc_html($root_cat->name); ?>
+                    </button>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Level 1 subcategory filters (shown for selected root category) -->
+            <?php foreach ($root_categories as $root_cat):
+                if (!isset($categories_by_parent[$root_cat->id]) || empty($categories_by_parent[$root_cat->id])) continue;
+
+                $has_products_in_children = false;
+                foreach ($categories_by_parent[$root_cat->id] as $child_cat) {
+                    $child_products = LRob_Carte_Database::get_products_recursive($child_cat->id);
+                    if (!empty($child_products)) {
+                        $has_products_in_children = true;
                         break;
                     }
                 }
-            }
-        }
-        ?>
-
-        <div class="lrob-breadcrumb">
-            <a href="?page=lrob-carte&cat=all" class="lrob-breadcrumb-item <?php echo $current_cat === 'all' ? 'active' : ''; ?>">
-                📁 <?php _e('All Categories', 'lrob-la-carte'); ?>
-            </a>
-            <?php foreach ($breadcrumb_cats as $bc): ?>
-                <span class="lrob-breadcrumb-separator">›</span>
-                <a href="?page=lrob-carte&cat=<?php echo $bc->id; ?>" class="lrob-breadcrumb-item <?php echo $current_cat == $bc->id ? 'active' : ''; ?>">
-                    <?php echo esc_html($bc->name); ?>
-                </a>
+                if (!$has_products_in_children) continue;
+            ?>
+                <div class="lrob-subcategory-filters lrob-level-1-filters"
+                     data-parent-id="<?php echo $root_cat->id; ?>"
+                     data-filter-level="1"
+                     style="display: none; margin: 15px 0; flex-wrap: wrap; gap: 8px;">
+                    <?php foreach ($categories_by_parent[$root_cat->id] as $child_cat):
+                        $child_products = LRob_Carte_Database::get_products_recursive($child_cat->id);
+                        if (empty($child_products)) continue;
+                    ?>
+                        <button class="lrob-subcategory-badge"
+                                data-subcategory-id="<?php echo $child_cat->id; ?>"
+                                data-parent-id="<?php echo $root_cat->id; ?>"
+                                data-filter-level="1">
+                            <span class="lrob-subcategory-badge-icon">
+                                <?php
+                                if ($child_cat->icon_type === 'emoji') {
+                                    echo esc_html($child_cat->icon_value);
+                                } elseif ($child_cat->icon_type === 'image' && $child_cat->icon_value) {
+                                    echo wp_get_attachment_image($child_cat->icon_value, array(16, 16));
+                                }
+                                ?>
+                            </span>
+                            <?php echo esc_html($child_cat->name); ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
             <?php endforeach; ?>
-        </div>
 
-        <div class="lrob-products-header">
-            <div class="lrob-search-box">
-                <input type="text" id="lrob-product-search" placeholder="<?php _e('Search for a product...', 'lrob-la-carte'); ?>" class="regular-text">
-                <span class="lrob-search-count"></span>
-            </div>
-            <button class="button button-primary" id="lrob-add-product">
-                <?php _e('Add Product', 'lrob-la-carte'); ?>
-            </button>
-        </div>
+            <!-- Level 2 subcategory filters (shown when level 1 is selected) -->
+            <?php foreach ($root_categories as $root_cat):
+                if (!isset($categories_by_parent[$root_cat->id])) continue;
+                foreach ($categories_by_parent[$root_cat->id] as $child_cat):
+                    if (!isset($categories_by_parent[$child_cat->id]) || empty($categories_by_parent[$child_cat->id])) continue;
 
-        <div id="lrob-products-grid">
-            <?php
-            // 1. FIRST display subcategories
-            if ($current_cat === 'all') {
-                $child_categories = array_filter($categories, function($cat) {
-                    return !$cat->parent_id || $cat->parent_id == 0;
-                });
-            } else {
-                $child_categories = array_filter($categories, function($cat) use ($current_cat) {
-                    return $cat->parent_id == $current_cat;
-                });
-            }
-
-            if (!empty($child_categories)):
-                foreach ($child_categories as $child_cat):
-                    $child_products_count = count(LRob_Carte_Database::get_products_recursive($child_cat->id));
-            ?>
-                <a href="?page=lrob-carte&cat=<?php echo $child_cat->id; ?>" class="lrob-category-card">
-                    <div class="lrob-category-card-icon">
-                        <?php
-                        if ($child_cat->icon_type === 'emoji') {
-                            echo esc_html($child_cat->icon_value);
-                        } elseif ($child_cat->icon_type === 'image' && $child_cat->icon_value) {
-                            echo wp_get_attachment_image($child_cat->icon_value, array(48, 48));
-                        } else {
-                            echo '<i class="' . esc_attr($child_cat->icon_value) . '"></i>';
+                    $has_products_in_grandchildren = false;
+                    foreach ($categories_by_parent[$child_cat->id] as $grandchild_cat) {
+                        $grandchild_products = LRob_Carte_Database::get_products_recursive($grandchild_cat->id);
+                        if (!empty($grandchild_products)) {
+                            $has_products_in_grandchildren = true;
+                            break;
                         }
-                        ?>
-                    </div>
-                    <div class="lrob-category-card-name"><?php echo esc_html($child_cat->name); ?></div>
-                    <div class="lrob-category-card-count">
-                        <?php
-                        printf(
-                            _n('%s product', '%s products', $child_products_count, 'lrob-la-carte'),
-                            $child_products_count
-                        );
-                        ?>
-                    </div>
-                </a>
-            <?php
-                endforeach;
-            endif;
-            ?>
-        </div>
-
-        <?php
-        // 2. THEN display products (if in a category OR if on "all")
-        if (!empty($products) || $current_cat === 'all'):
-            // If on "all", get all products
-            if ($current_cat === 'all') {
-                $products = LRob_Carte_Database::get_products();
-            }
-        ?>
-            <?php if (!empty($products)): ?>
-                <h2 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px;">
-                    <?php
-                    if ($current_cat === 'all') {
-                        _e('All Products', 'lrob-la-carte');
-                    } else {
-                        _e('Products', 'lrob-la-carte');
                     }
+                    if (!$has_products_in_grandchildren) continue;
+            ?>
+                <div class="lrob-subcategory-filters lrob-level-2-filters"
+                     data-parent-id="<?php echo $child_cat->id; ?>"
+                     data-filter-level="2"
+                     style="display: none; margin: 15px 0; flex-wrap: wrap; gap: 8px;">
+                    <?php foreach ($categories_by_parent[$child_cat->id] as $grandchild_cat):
+                        $grandchild_products = LRob_Carte_Database::get_products_recursive($grandchild_cat->id);
+                        if (empty($grandchild_products)) continue;
                     ?>
-                </h2>
-                <div id="lrob-products-grid">
-                    <?php
-                    foreach ($products as $product):
-                        $prices = LRob_Carte_Database::get_product_prices($product->id);
-                        $availability_class = $product->availability !== 'available' ? 'lrob-unavailable' : '';
-                        $product_category = LRob_Carte_Database::get_category($product->category_id);
-                    ?>
-                        <div class="lrob-product-card <?php echo $availability_class; ?>" data-id="<?php echo $product->id; ?>" data-category-id="<?php echo $product->category_id; ?>">
-                            <?php if ($product->image_id): ?>
-                                <div class="lrob-product-card-image">
-                                    <?php echo wp_get_attachment_image($product->image_id, 'thumbnail'); ?>
-                                </div>
-                            <?php endif; ?>
+                        <button class="lrob-subcategory-badge"
+                                data-subcategory-id="<?php echo $grandchild_cat->id; ?>"
+                                data-parent-id="<?php echo $child_cat->id; ?>"
+                                data-filter-level="2">
+                            <span class="lrob-subcategory-badge-icon">
+                                <?php
+                                if ($grandchild_cat->icon_type === 'emoji') {
+                                    echo esc_html($grandchild_cat->icon_value);
+                                } elseif ($grandchild_cat->icon_type === 'image' && $grandchild_cat->icon_value) {
+                                    echo wp_get_attachment_image($grandchild_cat->icon_value, array(16, 16));
+                                }
+                                ?>
+                            </span>
+                            <?php echo esc_html($grandchild_cat->name); ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+            <?php endforeach; endforeach; ?>
+        <?php endif; ?>
 
-                            <div class="lrob-product-card-content">
-                                <div class="lrob-product-card-header">
+        <!-- Products display -->
+        <?php if (!empty($all_products)): ?>
+            <h2 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px;">
+                <?php _e('Products', 'lrob-la-carte'); ?>
+            </h2>
+            <div id="lrob-products-grid">
+                <?php
+                foreach ($all_products as $product):
+                    $prices = LRob_Carte_Database::get_product_prices($product->id);
+                    $availability_class = $product->availability !== 'available' ? 'lrob-unavailable' : '';
+                    $product_category = LRob_Carte_Database::get_category($product->category_id);
+
+                    // Get all ancestor category IDs for this product
+                    $ancestor_ids = array($product->category_id);
+                    $current_parent_id = $product_category ? $product_category->parent_id : 0;
+                    while ($current_parent_id > 0) {
+                        $ancestor_ids[] = $current_parent_id;
+                        $parent_cat = LRob_Carte_Database::get_category($current_parent_id);
+                        $current_parent_id = $parent_cat ? $parent_cat->parent_id : 0;
+                    }
+                ?>
+                    <div class="lrob-product-card <?php echo $availability_class; ?>"
+                         data-id="<?php echo $product->id; ?>"
+                         data-category-id="<?php echo $product->category_id; ?>"
+                         data-category-ancestors="<?php echo implode(',', $ancestor_ids); ?>">
+
+                        <div class="lrob-product-card-content">
+                            <div class="lrob-product-card-header">
+                                <!-- Left column: Name + Image + Description -->
+                                <div class="lrob-product-card-main">
                                     <div class="lrob-product-card-name">
                                         <?php echo esc_html($product->name); ?>
                                     </div>
+
                                     <div class="lrob-product-card-badges">
                                         <?php if ($product_category): ?>
                                             <span class="lrob-badge lrob-badge-category" title="<?php echo esc_attr($product_category->name); ?>">
@@ -150,22 +190,31 @@
                                             <?php endforeach;
                                         endif; ?>
                                     </div>
+
+                                    <div class="lrob-product-card-image-desc">
+                                        <?php if ($product->image_id): ?>
+                                            <div class="lrob-product-card-image">
+                                                <?php echo wp_get_attachment_image($product->image_id, 'thumbnail'); ?>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($product->description): ?>
+                                            <div class="lrob-product-card-desc">
+                                                <?php echo esc_html($product->description); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
 
-                                <?php if ($product->description): ?>
-                                    <div class="lrob-product-card-description">
-                                        <?php echo esc_html($product->description); ?>
-                                    </div>
-                                <?php endif; ?>
-
+                                <!-- Right column: Prices -->
                                 <?php if (!empty($prices)): ?>
                                     <div class="lrob-product-card-prices">
                                         <?php foreach ($prices as $price): ?>
-                                            <span class="lrob-price">
+                                            <span class="lrob-price <?php echo $price->happy_hour ? 'lrob-price-happy' : ''; ?>">
                                                 <?php if ($price->label): ?>
-                                                    <span class="lrob-price-label"><?php echo esc_html($price->label); ?>:</span>
+                                                    <span class="lrob-price-label"><?php echo esc_html($price->label); ?></span>
                                                 <?php endif; ?>
-                                                <span class="lrob-price-amount"><?php echo number_format($price->price, 2); ?>€</span>
+                                                <strong><?php echo number_format($price->price, 2, ',', ' '); ?> €</strong>
                                                 <?php if ($price->is_happy_hour): ?>
                                                     <span class="lrob-price-happy-badge">🍹</span>
                                                 <?php endif; ?>
@@ -173,30 +222,28 @@
                                         <?php endforeach; ?>
                                     </div>
                                 <?php endif; ?>
-
-                                <?php if ($product->allergens): ?>
-                                    <div class="lrob-product-card-allergens">
-                                        <small>⚠️ <?php echo esc_html($product->allergens); ?></small>
-                                    </div>
-                                <?php endif; ?>
                             </div>
 
-                            <div class="lrob-product-card-actions">
-                                <button class="button button-small lrob-edit-product" data-id="<?php echo $product->id; ?>">
-                                    ✏️
-                                </button>
-                                <button class="button button-small lrob-delete-product" data-id="<?php echo $product->id; ?>">
-                                    🗑️
-                                </button>
-                            </div>
+                            <?php if ($product->allergens): ?>
+                                <div class="lrob-product-card-allergens">
+                                    <small>⚠️ <?php echo esc_html($product->allergens); ?></small>
+                                </div>
+                            <?php endif; ?>
                         </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-        <?php endif; ?>
 
-        <?php if (empty($child_categories) && empty($products)): ?>
-            <p class="lrob-empty"><?php _e('No products or subcategories here.', 'lrob-la-carte'); ?></p>
+                        <div class="lrob-product-card-actions">
+                            <button class="button button-small lrob-edit-product" data-id="<?php echo $product->id; ?>">
+                                ✏️
+                            </button>
+                            <button class="button button-small lrob-delete-product" data-id="<?php echo $product->id; ?>">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <p class="lrob-empty"><?php _e('No products found.', 'lrob-la-carte'); ?></p>
         <?php endif; ?>
 
     <?php endif; ?>
@@ -250,7 +297,7 @@
                 <tr>
                     <th><label><?php _e('Image', 'lrob-la-carte'); ?></label></th>
                     <td>
-                        <div id="product-image-preview"></div>
+                        <div id="product-image-preview" style="margin-bottom: 10px;"></div>
                         <input type="hidden" id="product-image-id" value="0">
                         <button type="button" class="button" id="product-upload-image"><?php _e('Choose Image', 'lrob-la-carte'); ?></button>
                         <button type="button" class="button" id="product-remove-image" style="display:none;"><?php _e('Remove', 'lrob-la-carte'); ?></button>

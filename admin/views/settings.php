@@ -78,25 +78,6 @@
                     </select>
                 </td>
             </tr>
-
-            <tr>
-                <th scope="row">
-                    <label><?php _e('Font Awesome', 'lrob-la-carte'); ?></label>
-                </th>
-                <td>
-                    <?php if (get_option('lrob_carte_load_fontawesome', false)): ?>
-                        <p><span class="dashicons dashicons-yes-alt" style="color: green;"></span> <?php _e('Font Awesome is installed', 'lrob-la-carte'); ?></p>
-                    <?php else: ?>
-                        <button type="button" class="button" id="lrob-download-fa">
-                            <?php _e('Download Font Awesome', 'lrob-la-carte'); ?>
-                        </button>
-                        <p class="description">
-                            <?php _e('Required if you use Font Awesome icons for categories.', 'lrob-la-carte'); ?>
-                        </p>
-                        <div id="lrob-fa-status" style="margin-top: 10px;"></div>
-                    <?php endif; ?>
-                </td>
-            </tr>
         </table>
 
         <?php submit_button(); ?>

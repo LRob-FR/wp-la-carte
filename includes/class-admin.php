@@ -16,7 +16,6 @@ class LRob_Carte_Admin {
         add_action('wp_ajax_lrob_delete_product', array($this, 'ajax_delete_product'));
         add_action('wp_ajax_lrob_update_positions', array($this, 'ajax_update_positions'));
         add_action('wp_ajax_lrob_get_product', array($this, 'ajax_get_product'));
-        add_action('wp_ajax_lrob_download_fontawesome', array($this, 'ajax_download_fontawesome'));
         add_action('wp_ajax_lrob_create_default_categories', array($this, 'ajax_create_default_categories'));
     }
 
@@ -156,7 +155,7 @@ class LRob_Carte_Admin {
             'parent_id' => isset($_POST['parent_id']) ? intval($_POST['parent_id']) : 0,
             'name' => sanitize_text_field($_POST['name']),
             'slug' => !empty($_POST['slug']) ? sanitize_title($_POST['slug']) : sanitize_title($_POST['name']),
-            'icon_type' => in_array($_POST['icon_type'], array('emoji', 'fontawesome')) ? $_POST['icon_type'] : 'emoji',
+            'icon_type' => in_array($_POST['icon_type'], array('emoji', 'image')) ? $_POST['icon_type'] : 'emoji',
             'icon_value' => sanitize_text_field($_POST['icon_value']),
             'position' => isset($_POST['position']) ? intval($_POST['position']) : 0,
             'active' => isset($_POST['active']) ? intval($_POST['active']) : 1
@@ -236,45 +235,21 @@ class LRob_Carte_Admin {
             wp_send_json_error(array('message' => __('Invalid ID', 'lrob-la-carte')));
         }
 
-        global $wpdb;
         $id = intval($_POST['id']);
-        $current_active = intval($_POST['active']);
-        $new_active = $current_active ? 0 : 1;
+        $category = LRob_Carte_Database::get_category($id);
 
-        // Debug : vérifier que la colonne existe
-        $columns = $wpdb->get_results("SHOW COLUMNS FROM {$wpdb->prefix}lrob_categories LIKE 'active'");
-        if (empty($columns)) {
-            wp_send_json_error(array('message' => __('La colonne "active" n\'existe pas. Veuillez désactiver puis réactiver le plugin.', 'lrob-la-carte')));
+        if (!$category) {
+            wp_send_json_error(array('message' => __('Category not found', 'lrob-la-carte')));
         }
 
-        // Vérifier que la catégorie existe
-        $exists = $wpdb->get_var($wpdb->prepare(
-            "SELECT id FROM {$wpdb->prefix}lrob_categories WHERE id = %d",
-            $id
-        ));
+        $new_status = $category->active ? 0 : 1;
+        $result = LRob_Carte_Database::update_category($id, array('active' => $new_status));
 
-        if (!$exists) {
-            wp_send_json_error(array('message' => __('Category not found (ID: ' . $id . ')', 'lrob-la-carte')));
-        }
-
-        $result = $wpdb->update(
-            $wpdb->prefix . 'lrob_categories',
-            array('active' => $new_active),
-            array('id' => $id),
-            array('%d'),
-            array('%d')
-        );
-
-        // $result peut être 0 (aucune ligne modifiée car valeur identique) ou false (erreur SQL)
         if ($result === false) {
-            wp_send_json_error(array('message' => __('Erreur SQL: ', 'lrob-la-carte') . $wpdb->last_error));
+            wp_send_json_error(array('message' => __('Error during update', 'lrob-la-carte')));
         }
 
-        wp_send_json_success(array(
-            'message' => $new_active ? __('Category enabled', 'lrob-la-carte') : __('Category disabled', 'lrob-la-carte'),
-            'new_active' => $new_active,
-            'rows_affected' => $result
-        ));
+        wp_send_json_success(array('message' => __('Status updated', 'lrob-la-carte')));
     }
 
     public function ajax_update_category_hierarchy() {
@@ -289,10 +264,15 @@ class LRob_Carte_Admin {
         }
 
         global $wpdb;
+        $table = $wpdb->prefix . 'lrob_categories';
 
         foreach ($_POST['updates'] as $update) {
+            if (empty($update['id']) || !isset($update['parent_id']) || !isset($update['position'])) {
+                continue;
+            }
+
             $wpdb->update(
-                $wpdb->prefix . 'lrob_categories',
+                $table,
                 array(
                     'parent_id' => intval($update['parent_id']),
                     'position' => intval($update['position'])
@@ -473,65 +453,21 @@ class LRob_Carte_Admin {
             wp_send_json_error(array('message' => __('Product not found', 'lrob-la-carte')));
         }
 
+        // Always add image_url property (empty string if no image)
+        $product->image_url = '';
+        if ($product->image_id && $product->image_id > 0) {
+            $image_url = wp_get_attachment_url($product->image_id);
+            if ($image_url) {
+                $product->image_url = $image_url;
+            }
+        }
+
         $prices = LRob_Carte_Database::get_product_prices(intval($_POST['id']));
 
         wp_send_json_success(array(
             'product' => $product,
             'prices' => $prices
         ));
-    }
-
-    public function ajax_download_fontawesome() {
-        check_ajax_referer('lrob_carte_nonce', 'nonce');
-
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('Unauthorized');
-        }
-
-        require_once(ABSPATH . 'wp-admin/includes/file.php');
-        WP_Filesystem();
-        global $wp_filesystem;
-
-        $fa_url = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
-        $fa_dir = LROB_CARTE_PATH . 'assets/fontawesome/css/';
-        $fa_webfonts_dir = LROB_CARTE_PATH . 'assets/fontawesome/webfonts/';
-
-        if (!file_exists($fa_dir)) {
-            wp_mkdir_p($fa_dir);
-        }
-        if (!file_exists($fa_webfonts_dir)) {
-            wp_mkdir_p($fa_webfonts_dir);
-        }
-
-        $css_content = wp_remote_retrieve_body(wp_remote_get($fa_url));
-
-        if (is_wp_error($css_content) || empty($css_content)) {
-            wp_send_json_error('Failed to download Font Awesome CSS');
-        }
-
-        $css_content = str_replace('../webfonts/', '../webfonts/', $css_content);
-        $wp_filesystem->put_contents($fa_dir . 'all.min.css', $css_content, FS_CHMOD_FILE);
-
-        preg_match_all('/url\((\.\.\/webfonts\/[^\)]+)\)/', $css_content, $matches);
-
-        if (!empty($matches[1])) {
-            $base_url = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/webfonts/';
-
-            foreach (array_unique($matches[1]) as $font_path) {
-                $font_file = basename($font_path);
-                $font_url = $base_url . $font_file;
-
-                $font_content = wp_remote_retrieve_body(wp_remote_get($font_url));
-
-                if (!is_wp_error($font_content) && !empty($font_content)) {
-                    $wp_filesystem->put_contents($fa_webfonts_dir . $font_file, $font_content, FS_CHMOD_FILE);
-                }
-            }
-        }
-
-        update_option('lrob_carte_load_fontawesome', true);
-
-        wp_send_json_success('Font Awesome downloaded successfully');
     }
 
     public function ajax_create_default_categories() {

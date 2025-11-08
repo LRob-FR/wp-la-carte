@@ -91,55 +91,37 @@ if (!function_exists('lrob_render_subcategory_section')) {
 						$is_unavailable = $product->availability !== 'available';
 					?>
 						<div class="lrob-carte-product <?php echo $is_unavailable ? 'lrob-unavailable' : ''; ?>">
-							<?php if ($show_images && $product->image_id): ?>
-								<div class="lrob-carte-product-image">
-									<?php echo wp_get_attachment_image($product->image_id, 'medium', false, array('loading' => 'lazy')); ?>
-								</div>
-							<?php endif; ?>
-
 							<div class="lrob-carte-product-content">
 								<div class="lrob-carte-product-header">
 									<h4 class="lrob-carte-product-name">
 										<span class="lrob-carte-product-name-text"><?php echo esc_html($product->name); ?></span>
-
 										<?php if ($is_unavailable): ?>
-											<span class="lrob-carte-badge lrob-badge-unavailable">
-												<?php _e('Out of Stock', 'lrob-la-carte'); ?>
-											</span>
+											<span class="lrob-carte-badge lrob-badge-unavailable"><?php _e('Out of Stock', 'lrob-la-carte'); ?></span>
 										<?php endif; ?>
-
-										<?php if ($product->badges):
-											$badges = explode(',', $product->badges);
-											foreach ($badges as $badge): ?>
-												<span class="lrob-carte-badge lrob-badge-<?php echo esc_attr($badge); ?>">
-													<?php echo esc_html(LRob_Carte_Settings::get_badges()[$badge] ?? $badge); ?>
-												</span>
-											<?php endforeach;
-										endif; ?>
+										<?php if ($product->badges): $badges = explode(',', $product->badges); foreach ($badges as $badge): ?>
+											<span class="lrob-carte-badge lrob-badge-<?php echo esc_attr($badge); ?>"><?php echo esc_html(LRob_Carte_Settings::get_badges()[$badge] ?? $badge); ?></span>
+										<?php endforeach; endif; ?>
 									</h4>
-
+									<div class="lrob-carte-product-main">
+										<?php if ($show_images && $product->image_id): ?>
+											<div class="lrob-carte-product-image"><?php echo wp_get_attachment_image($product->image_id, 'thumbnail', false, array('loading' => 'lazy')); ?></div>
+										<?php endif; ?>
+										<?php if ($show_descriptions && $product->description): ?>
+											<p class="lrob-carte-product-description"><?php echo esc_html($product->description); ?></p>
+										<?php endif; ?>
+									</div>
 									<?php if (!empty($prices)): ?>
 										<div class="lrob-carte-product-prices">
 											<?php foreach ($prices as $price): ?>
 												<div class="lrob-carte-price <?php echo $price->happy_hour ? 'lrob-price-happy' : ''; ?>">
-													<?php if ($price->label): ?>
-														<span class="lrob-carte-price-label"><?php echo esc_html($price->label); ?></span>
-													<?php endif; ?>
+													<?php if ($price->label): ?><span class="lrob-carte-price-label"><?php echo esc_html($price->label); ?></span><?php endif; ?>
 													<span class="lrob-carte-price-amount"><?php echo number_format($price->price, 2, ',', ' '); ?> €</span>
-													<?php if ($price->happy_hour): ?>
-														<span class="lrob-price-happy-icon">🍹</span>
-													<?php endif; ?>
+													<?php if ($price->happy_hour): ?><span class="lrob-price-happy-icon">🍹</span><?php endif; ?>
 												</div>
 											<?php endforeach; ?>
 										</div>
 									<?php endif; ?>
 								</div>
-
-								<?php if ($show_descriptions && $product->description): ?>
-									<p class="lrob-carte-product-description">
-										<?php echo esc_html($product->description); ?>
-									</p>
-								<?php endif; ?>
 
 								<?php if ($show_allergens && $product->allergens): ?>
 									<div class="lrob-carte-product-allergens">

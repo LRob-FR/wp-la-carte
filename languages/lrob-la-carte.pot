@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the LRob - La Carte plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: LRob La Carte 1.0.0\n"
+"Project-Id-Version: LRob La Carte 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/lrob-la-carte\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-11-08T01:38:40+00:00\n"
+"POT-Creation-Date: 2025-11-08T14:37:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: lrob-la-carte\n"
@@ -33,8 +33,8 @@ msgstr ""
 
 #: admin/views/categories.php:3
 #: admin/views/settings.php:29
+#: includes/class-admin.php:44
 #: includes/class-admin.php:45
-#: includes/class-admin.php:46
 msgid "Categories"
 msgstr ""
 
@@ -134,12 +134,12 @@ msgid "Custom Image"
 msgstr ""
 
 #: admin/views/categories.php:168
-#: admin/views/products.php:255
+#: admin/views/products.php:302
 msgid "Choose Image"
 msgstr ""
 
 #: admin/views/categories.php:169
-#: admin/views/products.php:256
+#: admin/views/products.php:303
 msgid "Remove"
 msgstr ""
 
@@ -148,12 +148,12 @@ msgid "Recommended format: 64x64px, PNG with transparent background"
 msgstr ""
 
 #: admin/views/categories.php:177
-#: admin/views/products.php:311
+#: admin/views/products.php:358
 msgid "Save"
 msgstr ""
 
 #: admin/views/categories.php:178
-#: admin/views/products.php:312
+#: admin/views/products.php:359
 msgid "Cancel"
 msgstr ""
 
@@ -198,106 +198,88 @@ msgstr ""
 msgid "Les images seront téléchargées depuis leurs URLs."
 msgstr ""
 
-#: admin/views/products.php:2
-#: admin/views/products.php:112
+#: admin/views/products.php:3
+#: admin/views/products.php:144
+#: includes/class-admin.php:35
 #: includes/class-admin.php:36
-#: includes/class-admin.php:37
 msgid "Products"
 msgstr ""
 
-#: admin/views/products.php:6
-msgid "No categories found. Please create categories first."
-msgstr ""
-
-#: admin/views/products.php:33
-msgid "All Categories"
-msgstr ""
-
-#: admin/views/products.php:45
-msgid "Search for a product..."
-msgstr ""
-
-#: admin/views/products.php:49
-#: admin/views/products.php:208
+#: admin/views/products.php:5
+#: admin/views/products.php:255
 msgid "Add Product"
 msgstr ""
 
-#: admin/views/products.php:86
-msgid "%s product"
-msgid_plural "%s products"
-msgstr[0] ""
-msgstr[1] ""
-
-#: admin/views/products.php:110
-msgid "All Products"
+#: admin/views/products.php:11
+msgid "No categories found. Please create categories first."
 msgstr ""
 
-#: admin/views/products.php:142
-#: admin/views/products.php:304
-#: blocks/menu-display/render.php:107
+#: admin/views/products.php:182
+#: admin/views/products.php:351
+#: blocks/menu-display/render.php:99
 msgid "Out of Stock"
 msgstr ""
 
-#: admin/views/products.php:199
-msgid "No products or subcategories here."
+#: admin/views/products.php:246
+msgid "No products found."
 msgstr ""
 
-#: admin/views/products.php:218
+#: admin/views/products.php:265
 msgid "Category"
 msgstr ""
 
-#: admin/views/products.php:221
+#: admin/views/products.php:268
 #: lrob-la-carte.php:81
 msgid "Choose a category"
 msgstr ""
 
-#: admin/views/products.php:243
+#: admin/views/products.php:290
 msgid "Product Name"
 msgstr ""
 
-#: admin/views/products.php:247
+#: admin/views/products.php:294
 msgid "Description"
 msgstr ""
 
-#: admin/views/products.php:251
+#: admin/views/products.php:298
 msgid "Image"
 msgstr ""
 
-#: admin/views/products.php:260
+#: admin/views/products.php:307
 msgid "Price"
 msgstr ""
 
-#: admin/views/products.php:262
+#: admin/views/products.php:309
 msgid "Label (optional): specify a variant (e.g. \"Glass (12cl)\", \"Pint\", \"Bottle\"). Previously used labels will be suggested automatically."
 msgstr ""
 
-#: admin/views/products.php:265
+#: admin/views/products.php:312
 msgid "E.g. Glass (12cl)"
 msgstr ""
 
-#: admin/views/products.php:270
+#: admin/views/products.php:317
 msgid "Add Price"
 msgstr ""
 
-#: admin/views/products.php:274
+#: admin/views/products.php:321
 msgid "Allergens"
 msgstr ""
 
-#: admin/views/products.php:287
+#: admin/views/products.php:334
 msgid "Badges"
 msgstr ""
 
-#: admin/views/products.php:300
+#: admin/views/products.php:347
 msgid "Availability"
 msgstr ""
 
-#: admin/views/products.php:303
+#: admin/views/products.php:350
 msgid "Available"
 msgstr ""
 
 #: admin/views/settings.php:2
+#: includes/class-admin.php:53
 #: includes/class-admin.php:54
-#: includes/class-admin.php:55
 msgid "Settings"
 msgstr ""
 
@@ -345,174 +327,144 @@ msgstr ""
 msgid "Hide Completely"
 msgstr ""
 
-#: admin/views/settings.php:84
-msgid "Font Awesome"
-msgstr ""
-
-#: admin/views/settings.php:88
-msgid "Font Awesome is installed"
-msgstr ""
-
-#: admin/views/settings.php:91
-msgid "Download Font Awesome"
-msgstr ""
-
-#: admin/views/settings.php:94
-msgid "Required if you use Font Awesome icons for categories."
-msgstr ""
-
+#: includes/class-admin.php:24
 #: includes/class-admin.php:25
-#: includes/class-admin.php:26
 msgid "La Carte"
 msgstr ""
 
+#: includes/class-admin.php:62
 #: includes/class-admin.php:63
-#: includes/class-admin.php:64
 msgid "Import/Export"
 msgstr ""
 
-#: includes/class-admin.php:110
+#: includes/class-admin.php:109
 msgid "Settings saved."
 msgstr ""
 
-#: includes/class-admin.php:115
+#: includes/class-admin.php:114
 msgid "Categories added."
 msgstr ""
 
-#: includes/class-admin.php:148
-#: includes/class-admin.php:192
-#: includes/class-admin.php:212
-#: includes/class-admin.php:232
-#: includes/class-admin.php:284
-#: includes/class-admin.php:313
-#: includes/class-admin.php:360
+#: includes/class-admin.php:147
+#: includes/class-admin.php:191
+#: includes/class-admin.php:211
+#: includes/class-admin.php:231
+#: includes/class-admin.php:259
+#: includes/class-admin.php:293
+#: includes/class-admin.php:340
+#: includes/class-admin.php:397
 #: includes/class-admin.php:417
-#: includes/class-admin.php:437
-#: includes/class-admin.php:463
-#: includes/class-admin.php:541
+#: includes/class-admin.php:443
+#: includes/class-admin.php:477
 msgid "Unauthorized"
 msgstr ""
 
-#: includes/class-admin.php:152
+#: includes/class-admin.php:151
 msgid "Category name is required"
 msgstr ""
 
-#: includes/class-admin.php:169
-#: includes/class-admin.php:325
+#: includes/class-admin.php:168
+#: includes/class-admin.php:305
 msgid "A category cannot be its own parent"
 msgstr ""
 
-#: includes/class-admin.php:175
-#: includes/class-admin.php:350
-#: includes/class-admin.php:392
+#: includes/class-admin.php:174
+#: includes/class-admin.php:249
+#: includes/class-admin.php:330
+#: includes/class-admin.php:372
 msgid "Error during update"
 msgstr ""
 
-#: includes/class-admin.php:181
-#: includes/class-admin.php:398
+#: includes/class-admin.php:180
+#: includes/class-admin.php:378
 msgid "Error during creation"
 msgstr ""
 
-#: includes/class-admin.php:185
+#: includes/class-admin.php:184
 msgid "Category saved"
 msgstr ""
 
-#: includes/class-admin.php:196
-#: includes/class-admin.php:216
-#: includes/class-admin.php:236
-#: includes/class-admin.php:421
-#: includes/class-admin.php:467
+#: includes/class-admin.php:195
+#: includes/class-admin.php:215
+#: includes/class-admin.php:235
+#: includes/class-admin.php:401
+#: includes/class-admin.php:447
 msgid "Invalid ID"
 msgstr ""
 
-#: includes/class-admin.php:202
-#: includes/class-admin.php:427
+#: includes/class-admin.php:201
+#: includes/class-admin.php:407
 msgid "Error during deletion"
 msgstr ""
 
-#: includes/class-admin.php:205
+#: includes/class-admin.php:204
 msgid "Category deleted"
 msgstr ""
 
-#: includes/class-admin.php:222
+#: includes/class-admin.php:221
+#: includes/class-admin.php:242
 msgid "Category not found"
 msgstr ""
 
-#: includes/class-admin.php:247
-msgid "La colonne \"active\" n'existe pas. Veuillez désactiver puis réactiver le plugin."
+#: includes/class-admin.php:252
+msgid "Status updated"
 msgstr ""
 
-#: includes/class-admin.php:257
-msgid "Category not found (ID: "
-msgstr ""
-
-#: includes/class-admin.php:270
-msgid "Erreur SQL: "
-msgstr ""
-
-#: includes/class-admin.php:274
-msgid "Category enabled"
-msgstr ""
-
-#: includes/class-admin.php:274
-msgid "Category disabled"
-msgstr ""
-
-#: includes/class-admin.php:288
-#: includes/class-admin.php:317
-#: includes/class-admin.php:441
+#: includes/class-admin.php:263
+#: includes/class-admin.php:297
+#: includes/class-admin.php:421
 msgid "Données invalides"
 msgstr ""
 
-#: includes/class-admin.php:306
+#: includes/class-admin.php:286
 msgid "Hiérarchie mise à jour"
 msgstr ""
 
-#: includes/class-admin.php:333
+#: includes/class-admin.php:313
 msgid "Impossible de créer une boucle dans la hiérarchie"
 msgstr ""
 
-#: includes/class-admin.php:353
+#: includes/class-admin.php:333
 msgid "Parent mis à jour"
 msgstr ""
 
-#: includes/class-admin.php:364
+#: includes/class-admin.php:344
 msgid "Product name is required"
 msgstr ""
 
-#: includes/class-admin.php:368
+#: includes/class-admin.php:348
 msgid "Invalid category"
 msgstr ""
 
-#: includes/class-admin.php:406
+#: includes/class-admin.php:386
 msgid "Erreur lors de l'enregistrement des prix"
 msgstr ""
 
-#: includes/class-admin.php:410
+#: includes/class-admin.php:390
 msgid "Product saved"
 msgstr ""
 
-#: includes/class-admin.php:430
+#: includes/class-admin.php:410
 msgid "Product deleted"
 msgstr ""
 
-#: includes/class-admin.php:448
+#: includes/class-admin.php:428
 msgid "Table invalide"
 msgstr ""
 
-#: includes/class-admin.php:452
+#: includes/class-admin.php:432
 msgid "Format de positions invalide"
 msgstr ""
 
-#: includes/class-admin.php:456
+#: includes/class-admin.php:436
 msgid "Positions updated"
 msgstr ""
 
-#: includes/class-admin.php:473
+#: includes/class-admin.php:453
 msgid "Product not found"
 msgstr ""
 
-#: includes/class-admin.php:548
+#: includes/class-admin.php:484
 msgid "Default categories created successfully"
 msgstr ""
 

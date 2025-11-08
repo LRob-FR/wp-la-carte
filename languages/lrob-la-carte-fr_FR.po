@@ -230,12 +230,6 @@ msgstr "Afficher en grisé"
 msgid "Show Normally"
 msgstr "Afficher normalement"
 
-msgid "Load Font Awesome"
-msgstr "Charger Font Awesome"
-
-msgid "Enable if your theme doesn't load Font Awesome"
-msgstr "Activer si votre thème ne charge pas Font Awesome"
-
 msgid "Save Changes"
 msgstr "Enregistrer les modifications"
 
@@ -318,9 +312,6 @@ msgstr "Catégorie parente"
 
 msgid "Emoji"
 msgstr "Emoji"
-
-msgid "Font Awesome"
-msgstr "Font Awesome"
 
 msgid "Icon Value"
 msgstr "Valeur de l'icône"
@@ -532,12 +523,3 @@ msgstr "Ajoute les catégories manquantes selon le mode actuel sans supprimer le
 
 msgid "Show with \"Out of Stock\" badge"
 msgstr "Afficher avec badge \"Rupture\""
-
-msgid "Font Awesome is installed"
-msgstr "Font Awesome est installé"
-
-msgid "Download Font Awesome"
-msgstr "Télécharger Font Awesome"
-
-msgid "Required if you use Font Awesome icons for categories."
-msgstr "Nécessaire si vous utilisez des icônes Font Awesome pour les catégories."

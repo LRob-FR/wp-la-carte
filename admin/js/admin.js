@@ -171,6 +171,12 @@ jQuery(document).ready(function($) {
     $('#product-upload-image').on('click', function(e) {
         e.preventDefault();
 
+        // Check if wp.media is available
+        if (typeof wp === 'undefined' || typeof wp.media === 'undefined') {
+            alert('WordPress media library is not loaded. Please refresh the page.');
+            return;
+        }
+
         if (mediaUploader) {
             mediaUploader.open();
             return;
@@ -198,10 +204,10 @@ jQuery(document).ready(function($) {
         $(this).hide();
     });
 
-    // Price management avec suggestions
+    // Price management with suggestions
     var usedPriceLabels = new Set();
 
-    // Collecter les labels existants au chargement
+    // Collect existing labels on page load
     function collectExistingPriceLabels() {
         usedPriceLabels.clear();
         $('.lrob-price-label').each(function() {
@@ -234,24 +240,13 @@ jQuery(document).ready(function($) {
         return newRow;
     }
 
-    function updatePriceLabelsSuggestions() {
-        var existingDatalist = $('#price-labels-suggestions');
-        if (existingDatalist.length === 0) {
-            $('body').append('<datalist id="price-labels-suggestions"></datalist>');
-            existingDatalist = $('#price-labels-suggestions');
-        }
+    $('#lrob-add-price').on('click', function() {
+        $('#product-prices-wrapper').append(createPriceRow());
+    });
 
-        existingDatalist.empty();
-        usedPriceLabels.forEach(function(label) {
-            existingDatalist.append('<option value="' + label + '">');
-        });
-    }
-
-    $(document).on('blur', '.price-label', function() {
-        var label = $(this).val().trim();
-        if (label) {
-            usedPriceLabels.add(label);
-            updatePriceLabelsSuggestions();
+    $(document).on('click', '.lrob-remove-price', function() {
+        if ($('#product-prices-wrapper .lrob-price-row').length > 1) {
+            $(this).closest('.lrob-price-row').remove();
         }
     });
 
@@ -264,18 +259,6 @@ jQuery(document).ready(function($) {
         }
     });
 
-    $('#lrob-add-price').on('click', function() {
-        var newRow = createPriceRow(false);
-        $('#product-prices-wrapper').append(newRow);
-        updatePriceLabelsSuggestions();
-    });
-
-    $(document).on('click', '.lrob-remove-price', function() {
-        if ($('#product-prices-wrapper .lrob-price-row').length > 1) {
-            $(this).closest('.lrob-price-row').remove();
-        }
-    });
-
     function resetProductForm() {
         $('#product-id').val('');
         $('#product-name').val('');
@@ -284,10 +267,9 @@ jQuery(document).ready(function($) {
         $('#product-image-preview').html('');
         $('#product-remove-image').hide();
         $('#product-availability').val('available');
-        $('.allergen-checkbox, .badge-checkbox').prop('checked', false);
-
-        $('#product-prices-wrapper').html(createPriceRow(false));
-        updatePriceLabelsSuggestions();
+        $('.allergen-checkbox').prop('checked', false);
+        $('.badge-checkbox').prop('checked', false);
+        $('#product-prices-wrapper').html(createPriceRow());
     }
 
     function populateProductForm(product, prices) {
@@ -295,98 +277,202 @@ jQuery(document).ready(function($) {
         $('#product-category').val(product.category_id);
         $('#product-category-select').val(product.category_id);
         $('#product-name').val(product.name);
-        $('#product-description').val(product.description);
-        $('#product-image-id').val(product.image_id || '0');
-        $('#product-availability').val(product.availability);
-        $('#product-position').val(product.position);
+        $('#product-description').val(product.description || '');
+        $('#product-availability').val(product.availability || 'available');
+        $('#product-position').val(product.position || 0);
 
-        if (product.image_id) {
-            $.ajax({
-                url: lrobCarte.ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'wp_ajax_get_attachment_url',
-                    attachment_id: product.image_id
-                },
-                success: function(url) {
-                    if (url) {
-                        $('#product-image-preview').html('<img src="' + url + '">');
-                        $('#product-remove-image').show();
-                    }
+        // Handle image - show image and remove button if image_url exists and is not empty
+        if (product.image_url && product.image_url !== '') {
+            $('#product-image-id').val(product.image_id || 0);
+            $('#product-image-preview').html('<img src="' + product.image_url + '" style="max-width: 200px; border-radius: 4px;">');
+            $('#product-remove-image').show();
+        } else {
+            $('#product-image-id').val('0');
+            $('#product-image-preview').html('');
+            $('#product-remove-image').hide();
+        }
+
+        var allergensList = product.allergens ? product.allergens.split(',') : [];
+        $('.allergen-checkbox').prop('checked', false);
+        allergensList.forEach(function(allergen) {
+            $('.allergen-checkbox[value="' + allergen.trim() + '"]').prop('checked', true);
+        });
+
+        var badgesList = product.badges ? product.badges.split(',') : [];
+        $('.badge-checkbox').prop('checked', false);
+        badgesList.forEach(function(badge) {
+            $('.badge-checkbox[value="' + badge.trim() + '"]').prop('checked', true);
+        });
+
+        $('#product-prices-wrapper').html('');
+        if (prices && prices.length > 0) {
+            prices.forEach(function(price) {
+                var isHappyHour = price.happy_hour == 1;
+                var $row = $(createPriceRow(isHappyHour));
+                $row.find('.price-label').val(price.label || '');
+                $row.find('.price-amount').val(price.price);
+                if (isHappyHour) {
+                    $row.find('.price-happy-hour').prop('checked', true);
+                }
+                $('#product-prices-wrapper').append($row);
+            });
+        } else {
+            $('#product-prices-wrapper').html(createPriceRow());
+        }
+    }
+
+    // ========== ADMIN CATEGORY FILTERING (like frontend) ==========
+
+    var filterWrapper = $('[data-admin-filter-wrapper]');
+    if (filterWrapper.length > 0) {
+        var rootTabs = filterWrapper.find('.lrob-admin-root-tab');
+        var allProducts = $('#lrob-products-grid .lrob-product-card');
+
+        // Initialize: show first root category on load
+        if (rootTabs.length > 0) {
+            var firstRootId = rootTabs.first().data('root-category');
+            rootTabs.first().addClass('active');
+
+            // Show level 1 filters for first category
+            $('.lrob-level-1-filters[data-parent-id="' + firstRootId + '"]').show();
+
+            // Filter products to show only those from first category
+            filterProductsByRootCategory(firstRootId);
+        }
+
+        // Root category tab click
+        rootTabs.on('click', function() {
+            var rootCategoryId = $(this).data('root-category');
+
+            // Update active tab
+            rootTabs.removeClass('active');
+            $(this).addClass('active');
+
+            // Hide all level 1 and level 2 filters
+            $('.lrob-level-1-filters, .lrob-level-2-filters').hide();
+
+            // Deselect all badges
+            $('.lrob-subcategory-badge').removeClass('active');
+
+            // Show level 1 filters for this root category
+            $('.lrob-level-1-filters[data-parent-id="' + rootCategoryId + '"]').show();
+
+            // Filter products
+            filterProductsByRootCategory(rootCategoryId);
+        });
+
+        // Level 1 subcategory badge click
+        $(document).on('click', '.lrob-subcategory-badge[data-filter-level="1"]', function() {
+            var subcategoryId = $(this).data('subcategory-id');
+            var parentId = $(this).data('parent-id');
+            var isActive = $(this).hasClass('active');
+
+            if (isActive) {
+                // Deselect
+                $(this).removeClass('active');
+
+                // Hide all level 2 filters
+                $('.lrob-level-2-filters').hide();
+
+                // Deselect all level 2 badges
+                $('.lrob-subcategory-badge[data-filter-level="2"]').removeClass('active');
+
+                // Show all products from root category
+                filterProductsByRootCategory(parentId);
+            } else {
+                // Deselect all other level 1 badges with same parent
+                $('.lrob-subcategory-badge[data-filter-level="1"][data-parent-id="' + parentId + '"]').removeClass('active');
+
+                // Select this badge
+                $(this).addClass('active');
+
+                // Hide all level 2 filters first
+                $('.lrob-level-2-filters').hide();
+
+                // Deselect all level 2 badges
+                $('.lrob-subcategory-badge[data-filter-level="2"]').removeClass('active');
+
+                // Show level 2 filters for this subcategory (if any)
+                $('.lrob-level-2-filters[data-parent-id="' + subcategoryId + '"]').show();
+
+                // Filter products to this level 1 category
+                filterProductsByCategory(subcategoryId, null);
+            }
+        });
+
+        // Level 2 subcategory badge click
+        $(document).on('click', '.lrob-subcategory-badge[data-filter-level="2"]', function() {
+            var subcategoryId = $(this).data('subcategory-id');
+            var parentId = $(this).data('parent-id');
+            var isActive = $(this).hasClass('active');
+
+            if (isActive) {
+                // Deselect
+                $(this).removeClass('active');
+
+                // Show all products from parent (level 1) category
+                filterProductsByCategory(parentId, null);
+            } else {
+                // Deselect all other level 2 badges with same parent
+                $('.lrob-subcategory-badge[data-filter-level="2"][data-parent-id="' + parentId + '"]').removeClass('active');
+
+                // Select this badge
+                $(this).addClass('active');
+
+                // Filter products to this level 2 category
+                filterProductsByCategory(parentId, subcategoryId);
+            }
+        });
+
+        function filterProductsByRootCategory(rootCategoryId) {
+            allProducts.each(function() {
+                var $product = $(this);
+                var ancestors = $product.data('category-ancestors').toString().split(',');
+
+                // Show product if any ancestor matches the root category
+                if (ancestors.indexOf(rootCategoryId.toString()) !== -1) {
+                    $product.show();
+                } else {
+                    $product.hide();
                 }
             });
         }
 
-        if (product.allergens) {
-            var allergensList = product.allergens.split(',');
-            allergensList.forEach(function(allergen) {
-                $('.allergen-checkbox[value="' + allergen + '"]').prop('checked', true);
+        function filterProductsByCategory(level1CategoryId, level2CategoryId) {
+            allProducts.each(function() {
+                var $product = $(this);
+                var categoryId = $product.data('category-id').toString();
+                var ancestors = $product.data('category-ancestors').toString().split(',');
+
+                if (level2CategoryId) {
+                    // Level 2 filter: show only products from this specific category
+                    if (ancestors.indexOf(level2CategoryId.toString()) !== -1) {
+                        $product.show();
+                    } else {
+                        $product.hide();
+                    }
+                } else if (level1CategoryId) {
+                    // Level 1 filter: show products from this category and all its children
+                    if (ancestors.indexOf(level1CategoryId.toString()) !== -1) {
+                        $product.show();
+                    } else {
+                        $product.hide();
+                    }
+                }
             });
         }
-
-        if (product.badges) {
-            var badgesList = product.badges.split(',');
-            badgesList.forEach(function(badge) {
-                $('.badge-checkbox[value="' + badge + '"]').prop('checked', true);
-            });
-        }
-
-        $('#product-prices-wrapper').html('');
-        if (prices.length > 0) {
-            prices.forEach(function(price) {
-                var isHappyHour = price.happy_hour == 1;
-                var row = createPriceRow(isHappyHour);
-                var $row = $(row);
-                $row.find('.price-label').val(price.label || '');
-                $row.find('.price-amount').val(price.price);
-                $('#product-prices-wrapper').append($row);
-            });
-        } else {
-            $('#product-prices-wrapper').html(createPriceRow(false));
-        }
-
-        updatePriceLabelsSuggestions();
     }
 
     // ========== CATEGORIES ==========
 
     $('#lrob-add-category').on('click', function() {
         resetCategoryForm();
-        $('#lrob-category-modal-title').text('Add Category');
+        $('#lrob-modal-title').text('Add Category');
         openModal('lrob-category-modal');
     });
 
-    // Create default categories button
-    $('#lrob-create-default-categories').on('click', function() {
-        if (!confirm('Create default categories based on your site language?')) return;
-
-        var $button = $(this);
-        $button.prop('disabled', true).text('Creating...');
-
-        $.ajax({
-            url: lrobCarte.ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'lrob_create_default_categories',
-                nonce: lrobCarte.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    location.reload();
-                } else {
-                    alert(response.data.message || 'Error creating categories');
-                    $button.prop('disabled', false).text('Create Default Categories');
-                }
-            },
-            error: function() {
-                alert('Error creating categories');
-                $button.prop('disabled', false).text('Create Default Categories');
-            }
-        });
-    });
-
     $('.lrob-edit-category').on('click', function() {
-        var catId = $(this).data('id');
+        var categoryId = $(this).data('id');
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -394,12 +480,12 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'lrob_get_category',
                 nonce: lrobCarte.nonce,
-                id: catId
+                id: categoryId
             },
             success: function(response) {
                 if (response.success) {
                     populateCategoryForm(response.data);
-                    $('#lrob-category-modal-title').text('Edit Category');
+                    $('#lrob-modal-title').text('Edit Category');
                     openModal('lrob-category-modal');
                 }
             }
@@ -407,9 +493,9 @@ jQuery(document).ready(function($) {
     });
 
     $('.lrob-delete-category').on('click', function() {
-        if (!confirm('Are you sure? All products in this category will be deleted.')) return;
+        if (!confirm('Are you sure you want to delete this category?')) return;
 
-        var catId = $(this).data('id');
+        var categoryId = $(this).data('id');
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -417,7 +503,7 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'lrob_delete_category',
                 nonce: lrobCarte.nonce,
-                id: catId
+                id: categoryId
             },
             success: function(response) {
                 if (response.success) {
@@ -428,9 +514,7 @@ jQuery(document).ready(function($) {
     });
 
     $('.lrob-toggle-category').on('click', function() {
-        var $btn = $(this);
-        var catId = $btn.data('id');
-        var isActive = $btn.data('active');
+        var categoryId = $(this).data('id');
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -438,112 +522,31 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'lrob_toggle_category',
                 nonce: lrobCarte.nonce,
-                id: catId,
-                active: isActive
+                id: categoryId
             },
             success: function(response) {
                 if (response.success) {
                     location.reload();
-                } else if (response.data && response.data.message) {
-                    alert(response.data.message);
                 }
-            },
-            error: function() {
-                alert('Error during update');
             }
         });
     });
 
-    // Boutons Haut/Bas pour les catégories
+    // Up/Down buttons for categories
     $('.lrob-move-category-up').on('click', function() {
         var $item = $(this).closest('.lrob-category-item');
-        var catId = $item.data('id');
-        var level = $item.data('level');
-
-        // Find previous element at same level
-        var $prev = null;
-        var $check = $item.prev('.lrob-category-item');
-
-        while ($check.length) {
-            if ($check.data('level') < level) {
-                // On a atteint un niveau supérieur, pas de déplacement possible
-                break;
-            }
-            if ($check.data('level') === level) {
-                $prev = $check;
-                break;
-            }
-            $check = $check.prev('.lrob-category-item');
-        }
-
-        if ($prev) {
-            // Collect element and all its children
-            var $toMove = $item;
-            var $children = $();
-            var $next = $item.next('.lrob-category-item');
-
-            while ($next.length && $next.data('level') > level) {
-                $children = $children.add($next);
-                $next = $next.next('.lrob-category-item');
-            }
-
-            // Move parent element and its children before the previous at same level
-            $prev.before($toMove);
-            if ($children.length) {
-                $toMove.after($children);
-            }
-
+        var $prev = $item.prev('.lrob-category-item');
+        if ($prev.length) {
+            $item.insertBefore($prev);
             updateCategoryPositions();
         }
     });
 
     $('.lrob-move-category-down').on('click', function() {
         var $item = $(this).closest('.lrob-category-item');
-        var catId = $item.data('id');
-        var level = $item.data('level');
-
-        // Collecter tous les enfants de cet élément
-        var $children = $();
-        var $check = $item.next('.lrob-category-item');
-
-        while ($check.length && $check.data('level') > level) {
-            $children = $children.add($check);
-            $check = $check.next('.lrob-category-item');
-        }
-
-        // Find next element at same level (after all children)
-        var $next = null;
-        $check = $children.length ? $children.last().next('.lrob-category-item') : $item.next('.lrob-category-item');
-
-        while ($check.length) {
-            if ($check.data('level') < level) {
-                // On a atteint un niveau supérieur, pas de déplacement possible
-                break;
-            }
-            if ($check.data('level') === level) {
-                $next = $check;
-                break;
-            }
-            $check = $check.next('.lrob-category-item');
-        }
-
-        if ($next) {
-            // Collecter les enfants du suivant
-            var $nextChildren = $();
-            $check = $next.next('.lrob-category-item');
-
-            while ($check.length && $check.data('level') > level) {
-                $nextChildren = $nextChildren.add($check);
-                $check = $check.next('.lrob-category-item');
-            }
-
-            // Déplacer après le suivant et tous ses enfants
-            var $insertAfter = $nextChildren.length ? $nextChildren.last() : $next;
-            $insertAfter.after($item);
-            if ($children.length) {
-                $item.after($children);
-            }
-
+        var $next = $item.next('.lrob-category-item');
+        if ($next.length) {
+            $item.insertAfter($next);
             updateCategoryPositions();
         }
     });
@@ -603,7 +606,7 @@ jQuery(document).ready(function($) {
         var catId = $item.data('id');
         var currentParent = $item.data('parent');
 
-        // Trouver le grand-parent
+        // Find grandparent
         var $parentItem = $('.lrob-category-item[data-id="' + currentParent + '"]');
         var newParentId = $parentItem.length ? ($parentItem.data('parent') || 0) : 0;
 
@@ -636,8 +639,6 @@ jQuery(document).ready(function($) {
             iconValue = $('#category-emoji').val();
         } else if (iconType === 'image') {
             iconValue = $('#category-icon-image-id').val();
-        } else {
-            iconValue = $('#category-fa').val();
         }
 
         if (!$('#category-slug').val()) {
@@ -667,21 +668,19 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                alert('Erreur lors de l\'enregistrement');
+                alert('Error saving');
             }
         });
     });
 
     $('input[name="icon-type"]').on('change', function() {
         var iconType = $(this).val();
-        $('#icon-emoji-row, #icon-image-row, #icon-fa-row').hide();
+        $('#icon-emoji-row, #icon-image-row').hide();
 
         if (iconType === 'emoji') {
             $('#icon-emoji-row').show();
         } else if (iconType === 'image') {
             $('#icon-image-row').show();
-        } else {
-            $('#icon-fa-row').show();
         }
     });
 
@@ -689,11 +688,17 @@ jQuery(document).ready(function($) {
         $('#category-emoji').val($(this).data('emoji'));
     });
 
-    // Media uploader pour icône personnalisée
+    // Media uploader for custom icon
     var categoryIconUploader;
 
     $('#category-upload-icon-image').on('click', function(e) {
         e.preventDefault();
+
+        // Check if wp.media is available
+        if (typeof wp === 'undefined' || typeof wp.media === 'undefined') {
+            alert('WordPress media library is not loaded. Please refresh the page.');
+            return;
+        }
 
         if (categoryIconUploader) {
             categoryIconUploader.open();
@@ -729,7 +734,6 @@ jQuery(document).ready(function($) {
         $('#category-name').val('');
         $('#category-slug').val('');
         $('#category-emoji').val('🍽️');
-        $('#category-fa').val('');
         $('#category-icon-image-id').val('');
         $('#category-icon-image-preview').html('');
         $('#category-remove-icon-image').hide();
@@ -745,7 +749,7 @@ jQuery(document).ready(function($) {
         $('#category-position').val(category.position);
         $('#category-active').prop('checked', category.active == 1);
 
-        // Définir le type d'icône et la valeur
+        // Set icon type and value
         if (category.icon_type === 'emoji') {
             $('input[name="icon-type"][value="emoji"]').prop('checked', true);
             $('#category-emoji').val(category.icon_value || '🍽️');
@@ -769,41 +773,8 @@ jQuery(document).ready(function($) {
                     }
                 });
             }
-        } else {
-            $('input[name="icon-type"][value="fa"]').prop('checked', true);
-            $('#category-fa').val(category.icon_value);
         }
 
         $('input[name="icon-type"]:checked').trigger('change');
     }
-
-    // Product search
-    $('#lrob-product-search').on('keyup', function() {
-        var searchTerm = $(this).val().toLowerCase();
-        var $products = $('#lrob-products-list .lrob-product-item');
-        var visibleCount = 0;
-
-        if (searchTerm === '') {
-            $products.show();
-            $('.lrob-search-count').text('');
-            return;
-        }
-
-        $products.each(function() {
-            var $product = $(this);
-            var name = $product.find('.lrob-product-name').text().toLowerCase();
-            var desc = $product.find('.lrob-product-desc').text().toLowerCase();
-            var allergens = $product.find('.lrob-product-allergens').text().toLowerCase();
-
-            if (name.indexOf(searchTerm) !== -1 || desc.indexOf(searchTerm) !== -1 || allergens.indexOf(searchTerm) !== -1) {
-                $product.show();
-                visibleCount++;
-            } else {
-                $product.hide();
-            }
-        });
-
-        var totalCount = $products.length;
-        $('.lrob-search-count').text(visibleCount + ' / ' + totalCount);
-    });
 });
