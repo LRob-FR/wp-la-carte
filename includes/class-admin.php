@@ -6,6 +6,7 @@ class LRob_Carte_Admin {
 
     public function __construct() {
         add_action('admin_menu', array($this, 'add_menu_pages'));
+        add_action('admin_init', array($this, 'handle_export')); // Handle export before any output
         add_action('wp_ajax_lrob_save_category', array($this, 'ajax_save_category'));
         add_action('wp_ajax_lrob_delete_category', array($this, 'ajax_delete_category'));
         add_action('wp_ajax_lrob_get_category', array($this, 'ajax_get_category'));
@@ -17,6 +18,20 @@ class LRob_Carte_Admin {
         add_action('wp_ajax_lrob_update_positions', array($this, 'ajax_update_positions'));
         add_action('wp_ajax_lrob_get_product', array($this, 'ajax_get_product'));
         add_action('wp_ajax_lrob_create_default_categories', array($this, 'ajax_create_default_categories'));
+    }
+
+    public function handle_export() {
+        if (!isset($_POST['lrob_export_nonce']) || !wp_verify_nonce($_POST['lrob_export_nonce'], 'lrob_export')) {
+            return;
+        }
+
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        $importer = new LRob_Carte_Import_Export();
+        $importer->export();
+        // export() method already has exit; inside it
     }
 
     public function add_menu_pages() {
@@ -120,14 +135,8 @@ class LRob_Carte_Admin {
     public function render_import_export_page() {
         if (!current_user_can('manage_options')) return;
 
-        $importer = new LRob_Carte_Import_Export();
-
-        if (isset($_POST['lrob_export_nonce']) && wp_verify_nonce($_POST['lrob_export_nonce'], 'lrob_export')) {
-            $importer->export();
-            exit;
-        }
-
         if (isset($_POST['lrob_import_nonce']) && wp_verify_nonce($_POST['lrob_import_nonce'], 'lrob_import') && isset($_FILES['import_file'])) {
+            $importer = new LRob_Carte_Import_Export();
             $result = $importer->import($_FILES['import_file']);
 
             if ($result['success']) {

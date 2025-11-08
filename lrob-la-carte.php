@@ -3,7 +3,7 @@
  * Plugin Name: LRob - La Carte
  * Plugin URI: https://www.lrob.fr/
  * Description: Menu manager for bars and restaurants
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: LRob
  * Author URI: https://www.lrob.fr/
  * Text Domain: lrob-la-carte
@@ -11,7 +11,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('LROB_CARTE_VERSION', '1.1.0');
+define('LROB_CARTE_VERSION', '1.1.1');
 define('LROB_CARTE_PATH', plugin_dir_path(__FILE__));
 define('LROB_CARTE_URL', plugin_dir_url(__FILE__));
 

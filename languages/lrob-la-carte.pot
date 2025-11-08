@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the LRob - La Carte plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: LRob La Carte 1.1.0\n"
+"Project-Id-Version: LRob La Carte 1.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/lrob-la-carte\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-11-08T14:37:25+00:00\n"
+"POT-Creation-Date: 2025-11-08T15:32:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: lrob-la-carte\n"
@@ -33,8 +33,8 @@ msgstr ""
 
 #: admin/views/categories.php:3
 #: admin/views/settings.php:29
-#: includes/class-admin.php:44
-#: includes/class-admin.php:45
+#: includes/class-admin.php:59
+#: includes/class-admin.php:60
 msgid "Categories"
 msgstr ""
 
@@ -161,47 +161,54 @@ msgstr ""
 msgid "Import / Export"
 msgstr ""
 
-#: admin/views/import-export.php:6
-msgid "Exporter"
+#: admin/views/import-export.php:8
+msgid "Export"
 msgstr ""
 
-#: admin/views/import-export.php:7
-msgid "Téléchargez toutes vos catégories et produits au format JSON."
+#: admin/views/import-export.php:9
+msgid "Export all your categories, products and settings as a JSON file."
 msgstr ""
 
-#: admin/views/import-export.php:12
-msgid "Exporter au format JSON"
+#: admin/views/import-export.php:15
+msgid "Export Data"
 msgstr ""
 
-#: admin/views/import-export.php:18
-#: admin/views/import-export.php:29
+#: admin/views/import-export.php:23
 msgid "Import"
 msgstr ""
 
-#: admin/views/import-export.php:19
-msgid "Importez un fichier JSON précédemment exporté. Les catégories et produits existants seront conservés."
+#: admin/views/import-export.php:24
+msgid "Import categories and products from a JSON file."
 msgstr ""
 
-#: admin/views/import-export.php:34
-msgid "Note:"
+#: admin/views/import-export.php:35
+msgid "Import Data"
 msgstr ""
 
-#: admin/views/import-export.php:36
-msgid "Les catégories avec le même slug seront mises à jour."
+#: admin/views/import-export.php:41
+msgid "Important:"
 msgstr ""
 
-#: admin/views/import-export.php:37
-msgid "Les produits seront ajoutés aux catégories correspondantes."
+#: admin/views/import-export.php:43
+msgid "Existing categories with the same slug will be updated."
 msgstr ""
 
-#: admin/views/import-export.php:38
-msgid "Les images seront téléchargées depuis leurs URLs."
+#: admin/views/import-export.php:44
+msgid "Products will be added (not updated)."
+msgstr ""
+
+#: admin/views/import-export.php:45
+msgid "Images will be downloaded and imported into your media library."
+msgstr ""
+
+#: admin/views/import-export.php:46
+msgid "Settings will be overwritten."
 msgstr ""
 
 #: admin/views/products.php:3
 #: admin/views/products.php:144
-#: includes/class-admin.php:35
-#: includes/class-admin.php:36
+#: includes/class-admin.php:50
+#: includes/class-admin.php:51
 msgid "Products"
 msgstr ""
 
@@ -278,8 +285,8 @@ msgid "Available"
 msgstr ""
 
 #: admin/views/settings.php:2
-#: includes/class-admin.php:53
-#: includes/class-admin.php:54
+#: includes/class-admin.php:68
+#: includes/class-admin.php:69
 msgid "Settings"
 msgstr ""
 
@@ -327,144 +334,144 @@ msgstr ""
 msgid "Hide Completely"
 msgstr ""
 
-#: includes/class-admin.php:24
-#: includes/class-admin.php:25
+#: includes/class-admin.php:39
+#: includes/class-admin.php:40
 msgid "La Carte"
 msgstr ""
 
-#: includes/class-admin.php:62
-#: includes/class-admin.php:63
+#: includes/class-admin.php:77
+#: includes/class-admin.php:78
 msgid "Import/Export"
 msgstr ""
 
-#: includes/class-admin.php:109
+#: includes/class-admin.php:124
 msgid "Settings saved."
 msgstr ""
 
-#: includes/class-admin.php:114
+#: includes/class-admin.php:129
 msgid "Categories added."
 msgstr ""
 
-#: includes/class-admin.php:147
-#: includes/class-admin.php:191
-#: includes/class-admin.php:211
-#: includes/class-admin.php:231
-#: includes/class-admin.php:259
-#: includes/class-admin.php:293
-#: includes/class-admin.php:340
-#: includes/class-admin.php:397
-#: includes/class-admin.php:417
-#: includes/class-admin.php:443
-#: includes/class-admin.php:477
+#: includes/class-admin.php:156
+#: includes/class-admin.php:200
+#: includes/class-admin.php:220
+#: includes/class-admin.php:240
+#: includes/class-admin.php:268
+#: includes/class-admin.php:302
+#: includes/class-admin.php:349
+#: includes/class-admin.php:406
+#: includes/class-admin.php:426
+#: includes/class-admin.php:452
+#: includes/class-admin.php:486
 msgid "Unauthorized"
 msgstr ""
 
-#: includes/class-admin.php:151
+#: includes/class-admin.php:160
 msgid "Category name is required"
 msgstr ""
 
-#: includes/class-admin.php:168
-#: includes/class-admin.php:305
+#: includes/class-admin.php:177
+#: includes/class-admin.php:314
 msgid "A category cannot be its own parent"
 msgstr ""
 
-#: includes/class-admin.php:174
-#: includes/class-admin.php:249
-#: includes/class-admin.php:330
-#: includes/class-admin.php:372
+#: includes/class-admin.php:183
+#: includes/class-admin.php:258
+#: includes/class-admin.php:339
+#: includes/class-admin.php:381
 msgid "Error during update"
 msgstr ""
 
-#: includes/class-admin.php:180
-#: includes/class-admin.php:378
+#: includes/class-admin.php:189
+#: includes/class-admin.php:387
 msgid "Error during creation"
 msgstr ""
 
-#: includes/class-admin.php:184
+#: includes/class-admin.php:193
 msgid "Category saved"
 msgstr ""
 
-#: includes/class-admin.php:195
-#: includes/class-admin.php:215
-#: includes/class-admin.php:235
-#: includes/class-admin.php:401
-#: includes/class-admin.php:447
+#: includes/class-admin.php:204
+#: includes/class-admin.php:224
+#: includes/class-admin.php:244
+#: includes/class-admin.php:410
+#: includes/class-admin.php:456
 msgid "Invalid ID"
 msgstr ""
 
-#: includes/class-admin.php:201
-#: includes/class-admin.php:407
+#: includes/class-admin.php:210
+#: includes/class-admin.php:416
 msgid "Error during deletion"
 msgstr ""
 
-#: includes/class-admin.php:204
+#: includes/class-admin.php:213
 msgid "Category deleted"
 msgstr ""
 
-#: includes/class-admin.php:221
-#: includes/class-admin.php:242
+#: includes/class-admin.php:230
+#: includes/class-admin.php:251
 msgid "Category not found"
 msgstr ""
 
-#: includes/class-admin.php:252
+#: includes/class-admin.php:261
 msgid "Status updated"
 msgstr ""
 
-#: includes/class-admin.php:263
-#: includes/class-admin.php:297
-#: includes/class-admin.php:421
+#: includes/class-admin.php:272
+#: includes/class-admin.php:306
+#: includes/class-admin.php:430
 msgid "Données invalides"
 msgstr ""
 
-#: includes/class-admin.php:286
+#: includes/class-admin.php:295
 msgid "Hiérarchie mise à jour"
 msgstr ""
 
-#: includes/class-admin.php:313
+#: includes/class-admin.php:322
 msgid "Impossible de créer une boucle dans la hiérarchie"
 msgstr ""
 
-#: includes/class-admin.php:333
+#: includes/class-admin.php:342
 msgid "Parent mis à jour"
 msgstr ""
 
-#: includes/class-admin.php:344
+#: includes/class-admin.php:353
 msgid "Product name is required"
 msgstr ""
 
-#: includes/class-admin.php:348
+#: includes/class-admin.php:357
 msgid "Invalid category"
 msgstr ""
 
-#: includes/class-admin.php:386
+#: includes/class-admin.php:395
 msgid "Erreur lors de l'enregistrement des prix"
 msgstr ""
 
-#: includes/class-admin.php:390
+#: includes/class-admin.php:399
 msgid "Product saved"
 msgstr ""
 
-#: includes/class-admin.php:410
+#: includes/class-admin.php:419
 msgid "Product deleted"
 msgstr ""
 
-#: includes/class-admin.php:428
+#: includes/class-admin.php:437
 msgid "Table invalide"
 msgstr ""
 
-#: includes/class-admin.php:432
+#: includes/class-admin.php:441
 msgid "Format de positions invalide"
 msgstr ""
 
-#: includes/class-admin.php:436
+#: includes/class-admin.php:445
 msgid "Positions updated"
 msgstr ""
 
-#: includes/class-admin.php:453
+#: includes/class-admin.php:462
 msgid "Product not found"
 msgstr ""
 
-#: includes/class-admin.php:484
+#: includes/class-admin.php:493
 msgid "Default categories created successfully"
 msgstr ""
 
@@ -532,20 +539,20 @@ msgstr ""
 msgid "Snacks"
 msgstr ""
 
-#: includes/class-import-export.php:73
-msgid "Erreur lors du téléchargement du fichier."
+#: includes/class-import-export.php:77
+msgid "Upload error."
 msgstr ""
 
-#: includes/class-import-export.php:80
-msgid "Fichier JSON invalide."
+#: includes/class-import-export.php:84
+msgid "Invalid JSON file."
 msgstr ""
 
-#: includes/class-import-export.php:139
-msgid "Import réussi !"
+#: includes/class-import-export.php:153
+msgid "Import successful!"
 msgstr ""
 
-#: includes/class-import-export.php:143
-msgid "Erreur lors de l'import : "
+#: includes/class-import-export.php:157
+msgid "Import error: "
 msgstr ""
 
 #: includes/class-settings.php:17

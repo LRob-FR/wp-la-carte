@@ -215,7 +215,7 @@
                                                     <span class="lrob-price-label"><?php echo esc_html($price->label); ?></span>
                                                 <?php endif; ?>
                                                 <strong><?php echo number_format($price->price, 2, ',', ' '); ?> €</strong>
-                                                <?php if ($price->is_happy_hour): ?>
+                                                <?php if (isset($price->happy_hour) && $price->happy_hour): ?>
                                                     <span class="lrob-price-happy-badge">🍹</span>
                                                 <?php endif; ?>
                                             </span>

@@ -8,14 +8,14 @@ class LRob_Carte_Import_Export {
         $data = array(
             'version' => LROB_CARTE_VERSION,
             'exported_at' => current_time('mysql'),
-                      'settings' => array(
-                          'mode' => get_option('lrob_carte_mode'),
-                                          'primary_color' => get_option('lrob_carte_primary_color'),
-                                          'secondary_color' => get_option('lrob_carte_secondary_color'),
-                                          'out_of_stock_display' => get_option('lrob_carte_out_of_stock_display'),
-                      ),
-                      'categories' => array(),
-                      'products' => array()
+            'settings' => array(
+                'mode' => get_option('lrob_carte_mode'),
+                'primary_color' => get_option('lrob_carte_primary_color'),
+                'secondary_color' => get_option('lrob_carte_secondary_color'),
+                'out_of_stock_display' => get_option('lrob_carte_out_of_stock_display'),
+            ),
+            'categories' => array(),
+            'products' => array()
         );
 
         $categories = LRob_Carte_Database::get_categories();
@@ -26,7 +26,9 @@ class LRob_Carte_Import_Export {
                 'slug' => $cat->slug,
                 'icon_type' => $cat->icon_type,
                 'icon_value' => $cat->icon_value,
-                'position' => $cat->position
+                'position' => $cat->position,
+                'parent_id' => $cat->parent_id ?? 0,
+                'active' => $cat->active ?? 1
             );
         }
 
@@ -37,13 +39,13 @@ class LRob_Carte_Import_Export {
 
             $product_data = array(
                 'category_slug' => $this->get_category_slug($product->category_id),
-                                  'name' => $product->name,
-                                  'description' => $product->description,
-                                  'allergens' => $product->allergens,
-                                  'badges' => $product->badges,
-                                  'availability' => $product->availability,
-                                  'position' => $product->position,
-                                  'prices' => array()
+                'name' => $product->name,
+                'description' => $product->description,
+                'allergens' => $product->allergens,
+                'badges' => $product->badges,
+                'availability' => $product->availability,
+                'position' => $product->position,
+                'prices' => array()
             );
 
             if ($product->image_id) {
@@ -56,7 +58,8 @@ class LRob_Carte_Import_Export {
             foreach ($prices as $price) {
                 $product_data['prices'][] = array(
                     'label' => $price->label,
-                    'price' => $price->price
+                    'price' => $price->price,
+                    'happy_hour' => isset($price->happy_hour) ? intval($price->happy_hour) : 0
                 );
             }
 
@@ -66,18 +69,19 @@ class LRob_Carte_Import_Export {
         header('Content-Type: application/json');
         header('Content-Disposition: attachment; filename="lrob-carte-export-' . date('Y-m-d') . '.json"');
         echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        exit; // Critical: stop WordPress from rendering anything else
     }
 
     public function import($file) {
         if ($file['error'] !== UPLOAD_ERR_OK) {
-            return array('success' => false, 'message' => __('Erreur lors du téléchargement du fichier.', 'lrob-la-carte'));
+            return array('success' => false, 'message' => __('Upload error.', 'lrob-la-carte'));
         }
 
         $json = file_get_contents($file['tmp_name']);
         $data = json_decode($json, true);
 
         if (!$data || !isset($data['categories']) || !isset($data['products'])) {
-            return array('success' => false, 'message' => __('Fichier JSON invalide.', 'lrob-la-carte'));
+            return array('success' => false, 'message' => __('Invalid JSON file.', 'lrob-la-carte'));
         }
 
         global $wpdb;
@@ -98,11 +102,21 @@ class LRob_Carte_Import_Export {
                     $cat_data['slug']
                 ));
 
+                $cat_insert_data = array(
+                    'name' => $cat_data['name'],
+                    'slug' => $cat_data['slug'],
+                    'icon_type' => $cat_data['icon_type'] ?? 'emoji',
+                    'icon_value' => $cat_data['icon_value'] ?? '🍽️',
+                    'position' => $cat_data['position'] ?? 0,
+                    'parent_id' => $cat_data['parent_id'] ?? 0,
+                    'active' => $cat_data['active'] ?? 1
+                );
+
                 if ($existing) {
-                    LRob_Carte_Database::update_category($existing, $cat_data);
+                    LRob_Carte_Database::update_category($existing, $cat_insert_data);
                     $category_map[$cat_data['slug']] = $existing;
                 } else {
-                    $new_id = LRob_Carte_Database::insert_category($cat_data);
+                    $new_id = LRob_Carte_Database::insert_category($cat_insert_data);
                     $category_map[$cat_data['slug']] = $new_id;
                 }
             }
@@ -136,11 +150,11 @@ class LRob_Carte_Import_Export {
             }
 
             $wpdb->query('COMMIT');
-            return array('success' => true, 'message' => __('Import réussi !', 'lrob-la-carte'));
+            return array('success' => true, 'message' => __('Import successful!', 'lrob-la-carte'));
 
         } catch (Exception $e) {
             $wpdb->query('ROLLBACK');
-            return array('success' => false, 'message' => __('Erreur lors de l\'import : ', 'lrob-la-carte') . $e->getMessage());
+            return array('success' => false, 'message' => __('Import error: ', 'lrob-la-carte') . $e->getMessage());
         }
     }
 
@@ -165,7 +179,7 @@ class LRob_Carte_Import_Export {
 
         $file_array = array(
             'name' => basename($url),
-                            'tmp_name' => $tmp
+            'tmp_name' => $tmp
         );
 
         $id = media_handle_sideload($file_array, 0);

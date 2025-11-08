@@ -102,8 +102,8 @@ nano languages/lrob-la-carte-es_ES.po
 
 ## Technical Details
 
-- **WordPress Version**: 5.0+
-- **PHP Version**: 7.4+
+- **WordPress Version**: 6.8+
+- **PHP Version**: 8.4+
 - **Text Domain**: `lrob-la-carte`
 - **Database Tables**: 
   - `wp_lrob_categories`
@@ -142,6 +142,7 @@ This plugin is proprietary software developed by LRob.
 
 
 ## Todo List
+- Fix JSON export (currently showing JSON output instead of downloading)
 - Make caracteristics such as allergen or badges fully customizable
 - Fix the "Unavailable" product's logic (currently doesn't make sense)
 - Add other modes for general services with presets (my be used for any kind of service)
