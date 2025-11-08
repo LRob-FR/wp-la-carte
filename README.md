@@ -140,9 +140,12 @@ This plugin is proprietary software developed by LRob.
 - Adapted product image to be a miniature image
 - Improve product cards display by avoiding blank spaces
 
+### 1.1.1
+- Fixed property is_happy_hour
+- Fixed JSON Export/import
+
 
 ## Todo List
-- Fix JSON export (currently showing JSON output instead of downloading)
 - Make caracteristics such as allergen or badges fully customizable
 - Fix the "Unavailable" product's logic (currently doesn't make sense)
 - Add other modes for general services with presets (my be used for any kind of service)
