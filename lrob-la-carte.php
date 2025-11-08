@@ -7,6 +7,10 @@
  * Author: LRob
  * Author URI: https://www.lrob.fr/
  * Text Domain: lrob-la-carte
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Requires at least: 6.8
+ * Requires PHP: 8.2
  */
 
 if (!defined('ABSPATH')) exit;
