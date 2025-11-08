@@ -19,7 +19,7 @@
                         </option>
                     </select>
                     <p class="description">
-                        <?php _e('Définit les catégories par défaut. Changer de mode ajoutera automatiquement les catégories manquantes.', 'lrob-la-carte'); ?>
+                        <?php _e('Defines default categories. Changing mode will automatically add missing categories.', 'lrob-la-carte'); ?>
                     </p>
                 </td>
             </tr>
@@ -36,7 +36,7 @@
                         </button>
                     </form>
                     <p class="description">
-                        <?php _e('Ajoute les catégories manquantes selon le mode actuel sans supprimer les catégories existantes.', 'lrob-la-carte'); ?>
+                        <?php _e('Adds missing categories according to current mode without deleting existing categories.', 'lrob-la-carte'); ?>
                     </p>
                 </td>
             </tr>
@@ -65,12 +65,12 @@
 
             <tr>
                 <th scope="row">
-                    <label for="out_of_stock_display"><?php _e('Affichage des produits en rupture', 'lrob-la-carte'); ?></label>
+                    <label for="out_of_stock_display"><?php _e('Out of Stock Display', 'lrob-la-carte'); ?></label>
                 </th>
                 <td>
                     <select name="out_of_stock_display" id="out_of_stock_display">
                         <option value="show" <?php selected(get_option('lrob_carte_out_of_stock_display'), 'show'); ?>>
-                            <?php _e('Afficher avec badge "Rupture"', 'lrob-la-carte'); ?>
+                            <?php _e('Show with "Out of Stock" badge', 'lrob-la-carte'); ?>
                         </option>
                         <option value="hide" <?php selected(get_option('lrob_carte_out_of_stock_display'), 'hide'); ?>>
                             <?php _e('Hide Completely', 'lrob-la-carte'); ?>
@@ -85,13 +85,13 @@
                 </th>
                 <td>
                     <?php if (get_option('lrob_carte_load_fontawesome', false)): ?>
-                        <p><span class="dashicons dashicons-yes-alt" style="color: green;"></span> <?php _e('Font Awesome est installé', 'lrob-la-carte'); ?></p>
+                        <p><span class="dashicons dashicons-yes-alt" style="color: green;"></span> <?php _e('Font Awesome is installed', 'lrob-la-carte'); ?></p>
                     <?php else: ?>
                         <button type="button" class="button" id="lrob-download-fa">
-                            <?php _e('Télécharger Font Awesome', 'lrob-la-carte'); ?>
+                            <?php _e('Download Font Awesome', 'lrob-la-carte'); ?>
                         </button>
                         <p class="description">
-                            <?php _e('Nécessaire si vous utilisez des icônes Font Awesome pour les catégories.', 'lrob-la-carte'); ?>
+                            <?php _e('Required if you use Font Awesome icons for categories.', 'lrob-la-carte'); ?>
                         </p>
                         <div id="lrob-fa-status" style="margin-top: 10px;"></div>
                     <?php endif; ?>

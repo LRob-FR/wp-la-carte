@@ -3,7 +3,7 @@
 
     <?php if (empty($categories)): ?>
         <div class="notice notice-warning">
-            <p><?php _e('Aucune catégorie trouvée. Veuillez d\'abord créer des catégories.', 'lrob-la-carte'); ?></p>
+            <p><?php _e('No categories found. Please create categories first.', 'lrob-la-carte'); ?></p>
         </div>
     <?php else: ?>
 
@@ -52,7 +52,7 @@
 
         <div id="lrob-products-grid">
             <?php
-            // 1. D'ABORD afficher les sous-catégories
+            // 1. FIRST display subcategories
             if ($current_cat === 'all') {
                 $child_categories = array_filter($categories, function($cat) {
                     return !$cat->parent_id || $cat->parent_id == 0;
@@ -80,7 +80,14 @@
                         ?>
                     </div>
                     <div class="lrob-category-card-name"><?php echo esc_html($child_cat->name); ?></div>
-                    <div class="lrob-category-card-count"><?php echo $child_products_count; ?> produit<?php echo $child_products_count > 1 ? 's' : ''; ?></div>
+                    <div class="lrob-category-card-count">
+                        <?php
+                        printf(
+                            _n('%s product', '%s products', $child_products_count, 'lrob-la-carte'),
+                            $child_products_count
+                        );
+                        ?>
+                    </div>
                 </a>
             <?php
                 endforeach;
@@ -89,9 +96,9 @@
         </div>
 
         <?php
-        // 2. ENSUITE afficher les produits (si on est dans une catégorie OU si on est sur "all")
+        // 2. THEN display products (if in a category OR if on "all")
         if (!empty($products) || $current_cat === 'all'):
-            // Si on est sur "all", récupérer tous les produits
+            // If on "all", get all products
             if ($current_cat === 'all') {
                 $products = LRob_Carte_Database::get_products();
             }
@@ -100,7 +107,7 @@
                 <h2 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px;">
                     <?php
                     if ($current_cat === 'all') {
-                        _e('Tous les produits', 'lrob-la-carte');
+                        _e('All Products', 'lrob-la-carte');
                     } else {
                         _e('Products', 'lrob-la-carte');
                     }
@@ -132,7 +139,7 @@
                                             </span>
                                         <?php endif; ?>
                                         <?php if ($product->availability !== 'available'): ?>
-                                            <span class="lrob-badge lrob-badge-unavailable"><?php _e('Rupture', 'lrob-la-carte'); ?></span>
+                                            <span class="lrob-badge lrob-badge-unavailable"><?php _e('Out of Stock', 'lrob-la-carte'); ?></span>
                                         <?php endif; ?>
                                         <?php if ($product->badges):
                                             $badges = explode(',', $product->badges);
@@ -146,18 +153,20 @@
                                 </div>
 
                                 <?php if ($product->description): ?>
-                                    <div class="lrob-product-card-desc"><?php echo esc_html($product->description); ?></div>
+                                    <div class="lrob-product-card-description">
+                                        <?php echo esc_html($product->description); ?>
+                                    </div>
                                 <?php endif; ?>
 
                                 <?php if (!empty($prices)): ?>
                                     <div class="lrob-product-card-prices">
                                         <?php foreach ($prices as $price): ?>
-                                            <span class="lrob-price <?php echo $price->happy_hour ? 'lrob-price-happy' : ''; ?>">
+                                            <span class="lrob-price">
                                                 <?php if ($price->label): ?>
-                                                    <span class="lrob-price-label"><?php echo esc_html($price->label); ?></span>
+                                                    <span class="lrob-price-label"><?php echo esc_html($price->label); ?>:</span>
                                                 <?php endif; ?>
-                                                <span class="lrob-price-amount"><?php echo number_format($price->price, 2, ',', ' '); ?> €</span>
-                                                <?php if ($price->happy_hour): ?>
+                                                <span class="lrob-price-amount"><?php echo number_format($price->price, 2); ?>€</span>
+                                                <?php if ($price->is_happy_hour): ?>
                                                     <span class="lrob-price-happy-badge">🍹</span>
                                                 <?php endif; ?>
                                             </span>
@@ -187,7 +196,7 @@
         <?php endif; ?>
 
         <?php if (empty($child_categories) && empty($products)): ?>
-            <p class="lrob-empty"><?php _e('Aucun produit ou sous-catégorie ici.', 'lrob-la-carte'); ?></p>
+            <p class="lrob-empty"><?php _e('No products or subcategories here.', 'lrob-la-carte'); ?></p>
         <?php endif; ?>
 
     <?php endif; ?>
@@ -231,7 +240,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="product-name"><?php _e('Nom', 'lrob-la-carte'); ?> *</label></th>
+                    <th><label for="product-name"><?php _e('Product Name', 'lrob-la-carte'); ?> *</label></th>
                     <td><input type="text" id="product-name" class="regular-text" required></td>
                 </tr>
                 <tr>
@@ -244,16 +253,16 @@
                         <div id="product-image-preview"></div>
                         <input type="hidden" id="product-image-id" value="0">
                         <button type="button" class="button" id="product-upload-image"><?php _e('Choose Image', 'lrob-la-carte'); ?></button>
-                        <button type="button" class="button" id="product-remove-image" style="display:none;"><?php _e('Retirer', 'lrob-la-carte'); ?></button>
+                        <button type="button" class="button" id="product-remove-image" style="display:none;"><?php _e('Remove', 'lrob-la-carte'); ?></button>
                     </td>
                 </tr>
                 <tr>
                     <th><label><?php _e('Price', 'lrob-la-carte'); ?></label></th>
                     <td>
-                        <p class="description"><?php _e('Label (optionnel) : spécifiez une variante (ex: "Verre (12cl)", "Pinte", "Bouteille").<br>Les labels déjà utilisés vous seront proposés automatiquement.', 'lrob-la-carte'); ?></p>
+                        <p class="description"><?php _e('Label (optional): specify a variant (e.g. "Glass (12cl)", "Pint", "Bottle"). Previously used labels will be suggested automatically.', 'lrob-la-carte'); ?></p>
                         <div id="product-prices-wrapper">
                             <div class="lrob-price-row">
-                                <input type="text" class="price-label" placeholder="<?php _e('Ex: Verre (12cl)', 'lrob-la-carte'); ?>" list="price-labels-suggestions">
+                                <input type="text" class="price-label" placeholder="<?php _e('E.g. Glass (12cl)', 'lrob-la-carte'); ?>" list="price-labels-suggestions">
                                 <input type="number" class="price-amount" placeholder="0.00" step="0.01" min="0">
                                 <button type="button" class="button lrob-remove-price">−</button>
                             </div>
@@ -292,7 +301,7 @@
                     <td>
                         <select id="product-availability">
                             <option value="available"><?php _e('Available', 'lrob-la-carte'); ?></option>
-                            <option value="unavailable"><?php _e('En rupture', 'lrob-la-carte'); ?></option>
+                            <option value="unavailable"><?php _e('Out of Stock', 'lrob-la-carte'); ?></option>
                         </select>
                     </td>
                 </tr>

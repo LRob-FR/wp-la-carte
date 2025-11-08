@@ -12,10 +12,17 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Script paths - detect automatically
+SCRIPT_NAME="$(basename "$(readlink -f "${BASH_SOURCE[0]}")")"
+SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+PLUGIN_DIR_NAME="$(basename "$SCRIPT_DIR")"
+
 # Configuration
 PLUGIN_SLUG="lrob-la-carte"
-PLUGIN_FILE="${PLUGIN_SLUG}.php"
-LANGUAGES_DIR="languages"
+PLUGIN_FILE="${SCRIPT_DIR}/${PLUGIN_SLUG}.php"
+LANGUAGES_DIR="${SCRIPT_DIR}/languages"
+RELEASES_DIR="${PARENT_DIR}/releases"
 
 # Print colored message
 print_status() {
@@ -92,6 +99,10 @@ check_dependencies() {
 
 # Extract version from plugin file
 get_current_version() {
+    if [ ! -f "$PLUGIN_FILE" ]; then
+        print_error "Plugin file not found: $PLUGIN_FILE"
+        exit 1
+    fi
     grep -oP "Version:\s*\K[\d.]+" "$PLUGIN_FILE"
 }
 
@@ -101,13 +112,13 @@ generate_pot() {
 
     mkdir -p "$LANGUAGES_DIR"
 
-    wp i18n make-pot . "$LANGUAGES_DIR/${PLUGIN_SLUG}.pot" \
+    wp i18n make-pot "$SCRIPT_DIR" "$LANGUAGES_DIR/${PLUGIN_SLUG}.pot" \
         --domain="$PLUGIN_SLUG" \
         --package-name="LRob La Carte" \
         --skip-js
 
     if [ $? -eq 0 ]; then
-        print_success "POT file generated: $LANGUAGES_DIR/${PLUGIN_SLUG}.pot"
+        print_success "POT file generated: ${LANGUAGES_DIR}/${PLUGIN_SLUG}.pot"
     else
         print_error "Failed to generate POT file"
         exit 1
@@ -119,24 +130,32 @@ compile_translations() {
     print_status "Compiling translations (.po → .mo)..."
 
     local compiled=0
+    local po_files_found=0
 
-    for po_file in "$LANGUAGES_DIR"/*.po; do
-        if [ -f "$po_file" ]; then
-            mo_file="${po_file%.po}.mo"
+    # Check if any .po files exist
+    shopt -s nullglob
+    local po_files=("$LANGUAGES_DIR"/*.po)
+    shopt -u nullglob
 
-            msgfmt -o "$mo_file" "$po_file" 2>/dev/null
+    if [ ${#po_files[@]} -eq 0 ]; then
+        print_warning "No .po files found to compile"
+        return 0
+    fi
 
-            if [ $? -eq 0 ]; then
-                print_success "Compiled $(basename "$mo_file")"
-                compiled=$((compiled + 1))
-            else
-                print_error "Failed to compile $(basename "$po_file")"
-            fi
+    for po_file in "${po_files[@]}"; do
+        po_files_found=1
+        mo_file="${po_file%.po}.mo"
+
+        if msgfmt -o "$mo_file" "$po_file" 2>/dev/null; then
+            print_success "Compiled: $(basename "$mo_file")"
+            compiled=$((compiled + 1))
+        else
+            print_error "Failed to compile: $(basename "$po_file")"
         fi
     done
 
-    if [ $compiled -eq 0 ]; then
-        print_warning "No .po files found to compile"
+    if [ $compiled -gt 0 ]; then
+        print_success "Compiled $compiled translation file(s)"
     fi
 }
 
@@ -144,30 +163,38 @@ compile_translations() {
 create_archive() {
     local version=$1
     local archive_name="${PLUGIN_SLUG}-${version}.zip"
+    local archive_path="${RELEASES_DIR}/${archive_name}"
 
     print_status "Creating release archive..."
 
-    mkdir -p ../releases
+    # Create releases directory
+    mkdir -p "$RELEASES_DIR"
 
     # Remove old archive if exists
-    [ -f "../releases/$archive_name" ] && rm "../releases/$archive_name"
+    [ -f "$archive_path" ] && rm "$archive_path"
 
-    # Create zip with proper folder structure, excluding development files
-    cd ..
-    zip -r "releases/$archive_name" \
-        "${PLUGIN_SLUG}/" \
-        -x "${PLUGIN_SLUG}/*.git*" \
-        -x "${PLUGIN_SLUG}/*node_modules*" \
-        -x "${PLUGIN_SLUG}/*.sh" \
-        -x "${PLUGIN_SLUG}/*.po" \
-        -x "${PLUGIN_SLUG}/*.pot" \
-        -x "${PLUGIN_SLUG}/example-export.json" \
-        >/dev/null
-    cd "${PLUGIN_SLUG}"
+    # Create temporary file list
+    local temp_list=$(mktemp)
 
-    if [ $? -eq 0 ]; then
-        local size=$(du -h "../releases/$archive_name" | cut -f1)
-        print_success "Archive created: ../releases/$archive_name ($size)"
+    # Find all files to include, excluding unwanted ones
+    (cd "$PARENT_DIR" && find "$PLUGIN_DIR_NAME" -type f \
+        ! -path "*/.git/*" \
+        ! -path "*/node_modules/*" \
+        ! -name "*.sh" \
+        ! -name "*.po" \
+        ! -name "*.pot" \
+        ! -name "example-export.json" \
+        > "$temp_list")
+
+    # Create zip using the file list
+    (cd "$PARENT_DIR" && zip -q -r "$archive_path" -@ < "$temp_list")
+    local zip_result=$?
+
+    rm "$temp_list"
+
+    if [ $zip_result -eq 0 ]; then
+        local size=$(du -h "$archive_path" | cut -f1)
+        print_success "Archive created: ${RELEASES_DIR}/${archive_name} ($size)"
     else
         print_error "Failed to create archive"
         exit 1
@@ -177,9 +204,13 @@ create_archive() {
 # Main script
 main() {
     echo ""
-    echo "╔════════════════════════════════════════╗"
+    echo "╔═══════════════════════════════════════╗"
     echo "║   LRob La Carte - Release Builder     ║"
-    echo "╚════════════════════════════════════════╝"
+    echo "╚═══════════════════════════════════════╝"
+    echo ""
+
+    print_status "Script directory: $SCRIPT_DIR"
+    print_status "Releases directory: $RELEASES_DIR"
     echo ""
 
     # Check dependencies first
@@ -199,7 +230,7 @@ main() {
     print_success "Release $VERSION completed successfully! 🎉"
     echo ""
     echo "Next steps:"
-    echo "  1. Test the plugin: unzip ../releases/${PLUGIN_SLUG}-${VERSION}.zip"
+    echo "  1. Test the plugin: unzip ${RELEASES_DIR}/${PLUGIN_SLUG}-${VERSION}.zip"
     echo "  2. Upload to WordPress"
     echo ""
 }

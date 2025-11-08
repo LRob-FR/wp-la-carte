@@ -33,10 +33,15 @@ class LRob_La_Carte {
     private function __construct() {
         register_activation_hook(__FILE__, array('LRob_Carte_Database', 'create_tables'));
 
+        add_action('plugins_loaded', array($this, 'load_textdomain'));
         add_action('init', array($this, 'init'));
         add_action('admin_init', array($this, 'check_database_version'));
         add_action('admin_enqueue_scripts', array($this, 'admin_assets'));
         add_action('wp_enqueue_scripts', array($this, 'frontend_assets'));
+    }
+
+    public function load_textdomain() {
+        load_plugin_textdomain('lrob-la-carte', false, dirname(plugin_basename(__FILE__)) . '/languages');
     }
 
     public function check_database_version() {
@@ -69,7 +74,7 @@ class LRob_La_Carte {
             'lrob-carte-block-editor',
             LROB_CARTE_URL . 'blocks/menu-display/index.js',
             array('wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n'),
-                          LROB_CARTE_VERSION
+            LROB_CARTE_VERSION
         );
 
         $categories = LRob_Carte_Database::get_categories();
@@ -90,7 +95,7 @@ class LRob_La_Carte {
             'lrob-carte-block-editor-style',
             LROB_CARTE_URL . 'blocks/menu-display/style.css',
             array(),
-                         LROB_CARTE_VERSION
+            LROB_CARTE_VERSION
         );
     }
 
@@ -115,7 +120,7 @@ class LRob_La_Carte {
 
         wp_localize_script('lrob-carte-admin', 'lrobCarte', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-                                                                  'nonce' => wp_create_nonce('lrob_carte_nonce')
+            'nonce' => wp_create_nonce('lrob_carte_nonce')
         ));
     }
 

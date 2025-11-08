@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-11-07T23:39:38+00:00\n"
+"POT-Creation-Date: 2025-11-08T00:43:43+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: lrob-la-carte\n"
@@ -60,19 +60,19 @@ msgid "Disabled"
 msgstr ""
 
 #: admin/views/categories.php:70
-msgid "Remonter d'un niveau"
+msgid "Move up one level"
 msgstr ""
 
 #: admin/views/categories.php:71
-msgid "Niveau sup."
+msgid "Parent level"
 msgstr ""
 
 #: admin/views/categories.php:75
-msgid "Descendre d'un niveau"
+msgid "Move down one level"
 msgstr ""
 
 #: admin/views/categories.php:76
-msgid "Sous-catégorie"
+msgid "Subcategory"
 msgstr ""
 
 #: admin/views/categories.php:80
@@ -84,16 +84,15 @@ msgid "Enable"
 msgstr ""
 
 #: admin/views/categories.php:83
-msgid "Modifier"
+msgid "Edit"
 msgstr ""
 
 #: admin/views/categories.php:86
-msgid "Supprimer"
+msgid "Delete"
 msgstr ""
 
 #: admin/views/categories.php:113
-#: admin/views/products.php:234
-msgid "Nom"
+msgid "Name"
 msgstr ""
 
 #: admin/views/categories.php:117
@@ -105,15 +104,15 @@ msgid "Parent Category"
 msgstr ""
 
 #: admin/views/categories.php:124
-msgid "Aucune (catégorie principale)"
+msgid "None (root category)"
 msgstr ""
 
 #: admin/views/categories.php:129
-msgid "Permet de créer une hiérarchie de catégories (ex: Cocktails sous Boissons)"
+msgid "Create a category hierarchy (e.g. Cocktails under Drinks)"
 msgstr ""
 
 #: admin/views/categories.php:133
-msgid "Statut"
+msgid "Status"
 msgstr ""
 
 #: admin/views/categories.php:137
@@ -121,7 +120,7 @@ msgid "Active category (visible on site)"
 msgstr ""
 
 #: admin/views/categories.php:142
-msgid "Type d'icône"
+msgid "Icon Type"
 msgstr ""
 
 #: admin/views/categories.php:145
@@ -131,30 +130,30 @@ msgstr ""
 
 #: admin/views/categories.php:148
 #: admin/views/categories.php:164
-msgid "Image personnalisée"
+msgid "Custom Image"
 msgstr ""
 
 #: admin/views/categories.php:168
-#: admin/views/products.php:246
+#: admin/views/products.php:255
 msgid "Choose Image"
 msgstr ""
 
 #: admin/views/categories.php:169
-#: admin/views/products.php:247
-msgid "Retirer"
+#: admin/views/products.php:256
+msgid "Remove"
 msgstr ""
 
 #: admin/views/categories.php:170
-msgid "Format recommandé : 64x64px, PNG avec fond transparent"
+msgid "Recommended format: 64x64px, PNG with transparent background"
 msgstr ""
 
 #: admin/views/categories.php:177
-#: admin/views/products.php:302
+#: admin/views/products.php:311
 msgid "Save"
 msgstr ""
 
 #: admin/views/categories.php:178
-#: admin/views/products.php:303
+#: admin/views/products.php:312
 msgid "Cancel"
 msgstr ""
 
@@ -200,14 +199,14 @@ msgid "Les images seront téléchargées depuis leurs URLs."
 msgstr ""
 
 #: admin/views/products.php:2
-#: admin/views/products.php:105
+#: admin/views/products.php:112
 #: includes/class-admin.php:36
 #: includes/class-admin.php:37
 msgid "Products"
 msgstr ""
 
 #: admin/views/products.php:6
-msgid "Aucune catégorie trouvée. Veuillez d'abord créer des catégories."
+msgid "No categories found. Please create categories first."
 msgstr ""
 
 #: admin/views/products.php:33
@@ -219,73 +218,81 @@ msgid "Search for a product..."
 msgstr ""
 
 #: admin/views/products.php:49
-#: admin/views/products.php:199
+#: admin/views/products.php:208
 msgid "Add Product"
 msgstr ""
 
-#: admin/views/products.php:103
-msgid "Tous les produits"
+#: admin/views/products.php:86
+msgid "%s product"
+msgid_plural "%s products"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/views/products.php:110
+msgid "All Products"
 msgstr ""
 
-#: admin/views/products.php:135
-msgid "Rupture"
+#: admin/views/products.php:142
+#: admin/views/products.php:304
+#: blocks/menu-display/render.php:133
+msgid "Out of Stock"
 msgstr ""
 
-#: admin/views/products.php:190
-msgid "Aucun produit ou sous-catégorie ici."
+#: admin/views/products.php:199
+msgid "No products or subcategories here."
 msgstr ""
 
-#: admin/views/products.php:209
+#: admin/views/products.php:218
 msgid "Category"
 msgstr ""
 
-#: admin/views/products.php:212
-#: lrob-la-carte.php:76
+#: admin/views/products.php:221
+#: lrob-la-carte.php:81
 msgid "Choose a category"
 msgstr ""
 
-#: admin/views/products.php:238
+#: admin/views/products.php:243
+msgid "Product Name"
+msgstr ""
+
+#: admin/views/products.php:247
 msgid "Description"
 msgstr ""
 
-#: admin/views/products.php:242
+#: admin/views/products.php:251
 msgid "Image"
 msgstr ""
 
-#: admin/views/products.php:251
+#: admin/views/products.php:260
 msgid "Price"
 msgstr ""
 
-#: admin/views/products.php:253
-msgid "Label (optionnel) : spécifiez une variante (ex: \"Verre (12cl)\", \"Pinte\", \"Bouteille\").<br>Les labels déjà utilisés vous seront proposés automatiquement."
-msgstr ""
-
-#: admin/views/products.php:256
-msgid "Ex: Verre (12cl)"
-msgstr ""
-
-#: admin/views/products.php:261
-msgid "Add Price"
+#: admin/views/products.php:262
+msgid "Label (optional): specify a variant (e.g. \"Glass (12cl)\", \"Pint\", \"Bottle\"). Previously used labels will be suggested automatically."
 msgstr ""
 
 #: admin/views/products.php:265
+msgid "E.g. Glass (12cl)"
+msgstr ""
+
+#: admin/views/products.php:270
+msgid "Add Price"
+msgstr ""
+
+#: admin/views/products.php:274
 msgid "Allergens"
 msgstr ""
 
-#: admin/views/products.php:278
+#: admin/views/products.php:287
 msgid "Badges"
 msgstr ""
 
-#: admin/views/products.php:291
+#: admin/views/products.php:300
 msgid "Availability"
 msgstr ""
 
-#: admin/views/products.php:294
+#: admin/views/products.php:303
 msgid "Available"
-msgstr ""
-
-#: admin/views/products.php:295
-msgid "En rupture"
 msgstr ""
 
 #: admin/views/settings.php:2
@@ -307,7 +314,7 @@ msgid "Bar"
 msgstr ""
 
 #: admin/views/settings.php:22
-msgid "Définit les catégories par défaut. Changer de mode ajoutera automatiquement les catégories manquantes."
+msgid "Defines default categories. Changing mode will automatically add missing categories."
 msgstr ""
 
 #: admin/views/settings.php:35
@@ -315,7 +322,7 @@ msgid "Add missing default categories"
 msgstr ""
 
 #: admin/views/settings.php:39
-msgid "Ajoute les catégories manquantes selon le mode actuel sans supprimer les catégories existantes."
+msgid "Adds missing categories according to current mode without deleting existing categories."
 msgstr ""
 
 #: admin/views/settings.php:46
@@ -327,11 +334,11 @@ msgid "Secondary Color"
 msgstr ""
 
 #: admin/views/settings.php:68
-msgid "Affichage des produits en rupture"
+msgid "Out of Stock Display"
 msgstr ""
 
 #: admin/views/settings.php:73
-msgid "Afficher avec badge \"Rupture\""
+msgid "Show with \"Out of Stock\" badge"
 msgstr ""
 
 #: admin/views/settings.php:76
@@ -343,24 +350,20 @@ msgid "Font Awesome"
 msgstr ""
 
 #: admin/views/settings.php:88
-msgid "Font Awesome est installé"
+msgid "Font Awesome is installed"
 msgstr ""
 
 #: admin/views/settings.php:91
-msgid "Télécharger Font Awesome"
+msgid "Download Font Awesome"
 msgstr ""
 
 #: admin/views/settings.php:94
-msgid "Nécessaire si vous utilisez des icônes Font Awesome pour les catégories."
-msgstr ""
-
-#: blocks/menu-display/render.php:133
-msgid "Out of Stock"
+msgid "Required if you use Font Awesome icons for categories."
 msgstr ""
 
 #: includes/class-admin.php:25
 #: includes/class-admin.php:26
-msgid "Menu"
+msgid "La Carte"
 msgstr ""
 
 #: includes/class-admin.php:63

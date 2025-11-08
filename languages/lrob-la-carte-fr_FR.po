@@ -20,7 +20,7 @@ msgid "Menu manager for bars and restaurants"
 msgstr "Gestionnaire de carte pour bars et restaurants"
 
 #: includes/class-admin.php
-msgid "Menu"
+msgid "La Carte"
 msgstr "La Carte"
 
 msgid "Products"
@@ -53,6 +53,17 @@ msgstr "Rechercher un produit..."
 
 msgid "Choose a category"
 msgstr "Choisir une catégorie"
+
+msgid "%s product"
+msgid_plural "%s products"
+msgstr[0] "%s produit"
+msgstr[1] "%s produits"
+
+msgid "All Products"
+msgstr "Tous les produits"
+
+msgid "No products or subcategories here."
+msgstr "Aucun produit ou sous-catégorie ici."
 
 #: admin/views/categories.php
 msgid "Add Category"
@@ -87,6 +98,48 @@ msgstr "Activer"
 
 msgid "Active category (visible on site)"
 msgstr "Catégorie active (visible sur le site)"
+
+msgid "Move up one level"
+msgstr "Remonter d'un niveau"
+
+msgid "Parent level"
+msgstr "Niveau parent"
+
+msgid "Move down one level"
+msgstr "Descendre d'un niveau"
+
+msgid "Subcategory"
+msgstr "Sous-catégorie"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "None (root category)"
+msgstr "Aucune (catégorie racine)"
+
+msgid "Create a category hierarchy (e.g. Cocktails under Drinks)"
+msgstr "Permet de créer une hiérarchie de catégories (ex: Cocktails sous Boissons)"
+
+msgid "Icon Type"
+msgstr "Type d'icône"
+
+msgid "Custom Image"
+msgstr "Image personnalisée"
+
+msgid "Remove"
+msgstr "Retirer"
+
+msgid "Recommended format: 64x64px, PNG with transparent background"
+msgstr "Format recommandé : 64x64px, PNG avec fond transparent"
 
 #: includes/class-admin.php
 msgid "Settings saved."
@@ -241,6 +294,12 @@ msgstr "Happy Hour"
 msgid "Add Price"
 msgstr "Ajouter un prix"
 
+msgid "Label (optional): specify a variant (e.g. \"Glass (12cl)\", \"Pint\", \"Bottle\"). Previously used labels will be suggested automatically."
+msgstr "Label (optionnel) : spécifiez une variante (ex: \"Verre (12cl)\", \"Pinte\", \"Bouteille\"). Les labels déjà utilisés vous seront proposés automatiquement."
+
+msgid "E.g. Glass (12cl)"
+msgstr "Ex: Verre (12cl)"
+
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -256,12 +315,6 @@ msgstr "Slug"
 
 msgid "Parent Category"
 msgstr "Catégorie parente"
-
-msgid "None (root category)"
-msgstr "Aucune (catégorie racine)"
-
-msgid "Icon Type"
-msgstr "Type d'icône"
 
 msgid "Emoji"
 msgstr "Emoji"
@@ -469,3 +522,22 @@ msgstr "Erreur lors de l'enregistrement"
 
 msgid "Cannot create a subcategory here"
 msgstr "Impossible de créer une sous-catégorie ici"
+
+#: admin/views/settings.php
+msgid "Defines default categories. Changing mode will automatically add missing categories."
+msgstr "Définit les catégories par défaut. Changer de mode ajoutera automatiquement les catégories manquantes."
+
+msgid "Adds missing categories according to current mode without deleting existing categories."
+msgstr "Ajoute les catégories manquantes selon le mode actuel sans supprimer les catégories existantes."
+
+msgid "Show with \"Out of Stock\" badge"
+msgstr "Afficher avec badge \"Rupture\""
+
+msgid "Font Awesome is installed"
+msgstr "Font Awesome est installé"
+
+msgid "Download Font Awesome"
+msgstr "Télécharger Font Awesome"
+
+msgid "Required if you use Font Awesome icons for categories."
+msgstr "Nécessaire si vous utilisez des icônes Font Awesome pour les catégories."

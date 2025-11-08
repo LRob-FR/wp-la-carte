@@ -22,49 +22,49 @@ class LRob_Carte_Admin {
 
     public function add_menu_pages() {
         add_menu_page(
-            __('Menu', 'lrob-la-carte'),
-                      __('Menu', 'lrob-la-carte'),
-                      'manage_options',
-                      'lrob-carte',
-                      array($this, 'render_products_page'),
-                      'dashicons-food',
-                      30
+            __('La Carte', 'lrob-la-carte'),
+            __('La Carte', 'lrob-la-carte'),
+            'manage_options',
+            'lrob-carte',
+            array($this, 'render_products_page'),
+            'dashicons-food',
+            30
         );
 
         add_submenu_page(
             'lrob-carte',
             __('Products', 'lrob-la-carte'),
-                         __('Products', 'lrob-la-carte'),
-                         'manage_options',
-                         'lrob-carte',
-                         array($this, 'render_products_page')
+            __('Products', 'lrob-la-carte'),
+            'manage_options',
+            'lrob-carte',
+            array($this, 'render_products_page')
         );
 
         add_submenu_page(
             'lrob-carte',
             __('Categories', 'lrob-la-carte'),
-                         __('Categories', 'lrob-la-carte'),
-                         'manage_options',
-                         'lrob-carte-categories',
-                         array($this, 'render_categories_page')
+            __('Categories', 'lrob-la-carte'),
+            'manage_options',
+            'lrob-carte-categories',
+            array($this, 'render_categories_page')
         );
 
         add_submenu_page(
             'lrob-carte',
             __('Settings', 'lrob-la-carte'),
-                         __('Settings', 'lrob-la-carte'),
-                         'manage_options',
-                         'lrob-carte-settings',
-                         array($this, 'render_settings_page')
+            __('Settings', 'lrob-la-carte'),
+            'manage_options',
+            'lrob-carte-settings',
+            array($this, 'render_settings_page')
         );
 
         add_submenu_page(
             'lrob-carte',
             __('Import/Export', 'lrob-la-carte'),
-                         __('Import/Export', 'lrob-la-carte'),
-                         'manage_options',
-                         'lrob-carte-import-export',
-                         array($this, 'render_import_export_page')
+            __('Import/Export', 'lrob-la-carte'),
+            'manage_options',
+            'lrob-carte-import-export',
+            array($this, 'render_import_export_page')
         );
     }
 
@@ -154,12 +154,12 @@ class LRob_Carte_Admin {
 
         $data = array(
             'parent_id' => isset($_POST['parent_id']) ? intval($_POST['parent_id']) : 0,
-                      'name' => sanitize_text_field($_POST['name']),
-                      'slug' => !empty($_POST['slug']) ? sanitize_title($_POST['slug']) : sanitize_title($_POST['name']),
-                      'icon_type' => in_array($_POST['icon_type'], array('emoji', 'fontawesome')) ? $_POST['icon_type'] : 'emoji',
-                      'icon_value' => sanitize_text_field($_POST['icon_value']),
-                      'position' => isset($_POST['position']) ? intval($_POST['position']) : 0,
-                      'active' => isset($_POST['active']) ? intval($_POST['active']) : 1
+            'name' => sanitize_text_field($_POST['name']),
+            'slug' => !empty($_POST['slug']) ? sanitize_title($_POST['slug']) : sanitize_title($_POST['name']),
+            'icon_type' => in_array($_POST['icon_type'], array('emoji', 'fontawesome')) ? $_POST['icon_type'] : 'emoji',
+            'icon_value' => sanitize_text_field($_POST['icon_value']),
+            'position' => isset($_POST['position']) ? intval($_POST['position']) : 0,
+            'active' => isset($_POST['active']) ? intval($_POST['active']) : 1
         );
 
         if (isset($_POST['id']) && $_POST['id']) {
@@ -260,9 +260,9 @@ class LRob_Carte_Admin {
         $result = $wpdb->update(
             $wpdb->prefix . 'lrob_categories',
             array('active' => $new_active),
-                                array('id' => $id),
-                                array('%d'),
-                                array('%d')
+            array('id' => $id),
+            array('%d'),
+            array('%d')
         );
 
         // $result peut être 0 (aucune ligne modifiée car valeur identique) ou false (erreur SQL)
@@ -272,8 +272,8 @@ class LRob_Carte_Admin {
 
         wp_send_json_success(array(
             'message' => $new_active ? __('Category enabled', 'lrob-la-carte') : __('Category disabled', 'lrob-la-carte'),
-                                   'new_active' => $new_active,
-                                   'rows_affected' => $result
+            'new_active' => $new_active,
+            'rows_affected' => $result
         ));
     }
 
@@ -295,11 +295,11 @@ class LRob_Carte_Admin {
                 $wpdb->prefix . 'lrob_categories',
                 array(
                     'parent_id' => intval($update['parent_id']),
-                      'position' => intval($update['position'])
+                    'position' => intval($update['position'])
                 ),
                 array('id' => intval($update['id'])),
-                          array('%d', '%d'),
-                          array('%d')
+                array('%d', '%d'),
+                array('%d')
             );
         }
 
@@ -341,9 +341,9 @@ class LRob_Carte_Admin {
         $result = $wpdb->update(
             $wpdb->prefix . 'lrob_categories',
             array('parent_id' => $parent_id),
-                                array('id' => $id),
-                                array('%d'),
-                                array('%d')
+            array('id' => $id),
+            array('%d'),
+            array('%d')
         );
 
         if ($result === false) {
@@ -370,18 +370,18 @@ class LRob_Carte_Admin {
 
         $allowed_availability = array('available', 'out_of_stock', 'temporary');
         $availability = isset($_POST['availability']) && in_array($_POST['availability'], $allowed_availability)
-        ? $_POST['availability']
-        : 'available';
+            ? $_POST['availability']
+            : 'available';
 
         $data = array(
             'category_id' => intval($_POST['category_id']),
-                      'name' => sanitize_text_field($_POST['name']),
-                      'description' => sanitize_textarea_field($_POST['description'] ?? ''),
-                      'image_id' => isset($_POST['image_id']) ? intval($_POST['image_id']) : 0,
-                      'allergens' => sanitize_text_field($_POST['allergens'] ?? ''),
-                      'badges' => sanitize_text_field($_POST['badges'] ?? ''),
-                      'availability' => $availability,
-                      'position' => isset($_POST['position']) ? intval($_POST['position']) : 0
+            'name' => sanitize_text_field($_POST['name']),
+            'description' => sanitize_textarea_field($_POST['description'] ?? ''),
+            'image_id' => isset($_POST['image_id']) ? intval($_POST['image_id']) : 0,
+            'allergens' => sanitize_text_field($_POST['allergens'] ?? ''),
+            'badges' => sanitize_text_field($_POST['badges'] ?? ''),
+            'availability' => $availability,
+            'position' => isset($_POST['position']) ? intval($_POST['position']) : 0
         );
 
         if (isset($_POST['id']) && $_POST['id']) {

@@ -11,7 +11,7 @@
 
     <div id="lrob-categories-list" class="lrob-sortable">
         <?php
-        // Organiser les catégories par hiérarchie
+        // Organize categories by hierarchy
         $categories_by_parent = array();
         foreach ($categories as $cat) {
             $parent_id = $cat->parent_id ?? 0;
@@ -21,7 +21,7 @@
             $categories_by_parent[$parent_id][] = $cat;
         }
 
-        // Fonction récursive pour afficher la hiérarchie
+        // Recursive function to display hierarchy
         function display_category_tree($parent_id, $categories_by_parent, $level = 0) {
             if (!isset($categories_by_parent[$parent_id])) return;
 
@@ -67,33 +67,33 @@
 
                 <div class="lrob-category-actions">
                     <?php if ($level > 0): ?>
-                        <button class="button button-small lrob-unindent-category" data-id="<?php echo $cat->id; ?>" title="<?php _e('Remonter d\'un niveau', 'lrob-la-carte'); ?>">
-                            ← <?php _e('Niveau sup.', 'lrob-la-carte'); ?>
+                        <button class="button button-small lrob-unindent-category" data-id="<?php echo $cat->id; ?>" title="<?php _e('Move up one level', 'lrob-la-carte'); ?>">
+                            ← <?php _e('Parent level', 'lrob-la-carte'); ?>
                         </button>
                     <?php endif; ?>
-                    <?php if ($level < 2): // Max 3 niveaux ?>
-                        <button class="button button-small lrob-indent-category" data-id="<?php echo $cat->id; ?>" title="<?php _e('Descendre d\'un niveau', 'lrob-la-carte'); ?>">
-                            → <?php _e('Sous-catégorie', 'lrob-la-carte'); ?>
+                    <?php if ($level < 2): // Max 3 levels ?>
+                        <button class="button button-small lrob-indent-category" data-id="<?php echo $cat->id; ?>" title="<?php _e('Move down one level', 'lrob-la-carte'); ?>">
+                            → <?php _e('Subcategory', 'lrob-la-carte'); ?>
                         </button>
                     <?php endif; ?>
                     <button class="button lrob-toggle-category" data-id="<?php echo $cat->id; ?>" data-active="<?php echo $cat->active; ?>">
                         <?php echo $cat->active ? __('Disable', 'lrob-la-carte') : __('Enable', 'lrob-la-carte'); ?>
                     </button>
                     <button class="button lrob-edit-category" data-id="<?php echo $cat->id; ?>">
-                        <?php _e('Modifier', 'lrob-la-carte'); ?>
+                        <?php _e('Edit', 'lrob-la-carte'); ?>
                     </button>
                     <button class="button lrob-delete-category" data-id="<?php echo $cat->id; ?>">
-                        <?php _e('Supprimer', 'lrob-la-carte'); ?>
+                        <?php _e('Delete', 'lrob-la-carte'); ?>
                     </button>
                 </div>
             </div>
             <?php
-                // Afficher récursivement les enfants
+                // Display children recursively
                 display_category_tree($cat->id, $categories_by_parent, $level + 1);
             endforeach;
         }
 
-        // Afficher à partir des catégories racines (parent_id = 0)
+        // Display from root categories (parent_id = 0)
         display_category_tree(0, $categories_by_parent);
         ?>
     </div>
@@ -110,7 +110,7 @@
 
             <table class="form-table">
                 <tr>
-                    <th><label for="category-name"><?php _e('Nom', 'lrob-la-carte'); ?> *</label></th>
+                    <th><label for="category-name"><?php _e('Name', 'lrob-la-carte'); ?> *</label></th>
                     <td><input type="text" id="category-name" class="regular-text" required></td>
                 </tr>
                 <tr>
@@ -121,16 +121,16 @@
                     <th><label for="category-parent"><?php _e('Parent Category', 'lrob-la-carte'); ?></label></th>
                     <td>
                         <select id="category-parent" class="regular-text">
-                            <option value="0"><?php _e('Aucune (catégorie principale)', 'lrob-la-carte'); ?></option>
+                            <option value="0"><?php _e('None (root category)', 'lrob-la-carte'); ?></option>
                             <?php foreach ($categories as $cat): ?>
                                 <option value="<?php echo $cat->id; ?>"><?php echo esc_html($cat->name); ?></option>
                             <?php endforeach; ?>
                         </select>
-                        <p class="description"><?php _e('Permet de créer une hiérarchie de catégories (ex: Cocktails sous Boissons)', 'lrob-la-carte'); ?></p>
+                        <p class="description"><?php _e('Create a category hierarchy (e.g. Cocktails under Drinks)', 'lrob-la-carte'); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="category-active"><?php _e('Statut', 'lrob-la-carte'); ?></label></th>
+                    <th><label for="category-active"><?php _e('Status', 'lrob-la-carte'); ?></label></th>
                     <td>
                         <label>
                             <input type="checkbox" id="category-active" value="1" checked>
@@ -139,13 +139,13 @@
                     </td>
                 </tr>
                 <tr>
-                    <th><label><?php _e('Type d\'icône', 'lrob-la-carte'); ?></label></th>
+                    <th><label><?php _e('Icon Type', 'lrob-la-carte'); ?></label></th>
                     <td>
                         <label>
                             <input type="radio" name="icon-type" value="emoji" checked> <?php _e('Emoji', 'lrob-la-carte'); ?>
                         </label>
                         <label>
-                            <input type="radio" name="icon-type" value="image"> <?php _e('Image personnalisée', 'lrob-la-carte'); ?>
+                            <input type="radio" name="icon-type" value="image"> <?php _e('Custom Image', 'lrob-la-carte'); ?>
                         </label>
                     </td>
                 </tr>
@@ -161,13 +161,13 @@
                     </td>
                 </tr>
                 <tr id="icon-image-row" style="display:none;">
-                    <th><label><?php _e('Image personnalisée', 'lrob-la-carte'); ?></label></th>
+                    <th><label><?php _e('Custom Image', 'lrob-la-carte'); ?></label></th>
                     <td>
                         <input type="hidden" id="category-icon-image-id" value="">
                         <div id="category-icon-image-preview" style="margin-bottom: 10px;"></div>
                         <button type="button" class="button" id="category-upload-icon-image"><?php _e('Choose Image', 'lrob-la-carte'); ?></button>
-                        <button type="button" class="button" id="category-remove-icon-image" style="display:none;"><?php _e('Retirer', 'lrob-la-carte'); ?></button>
-                        <p class="description"><?php _e('Format recommandé : 64x64px, PNG avec fond transparent', 'lrob-la-carte'); ?></p>
+                        <button type="button" class="button" id="category-remove-icon-image" style="display:none;"><?php _e('Remove', 'lrob-la-carte'); ?></button>
+                        <p class="description"><?php _e('Recommended format: 64x64px, PNG with transparent background', 'lrob-la-carte'); ?></p>
                     </td>
                 </tr>
                 </tr>
