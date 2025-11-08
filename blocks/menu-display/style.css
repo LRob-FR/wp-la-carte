@@ -93,7 +93,6 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    font-size: 32px;
     font-weight: 700;
     margin-bottom: 15px;
     padding-bottom: 15px;
@@ -108,6 +107,14 @@
     gap: 8px;
     flex-wrap: wrap;
     margin-top: 15px;
+}
+
+.lrob-level-2-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    padding-left: 20px;
 }
 
 .lrob-subcategory-badge {
@@ -150,37 +157,30 @@
     display: none;
 }
 
+.lrob-carte-subcategory:first-child {
+    margin-top: 0;
+}
+
 .lrob-carte-subcategory-title {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 24px;
     font-weight: 600;
     margin-bottom: 20px;
     color: inherit;
     opacity: 0.8;
 }
 
+/* Nested subcategories indentation */
+.lrob-carte-subcategory .lrob-carte-subcategories-container {
+    margin-top: 20px;
+    margin-left: 30px;
+    padding-left: 20px;
+    border-left: 2px solid var(--lrob-border-color);
+}
+
 .lrob-carte-category-icon {
     font-size: 36px;
-}
-
-/* Subcategory */
-.lrob-carte-subcategory {
-    margin-top: 40px;
-}
-
-.lrob-carte-subcategory-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--lrob-border-color);
-    opacity: 0.75;
-    color: inherit;
 }
 
 /* Products grid */
@@ -190,18 +190,25 @@
     gap: var(--lrob-card-gap);
 }
 
+/* Subcategories wrapper */
+.lrob-carte-subcategories-wrapper {
+    margin-top: 20px;
+}
+
 @media (max-width: 768px) {
     .lrob-carte-products {
         grid-template-columns: repeat(var(--lrob-cols-mobile), 1fr);
     }
 
-    .lrob-carte-category-title {
-        font-size: 24px;
-    }
-
     .lrob-carte-nav-item {
         font-size: 14px;
         padding: 10px 18px;
+    }
+
+    /* Reduce indentation on mobile */
+    .lrob-carte-subcategory .lrob-carte-subcategories-container {
+        margin-left: 15px;
+        padding-left: 15px;
     }
 }
 
@@ -255,7 +262,6 @@
 }
 
 .lrob-layout-compact .lrob-carte-product-name {
-    font-size: 18px;
     font-weight: 700;
     margin: 0;
     color: inherit;
@@ -308,7 +314,6 @@
 }
 
 .lrob-layout-classic .lrob-carte-product-name {
-    font-size: 20px;
     font-weight: 700;
     margin: 0 0 12px 0;
     color: inherit;
@@ -474,22 +479,6 @@
         width: 100%;
         height: 200px;
     }
-
-    .lrob-layout-compact .lrob-carte-product-header {
-        grid-template-columns: 1fr;
-    }
-
-    .lrob-layout-compact .lrob-carte-product-prices {
-        grid-column: 1;
-        grid-row: 2;
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: flex-start;
-    }
-
-    .lrob-layout-compact .lrob-carte-price {
-        text-align: left;
-    }
 }
 
 /* Happy Hour styles for frontend */
@@ -531,25 +520,6 @@
 
 .lrob-carte-child-category {
     margin-top: 24px;
-    margin-left: 20px;
-    padding-left: 20px;
-    border-left: 3px solid var(--lrob-accent-color, #2271b1);
-}
-
-.lrob-carte-child-category[data-level="1"] {
-    margin-left: 20px;
-}
-
-.lrob-carte-child-category[data-level="2"] {
-    margin-left: 40px;
-}
-
-.lrob-carte-child-category[data-level="3"] {
-    margin-left: 60px;
-}
-
-.lrob-carte-subcategories-container {
-    margin-top: 20px;
 }
 
 .lrob-subcategory-badge {

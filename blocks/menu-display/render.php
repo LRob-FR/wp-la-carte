@@ -55,61 +55,35 @@ if ($badge_text_color) $inline_style .= " --lrob-badge-text: {$badge_text_color}
 
 $parent_categories = $categories_by_parent[0] ?? array();
 
-if (!function_exists('lrob_render_category_drill_down')) {
-	function lrob_render_category_drill_down($category, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, $level = 0) {
+if (!function_exists('lrob_render_subcategory_section')) {
+	function lrob_render_subcategory_section($category, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, $level = 1) {
 		$has_children = isset($categories_by_parent[$category->id]) && !empty($categories_by_parent[$category->id]);
 		$direct_products = LRob_Carte_Database::get_products($category->id);
+		$all_products = LRob_Carte_Database::get_products_recursive($category->id);
 
-		if (empty($direct_products) && !$has_children) return;
+		// Hide categories with no products (direct or in descendants)
+		if (empty($all_products) && !$has_children) return;
+		if (empty($all_products)) return;
 
-		$is_root = $level === 0;
 		?>
-		<div class="lrob-carte-category <?php echo $is_root ? 'lrob-carte-root-category' : 'lrob-carte-child-category'; ?>"
-			 data-category-id="<?php echo $category->id; ?>"
-			 data-level="<?php echo $level; ?>">
-
-			<div class="lrob-carte-category-header">
-				<h<?php echo min($level + 2, 6); ?> class="lrob-carte-category-title">
-					<span class="lrob-carte-category-icon">
-						<?php
-						if ($category->icon_type === 'emoji') {
-							echo esc_html($category->icon_value);
-						} elseif ($category->icon_type === 'image' && $category->icon_value) {
-							echo wp_get_attachment_image($category->icon_value, array(32, 32));
-						} else {
-							echo '<i class="' . esc_attr($category->icon_value) . '"></i>';
-						}
-						?>
-					</span>
-					<?php echo esc_html($category->name); ?>
-				</h<?php echo min($level + 2, 6); ?>>
-			</div>
-
-			<?php if ($has_children): ?>
-				<div class="lrob-carte-subcategory-filters" data-parent-category="<?php echo $category->id; ?>">
-					<?php foreach ($categories_by_parent[$category->id] as $child_cat): ?>
-						<button class="lrob-subcategory-badge"
-								data-subcategory="<?php echo $child_cat->id; ?>"
-								data-parent="<?php echo $category->id; ?>">
-							<span class="lrob-subcategory-badge-icon">
-								<?php
-								if ($child_cat->icon_type === 'emoji') {
-									echo esc_html($child_cat->icon_value);
-								} elseif ($child_cat->icon_type === 'image' && $child_cat->icon_value) {
-									echo wp_get_attachment_image($child_cat->icon_value, array(16, 16));
-								} else {
-									echo '<i class="' . esc_attr($child_cat->icon_value) . '"></i>';
-								}
-								?>
-							</span>
-							<?php echo esc_html($child_cat->name); ?>
-						</button>
-					<?php endforeach; ?>
-				</div>
-			<?php endif; ?>
+		<div class="lrob-carte-subcategory" data-subcategory-id="<?php echo $category->id; ?>" data-level="<?php echo $level; ?>">
+			<h<?php echo min($level + 3, 6); ?> class="lrob-carte-subcategory-title">
+				<span class="lrob-carte-category-icon">
+					<?php
+					if ($category->icon_type === 'emoji') {
+						echo esc_html($category->icon_value);
+					} elseif ($category->icon_type === 'image' && $category->icon_value) {
+						echo wp_get_attachment_image($category->icon_value, array(24, 24));
+					} else {
+						echo '<i class="' . esc_attr($category->icon_value) . '"></i>';
+					}
+					?>
+				</span>
+				<?php echo esc_html($category->name); ?>
+			</h<?php echo min($level + 3, 6); ?>>
 
 			<?php if (!empty($direct_products)): ?>
-				<div class="lrob-carte-products" data-category-products="<?php echo $category->id; ?>">
+				<div class="lrob-carte-products">
 					<?php foreach ($direct_products as $product):
 						if ($product->availability !== 'available' && $out_of_stock_display === 'hide') continue;
 
@@ -179,10 +153,129 @@ if (!function_exists('lrob_render_category_drill_down')) {
 			<?php endif; ?>
 
 			<?php if ($has_children): ?>
-				<div class="lrob-carte-subcategories-container" data-parent="<?php echo $category->id; ?>">
+				<div class="lrob-carte-subcategories-container" data-parent-id="<?php echo $category->id; ?>">
 					<?php
 					foreach ($categories_by_parent[$category->id] as $child_cat) {
-						lrob_render_category_drill_down($child_cat, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, $level + 1);
+						lrob_render_subcategory_section($child_cat, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, $level + 1);
+					}
+					?>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+}
+
+if (!function_exists('lrob_render_category_drill_down')) {
+	function lrob_render_category_drill_down($category, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, $level = 0) {
+		$has_children = isset($categories_by_parent[$category->id]) && !empty($categories_by_parent[$category->id]);
+		$all_products = LRob_Carte_Database::get_products_recursive($category->id);
+
+		if (empty($all_products) && !$has_children) return;
+
+		$is_root = $level === 0;
+		?>
+		<div class="lrob-carte-category <?php echo $is_root ? 'lrob-carte-root-category' : 'lrob-carte-child-category'; ?>"
+			 data-category-id="<?php echo $category->id; ?>"
+			 data-level="<?php echo $level; ?>">
+
+			<div class="lrob-carte-category-header">
+				<h<?php echo min($level + 2, 6); ?> class="lrob-carte-category-title">
+					<span class="lrob-carte-category-icon">
+						<?php
+						if ($category->icon_type === 'emoji') {
+							echo esc_html($category->icon_value);
+						} elseif ($category->icon_type === 'image' && $category->icon_value) {
+							echo wp_get_attachment_image($category->icon_value, array(32, 32));
+						} else {
+							echo '<i class="' . esc_attr($category->icon_value) . '"></i>';
+						}
+						?>
+					</span>
+					<?php echo esc_html($category->name); ?>
+				</h<?php echo min($level + 2, 6); ?>>
+
+				<?php if ($has_children): ?>
+					<!-- Level 1 subcategory badges -->
+					<div class="lrob-subcategory-filters lrob-level-1-filters" data-parent-id="<?php echo $category->id; ?>" data-filter-level="1">
+						<?php foreach ($categories_by_parent[$category->id] as $child_cat):
+							// Only show badge if category has products
+							$child_products = LRob_Carte_Database::get_products_recursive($child_cat->id);
+							if (empty($child_products)) continue;
+						?>
+							<button class="lrob-subcategory-badge"
+									data-subcategory-id="<?php echo $child_cat->id; ?>"
+									data-parent-id="<?php echo $category->id; ?>"
+									data-filter-level="1">
+								<span class="lrob-subcategory-badge-icon">
+									<?php
+									if ($child_cat->icon_type === 'emoji') {
+										echo esc_html($child_cat->icon_value);
+									} elseif ($child_cat->icon_type === 'image' && $child_cat->icon_value) {
+										echo wp_get_attachment_image($child_cat->icon_value, array(16, 16));
+									} else {
+										echo '<i class="' . esc_attr($child_cat->icon_value) . '"></i>';
+									}
+									?>
+								</span>
+								<?php echo esc_html($child_cat->name); ?>
+							</button>
+						<?php endforeach; ?>
+					</div>
+
+					<!-- Level 2 subcategory badges (initially hidden, shown when level 1 is selected) -->
+					<?php foreach ($categories_by_parent[$category->id] as $child_cat):
+						if (!isset($categories_by_parent[$child_cat->id]) || empty($categories_by_parent[$child_cat->id])) continue;
+
+						// Check if any grandchildren have products
+						$has_products_in_grandchildren = false;
+						foreach ($categories_by_parent[$child_cat->id] as $grandchild_cat) {
+							$grandchild_products = LRob_Carte_Database::get_products_recursive($grandchild_cat->id);
+							if (!empty($grandchild_products)) {
+								$has_products_in_grandchildren = true;
+								break;
+							}
+						}
+						if (!$has_products_in_grandchildren) continue;
+					?>
+						<div class="lrob-subcategory-filters lrob-level-2-filters"
+							 data-parent-id="<?php echo $child_cat->id; ?>"
+							 data-filter-level="2"
+							 style="display: none;">
+							<?php foreach ($categories_by_parent[$child_cat->id] as $grandchild_cat):
+								// Only show badge if category has products
+								$grandchild_products = LRob_Carte_Database::get_products_recursive($grandchild_cat->id);
+								if (empty($grandchild_products)) continue;
+							?>
+								<button class="lrob-subcategory-badge"
+										data-subcategory-id="<?php echo $grandchild_cat->id; ?>"
+										data-parent-id="<?php echo $child_cat->id; ?>"
+										data-filter-level="2">
+									<span class="lrob-subcategory-badge-icon">
+										<?php
+										if ($grandchild_cat->icon_type === 'emoji') {
+											echo esc_html($grandchild_cat->icon_value);
+										} elseif ($grandchild_cat->icon_type === 'image' && $grandchild_cat->icon_value) {
+											echo wp_get_attachment_image($grandchild_cat->icon_value, array(16, 16));
+										} else {
+											echo '<i class="' . esc_attr($grandchild_cat->icon_value) . '"></i>';
+										}
+										?>
+									</span>
+									<?php echo esc_html($grandchild_cat->name); ?>
+								</button>
+							<?php endforeach; ?>
+						</div>
+					<?php endforeach; ?>
+				<?php endif; ?>
+			</div>
+
+			<!-- Subcategories with their products -->
+			<?php if ($has_children): ?>
+				<div class="lrob-carte-subcategories-wrapper" data-root-category-id="<?php echo $category->id; ?>">
+					<?php
+					foreach ($categories_by_parent[$category->id] as $child_cat) {
+						lrob_render_subcategory_section($child_cat, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, 1);
 					}
 					?>
 				</div>
