@@ -1,21 +1,35 @@
-jQuery(document).ready(function($) {
+jQuery(document).ready(function ($) {
 
-    $('.lrob-color-picker').wpColorPicker();
-
-    // Modal management
-    function openModal(modalId) {
-        $('#' + modalId).fadeIn(200);
+    // ---- Helpers ----
+    function toId(val) { return String(val || '').replace(/[^0-9]/g, ''); }
+    function toInt(val, def = 0) { const n = parseInt(val, 10); return isNaN(n) ? def : n; }
+    function isObj(x) { return x && typeof x === 'object'; }
+    function hasAjaxCfg() { return typeof window.lrobCarte === 'object' && lrobCarte.ajaxurl && lrobCarte.nonce; }
+    function safeImg($container, url, opts) {
+        $container.empty();
+        if (!url || typeof url !== 'string') return;
+        // Create <img> via DOM API (prevents attribute injection)
+        const img = document.createElement('img');
+        img.setAttribute('src', url);
+        if (opts && opts.style) img.setAttribute('style', opts.style);
+        $container.append(img);
     }
 
-    function closeModal(modalId) {
-        $('#' + modalId).fadeOut(200);
-    }
+    // Early guard: if missing ajax config, we keep UI actions but avoid broken calls.
+    const ajaxDisabled = !hasAjaxCfg();
 
-    $('.lrob-modal-close').on('click', function() {
+    // ---- WP color pickers ----
+    $('.lrob-color-picker').wpColorPicker && $('.lrob-color-picker').wpColorPicker();
+
+    // ---- Modal management ----
+    function openModal(modalId) { $('#' + modalId).fadeIn(200); }
+    function closeModal(modalId) { $('#' + modalId).fadeOut(200); }
+
+    $('.lrob-modal-close').on('click', function () {
         $(this).closest('.lrob-modal').fadeOut(200);
     });
 
-    $(window).on('click', function(e) {
+    $(window).on('click', function (e) {
         if ($(e.target).hasClass('lrob-modal')) {
             $(e.target).fadeOut(200);
         }
@@ -23,19 +37,20 @@ jQuery(document).ready(function($) {
 
     // ========== PRODUCTS ==========
 
-    $('#lrob-add-product').on('click', function() {
+    $('#lrob-add-product').on('click', function () {
         resetProductForm();
         $('#lrob-modal-title').text('Add Product');
         openModal('lrob-product-modal');
     });
 
     // Synchronize category select with hidden field
-    $(document).on('change', '#product-category-select', function() {
-        $('#product-category').val($(this).val());
+    $(document).on('change', '#product-category-select', function () {
+        $('#product-category').val(toId($(this).val()));
     });
 
-    $('.lrob-edit-product').on('click', function() {
-        var productId = $(this).data('id');
+    $('.lrob-edit-product').on('click', function () {
+        if (ajaxDisabled) return alert('AJAX config missing.');
+        const productId = toId($(this).data('id'));
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -44,21 +59,28 @@ jQuery(document).ready(function($) {
                 action: 'lrob_get_product',
                 nonce: lrobCarte.nonce,
                 id: productId
-            },
-            success: function(response) {
-                if (response.success) {
-                    populateProductForm(response.data.product, response.data.prices);
-                    $('#lrob-modal-title').text('Edit Product');
-                    openModal('lrob-product-modal');
-                }
             }
+        }).done(function (response) {
+            if (response && response.success && isObj(response.data) && isObj(response.data.product)) {
+                const prices = Array.isArray(response.data.prices) ? response.data.prices : [];
+                populateProductForm(response.data.product, prices);
+                $('#lrob-modal-title').text('Edit Product');
+                openModal('lrob-product-modal');
+            } else if (response && response.data && response.data.message) {
+                alert(response.data.message);
+            } else {
+                alert('Unable to load product.');
+            }
+        }).fail(function () {
+            alert('Request failed.');
         });
     });
 
-    $('.lrob-delete-product').on('click', function() {
+    $('.lrob-delete-product').on('click', function () {
+        if (ajaxDisabled) return alert('AJAX config missing.');
         if (!confirm('Are you sure you want to delete this product?')) return;
 
-        var productId = $(this).data('id');
+        const productId = toId($(this).data('id'));
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -67,28 +89,33 @@ jQuery(document).ready(function($) {
                 action: 'lrob_delete_product',
                 nonce: lrobCarte.nonce,
                 id: productId
-            },
-            success: function(response) {
-                if (response.success) {
-                    location.reload();
-                }
             }
+        }).done(function (response) {
+            if (response && response.success) {
+                location.reload();
+            } else if (response && response.data && response.data.message) {
+                alert(response.data.message);
+            } else {
+                alert('Deletion failed.');
+            }
+        }).fail(function () {
+            alert('Request failed.');
         });
     });
 
     // Up/Down buttons for products
-    $('.lrob-move-product-up').on('click', function() {
-        var $item = $(this).closest('.lrob-product-item');
-        var $prev = $item.prev('.lrob-product-item');
+    $('.lrob-move-product-up').on('click', function () {
+        const $item = $(this).closest('.lrob-product-item');
+        const $prev = $item.prev('.lrob-product-item');
         if ($prev.length) {
             $item.insertBefore($prev);
             updateProductPositions();
         }
     });
 
-    $('.lrob-move-product-down').on('click', function() {
-        var $item = $(this).closest('.lrob-product-item');
-        var $next = $item.next('.lrob-product-item');
+    $('.lrob-move-product-down').on('click', function () {
+        const $item = $(this).closest('.lrob-product-item');
+        const $next = $item.next('.lrob-product-item');
         if ($next.length) {
             $item.insertAfter($next);
             updateProductPositions();
@@ -96,10 +123,14 @@ jQuery(document).ready(function($) {
     });
 
     function updateProductPositions() {
-        var positions = [];
-        $('#lrob-products-list .lrob-product-item').each(function(index) {
-            positions.push($(this).data('id'));
+        if (ajaxDisabled) return;
+        const positions = [];
+        $('#lrob-products-list .lrob-product-item').each(function () {
+            positions.push(toId($(this).data('id')));
         });
+
+        // Cap payload to avoid DoS via massive DOM (safety belt; adjust if needed)
+        const capped = positions.slice(0, 1000);
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -108,37 +139,43 @@ jQuery(document).ready(function($) {
                 action: 'lrob_update_positions',
                 nonce: lrobCarte.nonce,
                 table: 'products',
-                positions: positions
+                positions: capped
             }
+        }).fail(function () {
+            alert('Failed to update positions.');
         });
     }
 
-    $('#lrob-product-form').on('submit', function(e) {
+    $('#lrob-product-form').on('submit', function (e) {
         e.preventDefault();
+        if (ajaxDisabled) return alert('AJAX config missing.');
 
-        var allergens = [];
-        $('.allergen-checkbox:checked').each(function() {
-            allergens.push($(this).val());
+        const allergens = [];
+        $('.allergen-checkbox:checked').each(function () {
+            allergens.push(String($(this).val() || '').trim());
         });
 
-        var badges = [];
-        $('.badge-checkbox:checked').each(function() {
-            badges.push($(this).val());
+        const badges = [];
+        $('.badge-checkbox:checked').each(function () {
+            badges.push(String($(this).val() || '').trim());
         });
 
-        var prices = [];
-        $('#product-prices-wrapper .lrob-price-row').each(function() {
-            var label = $(this).find('.price-label').val();
-            var amount = $(this).find('.price-amount').val();
-            var happyHour = $(this).find('.price-happy-hour').is(':checked') ? 1 : 0;
+        const prices = [];
+        $('#product-prices-wrapper .lrob-price-row').each(function () {
+            const label = $(this).find('.price-label').val();
+            const amount = $(this).find('.price-amount').val();
+            const happyHour = $(this).find('.price-happy-hour').is(':checked') ? 1 : 0;
             if (amount) {
                 prices.push({
-                    label: label,
-                    price: amount,
+                    label: String(label || ''),
+                    price: String(amount),
                     happy_hour: happyHour
                 });
             }
         });
+
+        // Cap number of prices to a reasonable limit
+        const pricesCapped = prices.slice(0, 100);
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -146,32 +183,36 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'lrob_save_product',
                 nonce: lrobCarte.nonce,
-                id: $('#product-id').val(),
-                category_id: $('#product-category').val(),
+                id: toId($('#product-id').val()),
+                category_id: toId($('#product-category').val()),
                 name: $('#product-name').val(),
                 description: $('#product-description').val(),
-                image_id: $('#product-image-id').val(),
+                image_id: toId($('#product-image-id').val()),
                 allergens: allergens.join(','),
                 badges: badges.join(','),
                 availability: $('#product-availability').val(),
-                position: $('#product-position').val(),
-                prices: prices
-            },
-            success: function(response) {
-                if (response.success) {
-                    location.reload();
-                }
+                position: toId($('#product-position').val()),
+                prices: pricesCapped
             }
+        }).done(function (response) {
+            if (response && response.success) {
+                location.reload();
+            } else if (response && response.data && response.data.message) {
+                alert(response.data.message);
+            } else {
+                alert('Save failed.');
+            }
+        }).fail(function () {
+            alert('Request failed.');
         });
     });
 
-    // Media uploader
-    var mediaUploader;
+    // Media uploader (Product)
+    let mediaUploader;
 
-    $('#product-upload-image').on('click', function(e) {
+    $('#product-upload-image').on('click', function (e) {
         e.preventDefault();
 
-        // Check if wp.media is available
         if (typeof wp === 'undefined' || typeof wp.media === 'undefined') {
             alert('WordPress media library is not loaded. Please refresh the page.');
             return;
@@ -188,49 +229,49 @@ jQuery(document).ready(function($) {
             multiple: false
         });
 
-        mediaUploader.on('select', function() {
-            var attachment = mediaUploader.state().get('selection').first().toJSON();
-            $('#product-image-id').val(attachment.id);
-            $('#product-image-preview').html('<img src="' + attachment.url + '">');
+        mediaUploader.on('select', function () {
+            const attachment = mediaUploader.state().get('selection').first().toJSON();
+            $('#product-image-id').val(toId(attachment.id));
+            // Safe DOM injection (no string HTML)
+            safeImg($('#product-image-preview'), attachment.url);
             $('#product-remove-image').show();
         });
 
         mediaUploader.open();
     });
 
-    $('#product-remove-image').on('click', function() {
+    $('#product-remove-image').on('click', function () {
         $('#product-image-id').val('0');
-        $('#product-image-preview').html('');
+        $('#product-image-preview').empty();
         $(this).hide();
     });
 
     // Price management with suggestions
-    var usedPriceLabels = new Set();
+    const usedPriceLabels = new Set();
 
-    // Collect existing labels on page load
     function collectExistingPriceLabels() {
         usedPriceLabels.clear();
-        $('.lrob-price-label').each(function() {
-            var label = $(this).text().trim();
-            if (label) {
-                usedPriceLabels.add(label);
-            }
+        $('.lrob-price-label').each(function () {
+            const label = $(this).text().trim();
+            if (label) usedPriceLabels.add(label);
         });
     }
-
     collectExistingPriceLabels();
 
     function createPriceRow(isHappyHour = false) {
-        var mode = $('#product-mode-hidden').val() || 'restaurant';
-        var happyHourCheckbox = '';
+        const mode = $('#product-mode-hidden').val() || 'restaurant';
+        let happyHourCheckbox = '';
 
         if (mode === 'bar') {
-            happyHourCheckbox = '<label class="lrob-happy-hour-label">' +
+            happyHourCheckbox =
+                '<label class="lrob-happy-hour-label">' +
                 '<input type="checkbox" class="price-happy-hour"' + (isHappyHour ? ' checked' : '') + '> Happy Hour' +
                 '</label>';
         }
 
-        var newRow = '<div class="lrob-price-row' + (isHappyHour ? ' lrob-happy-hour-row' : '') + '">' +
+        // Static HTML (no untrusted data included here)
+        const newRow =
+            '<div class="lrob-price-row' + (isHappyHour ? ' lrob-happy-hour-row' : '') + '">' +
             '<input type="text" class="price-label" placeholder="Ex: Verre (12cl)" list="price-labels-suggestions">' +
             '<input type="number" class="price-amount" placeholder="0.00" step="0.01" min="0">' +
             happyHourCheckbox +
@@ -240,23 +281,19 @@ jQuery(document).ready(function($) {
         return newRow;
     }
 
-    $('#lrob-add-price').on('click', function() {
+    $('#lrob-add-price').on('click', function () {
         $('#product-prices-wrapper').append(createPriceRow());
     });
 
-    $(document).on('click', '.lrob-remove-price', function() {
+    $(document).on('click', '.lrob-remove-price', function () {
         if ($('#product-prices-wrapper .lrob-price-row').length > 1) {
             $(this).closest('.lrob-price-row').remove();
         }
     });
 
-    $(document).on('change', '.price-happy-hour', function() {
-        var $row = $(this).closest('.lrob-price-row');
-        if ($(this).is(':checked')) {
-            $row.addClass('lrob-happy-hour-row');
-        } else {
-            $row.removeClass('lrob-happy-hour-row');
-        }
+    $(document).on('change', '.price-happy-hour', function () {
+        const $row = $(this).closest('.lrob-price-row');
+        $row.toggleClass('lrob-happy-hour-row', $(this).is(':checked'));
     });
 
     function resetProductForm() {
@@ -264,7 +301,7 @@ jQuery(document).ready(function($) {
         $('#product-name').val('');
         $('#product-description').val('');
         $('#product-image-id').val('0');
-        $('#product-image-preview').html('');
+        $('#product-image-preview').empty();
         $('#product-remove-image').hide();
         $('#product-availability').val('available');
         $('.allergen-checkbox').prop('checked', false);
@@ -273,47 +310,46 @@ jQuery(document).ready(function($) {
     }
 
     function populateProductForm(product, prices) {
-        $('#product-id').val(product.id);
-        $('#product-category').val(product.category_id);
-        $('#product-category-select').val(product.category_id);
-        $('#product-name').val(product.name);
+        if (!isObj(product)) return;
+        $('#product-id').val(toId(product.id));
+        $('#product-category').val(toId(product.category_id));
+        $('#product-category-select').val(toId(product.category_id));
+        $('#product-name').val(product.name || '');
         $('#product-description').val(product.description || '');
         $('#product-availability').val(product.availability || 'available');
-        $('#product-position').val(product.position || 0);
+        $('#product-position').val(toInt(product.position, 0));
 
-        // Handle image - show image and remove button if image_url exists and is not empty
-        if (product.image_url && product.image_url !== '') {
-            $('#product-image-id').val(product.image_id || 0);
-            $('#product-image-preview').html('<img src="' + product.image_url + '" style="max-width: 200px; border-radius: 4px;">');
+        // Image preview safely
+        if (product.image_url) {
+            $('#product-image-id').val(toId(product.image_id || 0));
+            safeImg($('#product-image-preview'), String(product.image_url), { style: 'max-width: 200px; border-radius: 4px;' });
             $('#product-remove-image').show();
         } else {
             $('#product-image-id').val('0');
-            $('#product-image-preview').html('');
+            $('#product-image-preview').empty();
             $('#product-remove-image').hide();
         }
 
-        var allergensList = product.allergens ? product.allergens.split(',') : [];
+        const allergensList = (product.allergens ? String(product.allergens).split(',') : []).map(s => s.trim());
         $('.allergen-checkbox').prop('checked', false);
-        allergensList.forEach(function(allergen) {
-            $('.allergen-checkbox[value="' + allergen.trim() + '"]').prop('checked', true);
+        allergensList.forEach(function (allergen) {
+            $('.allergen-checkbox[value="' + allergen + '"]').prop('checked', true);
         });
 
-        var badgesList = product.badges ? product.badges.split(',') : [];
+        const badgesList = (product.badges ? String(product.badges).split(',') : []).map(s => s.trim());
         $('.badge-checkbox').prop('checked', false);
-        badgesList.forEach(function(badge) {
-            $('.badge-checkbox[value="' + badge.trim() + '"]').prop('checked', true);
+        badgesList.forEach(function (badge) {
+            $('.badge-checkbox[value="' + badge + '"]').prop('checked', true);
         });
 
         $('#product-prices-wrapper').html('');
-        if (prices && prices.length > 0) {
-            prices.forEach(function(price) {
-                var isHappyHour = price.happy_hour == 1;
-                var $row = $(createPriceRow(isHappyHour));
+        if (Array.isArray(prices) && prices.length > 0) {
+            prices.slice(0, 100).forEach(function (price) {
+                const isHappyHour = String(price.happy_hour) === '1';
+                const $row = $(createPriceRow(isHappyHour));
                 $row.find('.price-label').val(price.label || '');
                 $row.find('.price-amount').val(price.price);
-                if (isHappyHour) {
-                    $row.find('.price-happy-hour').prop('checked', true);
-                }
+                if (isHappyHour) $row.find('.price-happy-hour').prop('checked', true);
                 $('#product-prices-wrapper').append($row);
             });
         } else {
@@ -323,141 +359,86 @@ jQuery(document).ready(function($) {
 
     // ========== ADMIN CATEGORY FILTERING (like frontend) ==========
 
-    var filterWrapper = $('[data-admin-filter-wrapper]');
+    const filterWrapper = $('[data-admin-filter-wrapper]');
     if (filterWrapper.length > 0) {
-        var rootTabs = filterWrapper.find('.lrob-admin-root-tab');
-        var allProducts = $('#lrob-products-grid .lrob-product-card');
+        const rootTabs = filterWrapper.find('.lrob-admin-root-tab');
+        const allProducts = $('#lrob-products-grid .lrob-product-card');
 
         // Initialize: show first root category on load
         if (rootTabs.length > 0) {
-            var firstRootId = rootTabs.first().data('root-category');
+            const firstRootId = toId(rootTabs.first().data('root-category'));
             rootTabs.first().addClass('active');
-
-            // Show level 1 filters for first category
             $('.lrob-level-1-filters[data-parent-id="' + firstRootId + '"]').show();
-
-            // Filter products to show only those from first category
             filterProductsByRootCategory(firstRootId);
         }
 
         // Root category tab click
-        rootTabs.on('click', function() {
-            var rootCategoryId = $(this).data('root-category');
-
-            // Update active tab
+        rootTabs.on('click', function () {
+            const rootCategoryId = toId($(this).data('root-category'));
             rootTabs.removeClass('active');
             $(this).addClass('active');
 
-            // Hide all level 1 and level 2 filters
             $('.lrob-level-1-filters, .lrob-level-2-filters').hide();
-
-            // Deselect all badges
             $('.lrob-subcategory-badge').removeClass('active');
-
-            // Show level 1 filters for this root category
             $('.lrob-level-1-filters[data-parent-id="' + rootCategoryId + '"]').show();
 
-            // Filter products
             filterProductsByRootCategory(rootCategoryId);
         });
 
         // Level 1 subcategory badge click
-        $(document).on('click', '.lrob-subcategory-badge[data-filter-level="1"]', function() {
-            var subcategoryId = $(this).data('subcategory-id');
-            var parentId = $(this).data('parent-id');
-            var isActive = $(this).hasClass('active');
+        $(document).on('click', '.lrob-subcategory-badge[data-filter-level="1"]', function () {
+            const subcategoryId = toId($(this).data('subcategory-id'));
+            const parentId = toId($(this).data('parent-id'));
+            const isActive = $(this).hasClass('active');
 
             if (isActive) {
-                // Deselect
                 $(this).removeClass('active');
-
-                // Hide all level 2 filters
                 $('.lrob-level-2-filters').hide();
-
-                // Deselect all level 2 badges
                 $('.lrob-subcategory-badge[data-filter-level="2"]').removeClass('active');
-
-                // Show all products from root category
                 filterProductsByRootCategory(parentId);
             } else {
-                // Deselect all other level 1 badges with same parent
                 $('.lrob-subcategory-badge[data-filter-level="1"][data-parent-id="' + parentId + '"]').removeClass('active');
-
-                // Select this badge
                 $(this).addClass('active');
-
-                // Hide all level 2 filters first
                 $('.lrob-level-2-filters').hide();
-
-                // Deselect all level 2 badges
                 $('.lrob-subcategory-badge[data-filter-level="2"]').removeClass('active');
-
-                // Show level 2 filters for this subcategory (if any)
                 $('.lrob-level-2-filters[data-parent-id="' + subcategoryId + '"]').show();
-
-                // Filter products to this level 1 category
                 filterProductsByCategory(subcategoryId, null);
             }
         });
 
         // Level 2 subcategory badge click
-        $(document).on('click', '.lrob-subcategory-badge[data-filter-level="2"]', function() {
-            var subcategoryId = $(this).data('subcategory-id');
-            var parentId = $(this).data('parent-id');
-            var isActive = $(this).hasClass('active');
+        $(document).on('click', '.lrob-subcategory-badge[data-filter-level="2"]', function () {
+            const subcategoryId = toId($(this).data('subcategory-id'));
+            const parentId = toId($(this).data('parent-id'));
+            const isActive = $(this).hasClass('active');
 
             if (isActive) {
-                // Deselect
                 $(this).removeClass('active');
-
-                // Show all products from parent (level 1) category
                 filterProductsByCategory(parentId, null);
             } else {
-                // Deselect all other level 2 badges with same parent
                 $('.lrob-subcategory-badge[data-filter-level="2"][data-parent-id="' + parentId + '"]').removeClass('active');
-
-                // Select this badge
                 $(this).addClass('active');
-
-                // Filter products to this level 2 category
                 filterProductsByCategory(parentId, subcategoryId);
             }
         });
 
         function filterProductsByRootCategory(rootCategoryId) {
-            allProducts.each(function() {
-                var $product = $(this);
-                var ancestors = $product.data('category-ancestors').toString().split(',');
-
-                // Show product if any ancestor matches the root category
-                if (ancestors.indexOf(rootCategoryId.toString()) !== -1) {
-                    $product.show();
-                } else {
-                    $product.hide();
-                }
+            allProducts.each(function () {
+                const $product = $(this);
+                const ancestors = String($product.data('category-ancestors') || '').split(',');
+                $product.toggle(ancestors.indexOf(String(rootCategoryId)) !== -1);
             });
         }
 
         function filterProductsByCategory(level1CategoryId, level2CategoryId) {
-            allProducts.each(function() {
-                var $product = $(this);
-                var categoryId = $product.data('category-id').toString();
-                var ancestors = $product.data('category-ancestors').toString().split(',');
+            allProducts.each(function () {
+                const $product = $(this);
+                const ancestors = String($product.data('category-ancestors') || '').split(',');
 
                 if (level2CategoryId) {
-                    // Level 2 filter: show only products from this specific category
-                    if (ancestors.indexOf(level2CategoryId.toString()) !== -1) {
-                        $product.show();
-                    } else {
-                        $product.hide();
-                    }
+                    $product.toggle(ancestors.indexOf(String(level2CategoryId)) !== -1);
                 } else if (level1CategoryId) {
-                    // Level 1 filter: show products from this category and all its children
-                    if (ancestors.indexOf(level1CategoryId.toString()) !== -1) {
-                        $product.show();
-                    } else {
-                        $product.hide();
-                    }
+                    $product.toggle(ancestors.indexOf(String(level1CategoryId)) !== -1);
                 }
             });
         }
@@ -465,14 +446,15 @@ jQuery(document).ready(function($) {
 
     // ========== CATEGORIES ==========
 
-    $('#lrob-add-category').on('click', function() {
+    $('#lrob-add-category').on('click', function () {
         resetCategoryForm();
         $('#lrob-modal-title').text('Add Category');
         openModal('lrob-category-modal');
     });
 
-    $('.lrob-edit-category').on('click', function() {
-        var categoryId = $(this).data('id');
+    $('.lrob-edit-category').on('click', function () {
+        if (ajaxDisabled) return alert('AJAX config missing.');
+        const categoryId = toId($(this).data('id'));
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -481,21 +463,27 @@ jQuery(document).ready(function($) {
                 action: 'lrob_get_category',
                 nonce: lrobCarte.nonce,
                 id: categoryId
-            },
-            success: function(response) {
-                if (response.success) {
-                    populateCategoryForm(response.data);
-                    $('#lrob-modal-title').text('Edit Category');
-                    openModal('lrob-category-modal');
-                }
             }
+        }).done(function (response) {
+            if (response && response.success && isObj(response.data)) {
+                populateCategoryForm(response.data);
+                $('#lrob-modal-title').text('Edit Category');
+                openModal('lrob-category-modal');
+            } else if (response && response.data && response.data.message) {
+                alert(response.data.message);
+            } else {
+                alert('Unable to load category.');
+            }
+        }).fail(function () {
+            alert('Request failed.');
         });
     });
 
-    $('.lrob-delete-category').on('click', function() {
+    $('.lrob-delete-category').on('click', function () {
+        if (ajaxDisabled) return alert('AJAX config missing.');
         if (!confirm('Are you sure you want to delete this category?')) return;
 
-        var categoryId = $(this).data('id');
+        const categoryId = toId($(this).data('id'));
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -504,17 +492,23 @@ jQuery(document).ready(function($) {
                 action: 'lrob_delete_category',
                 nonce: lrobCarte.nonce,
                 id: categoryId
-            },
-            success: function(response) {
-                if (response.success) {
-                    location.reload();
-                }
             }
+        }).done(function (response) {
+            if (response && response.success) {
+                location.reload();
+            } else if (response && response.data && response.data.message) {
+                alert(response.data.message);
+            } else {
+                alert('Deletion failed.');
+            }
+        }).fail(function () {
+            alert('Request failed.');
         });
     });
 
-    $('.lrob-toggle-category').on('click', function() {
-        var categoryId = $(this).data('id');
+    $('.lrob-toggle-category').on('click', function () {
+        if (ajaxDisabled) return alert('AJAX config missing.');
+        const categoryId = toId($(this).data('id'));
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -523,28 +517,33 @@ jQuery(document).ready(function($) {
                 action: 'lrob_toggle_category',
                 nonce: lrobCarte.nonce,
                 id: categoryId
-            },
-            success: function(response) {
-                if (response.success) {
-                    location.reload();
-                }
             }
+        }).done(function (response) {
+            if (response && response.success) {
+                location.reload();
+            } else if (response && response.data && response.data.message) {
+                alert(response.data.message);
+            } else {
+                alert('Update failed.');
+            }
+        }).fail(function () {
+            alert('Request failed.');
         });
     });
 
     // Up/Down buttons for categories
-    $('.lrob-move-category-up').on('click', function() {
-        var $item = $(this).closest('.lrob-category-item');
-        var $prev = $item.prev('.lrob-category-item');
+    $('.lrob-move-category-up').on('click', function () {
+        const $item = $(this).closest('.lrob-category-item');
+        const $prev = $item.prev('.lrob-category-item');
         if ($prev.length) {
             $item.insertBefore($prev);
             updateCategoryPositions();
         }
     });
 
-    $('.lrob-move-category-down').on('click', function() {
-        var $item = $(this).closest('.lrob-category-item');
-        var $next = $item.next('.lrob-category-item');
+    $('.lrob-move-category-down').on('click', function () {
+        const $item = $(this).closest('.lrob-category-item');
+        const $next = $item.next('.lrob-category-item');
         if ($next.length) {
             $item.insertAfter($next);
             updateCategoryPositions();
@@ -552,10 +551,13 @@ jQuery(document).ready(function($) {
     });
 
     function updateCategoryPositions() {
-        var positions = [];
-        $('#lrob-categories-list .lrob-category-item').each(function(index) {
-            positions.push($(this).data('id'));
+        if (ajaxDisabled) return;
+        const positions = [];
+        $('#lrob-categories-list .lrob-category-item').each(function () {
+            positions.push(toId($(this).data('id')));
         });
+
+        const capped = positions.slice(0, 1000);
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -564,23 +566,26 @@ jQuery(document).ready(function($) {
                 action: 'lrob_update_positions',
                 nonce: lrobCarte.nonce,
                 table: 'categories',
-                positions: positions
+                positions: capped
             }
+        }).fail(function () {
+            alert('Failed to update positions.');
         });
     }
 
     // Indent / Unindent
-    $('.lrob-indent-category').on('click', function() {
-        var $item = $(this).closest('.lrob-category-item');
-        var catId = $item.data('id');
-        var $prev = $item.prev('.lrob-category-item');
+    $('.lrob-indent-category').on('click', function () {
+        if (ajaxDisabled) return alert('AJAX config missing.');
+        const $item = $(this).closest('.lrob-category-item');
+        const catId = toId($item.data('id'));
+        const $prev = $item.prev('.lrob-category-item');
 
         if (!$prev.length) {
             alert('Cannot create a subcategory here');
             return;
         }
 
-        var newParentId = $prev.data('id');
+        const newParentId = toId($prev.data('id'));
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -590,25 +595,28 @@ jQuery(document).ready(function($) {
                 nonce: lrobCarte.nonce,
                 id: catId,
                 parent_id: newParentId
-            },
-            success: function(response) {
-                if (response.success) {
-                    location.reload();
-                } else if (response.data && response.data.message) {
-                    alert(response.data.message);
-                }
             }
+        }).done(function (response) {
+            if (response && response.success) {
+                location.reload();
+            } else if (response && response.data && response.data.message) {
+                alert(response.data.message);
+            } else {
+                alert('Update failed.');
+            }
+        }).fail(function () {
+            alert('Request failed.');
         });
     });
 
-    $('.lrob-unindent-category').on('click', function() {
-        var $item = $(this).closest('.lrob-category-item');
-        var catId = $item.data('id');
-        var currentParent = $item.data('parent');
+    $('.lrob-unindent-category').on('click', function () {
+        if (ajaxDisabled) return alert('AJAX config missing.');
+        const $item = $(this).closest('.lrob-category-item');
+        const catId = toId($item.data('id'));
+        const currentParent = toId($item.data('parent'));
 
-        // Find grandparent
-        var $parentItem = $('.lrob-category-item[data-id="' + currentParent + '"]');
-        var newParentId = $parentItem.length ? ($parentItem.data('parent') || 0) : 0;
+        const $parentItem = $('.lrob-category-item[data-id="' + currentParent + '"]');
+        const newParentId = $parentItem.length ? toId($parentItem.data('parent') || 0) : '0';
 
         $.ajax({
             url: lrobCarte.ajaxurl,
@@ -618,27 +626,31 @@ jQuery(document).ready(function($) {
                 nonce: lrobCarte.nonce,
                 id: catId,
                 parent_id: newParentId
-            },
-            success: function(response) {
-                if (response.success) {
-                    location.reload();
-                } else if (response.data && response.data.message) {
-                    alert(response.data.message);
-                }
             }
+        }).done(function (response) {
+            if (response && response.success) {
+                location.reload();
+            } else if (response && response.data && response.data.message) {
+                alert(response.data.message);
+            } else {
+                alert('Update failed.');
+            }
+        }).fail(function () {
+            alert('Request failed.');
         });
     });
 
-    $('#lrob-category-form').on('submit', function(e) {
+    $('#lrob-category-form').on('submit', function (e) {
         e.preventDefault();
+        if (ajaxDisabled) return alert('AJAX config missing.');
 
-        var iconType = $('input[name="icon-type"]:checked').val();
-        var iconValue;
+        const iconType = $('input[name="icon-type"]:checked').val();
+        let iconValue = '';
 
         if (iconType === 'emoji') {
             iconValue = $('#category-emoji').val();
         } else if (iconType === 'image') {
-            iconValue = $('#category-icon-image-id').val();
+            iconValue = toId($('#category-icon-image-id').val());
         }
 
         if (!$('#category-slug').val()) {
@@ -651,30 +663,30 @@ jQuery(document).ready(function($) {
             data: {
                 action: 'lrob_save_category',
                 nonce: lrobCarte.nonce,
-                id: $('#category-id').val(),
-                parent_id: $('#category-parent').val(),
+                id: toId($('#category-id').val()),
+                parent_id: toId($('#category-parent').val()),
                 name: $('#category-name').val(),
                 slug: $('#category-slug').val(),
                 icon_type: iconType,
                 icon_value: iconValue,
-                position: $('#category-position').val(),
+                position: toId($('#category-position').val()),
                 active: $('#category-active').is(':checked') ? 1 : 0
-            },
-            success: function(response) {
-                if (response.success) {
-                    location.reload();
-                } else if (response.data && response.data.message) {
-                    alert(response.data.message);
-                }
-            },
-            error: function() {
-                alert('Error saving');
             }
+        }).done(function (response) {
+            if (response && response.success) {
+                location.reload();
+            } else if (response && response.data && response.data.message) {
+                alert(response.data.message);
+            } else {
+                alert('Save failed.');
+            }
+        }).fail(function () {
+            alert('Request failed.');
         });
     });
 
-    $('input[name="icon-type"]').on('change', function() {
-        var iconType = $(this).val();
+    $('input[name="icon-type"]').on('change', function () {
+        const iconType = $(this).val();
         $('#icon-emoji-row, #icon-image-row').hide();
 
         if (iconType === 'emoji') {
@@ -684,17 +696,16 @@ jQuery(document).ready(function($) {
         }
     });
 
-    $('.lrob-emoji-option').on('click', function() {
+    $('.lrob-emoji-option').on('click', function () {
         $('#category-emoji').val($(this).data('emoji'));
     });
 
-    // Media uploader for custom icon
-    var categoryIconUploader;
+    // Media uploader for custom icon (Category)
+    let categoryIconUploader;
 
-    $('#category-upload-icon-image').on('click', function(e) {
+    $('#category-upload-icon-image').on('click', function (e) {
         e.preventDefault();
 
-        // Check if wp.media is available
         if (typeof wp === 'undefined' || typeof wp.media === 'undefined') {
             alert('WordPress media library is not loaded. Please refresh the page.');
             return;
@@ -712,19 +723,19 @@ jQuery(document).ready(function($) {
             library: { type: 'image' }
         });
 
-        categoryIconUploader.on('select', function() {
-            var attachment = categoryIconUploader.state().get('selection').first().toJSON();
-            $('#category-icon-image-id').val(attachment.id);
-            $('#category-icon-image-preview').html('<img src="' + attachment.url + '" style="max-width: 50px; max-height: 50px;">');
+        categoryIconUploader.on('select', function () {
+            const attachment = categoryIconUploader.state().get('selection').first().toJSON();
+            $('#category-icon-image-id').val(toId(attachment.id));
+            safeImg($('#category-icon-image-preview'), attachment.url, { style: 'max-width: 50px; max-height: 50px;' });
             $('#category-remove-icon-image').show();
         });
 
         categoryIconUploader.open();
     });
 
-    $('#category-remove-icon-image').on('click', function() {
+    $('#category-remove-icon-image').on('click', function () {
         $('#category-icon-image-id').val('');
-        $('#category-icon-image-preview').html('');
+        $('#category-icon-image-preview').empty();
         $(this).hide();
     });
 
@@ -735,43 +746,50 @@ jQuery(document).ready(function($) {
         $('#category-slug').val('');
         $('#category-emoji').val('🍽️');
         $('#category-icon-image-id').val('');
-        $('#category-icon-image-preview').html('');
+        $('#category-icon-image-preview').empty();
         $('#category-remove-icon-image').hide();
         $('#category-active').prop('checked', true);
         $('input[name="icon-type"][value="emoji"]').prop('checked', true).trigger('change');
     }
 
     function populateCategoryForm(category) {
-        $('#category-id').val(category.id);
-        $('#category-parent').val(category.parent_id || '0');
-        $('#category-name').val(category.name);
-        $('#category-slug').val(category.slug);
-        $('#category-position').val(category.position);
-        $('#category-active').prop('checked', category.active == 1);
+        if (!isObj(category)) return;
+        $('#category-id').val(toId(category.id));
+        $('#category-parent').val(toId(category.parent_id || '0'));
+        $('#category-name').val(category.name || '');
+        $('#category-slug').val(category.slug || '');
+        $('#category-position').val(toInt(category.position, 0));
+        $('#category-active').prop('checked', String(category.active) === '1');
 
-        // Set icon type and value
         if (category.icon_type === 'emoji') {
             $('input[name="icon-type"][value="emoji"]').prop('checked', true);
             $('#category-emoji').val(category.icon_value || '🍽️');
+            $('#category-icon-image-id').val('');
+            $('#category-icon-image-preview').empty();
+            $('#category-remove-icon-image').hide();
         } else if (category.icon_type === 'image') {
             $('input[name="icon-type"][value="image"]').prop('checked', true);
-            $('#category-icon-image-id').val(category.icon_value);
+            const id = toId(category.icon_value);
+            $('#category-icon-image-id').val(id);
 
-            if (category.icon_value) {
+            if (id) {
+                // This action name looks non-standard; leaving as-is to avoid backend changes.
                 $.ajax({
                     url: lrobCarte.ajaxurl,
                     type: 'POST',
                     data: {
                         action: 'wp_ajax_get_attachment_url',
-                        attachment_id: category.icon_value
-                    },
-                    success: function(url) {
-                        if (url) {
-                            $('#category-icon-image-preview').html('<img src="' + url + '" style="max-width: 50px; max-height: 50px;">');
-                            $('#category-remove-icon-image').show();
-                        }
+                        attachment_id: id
+                    }
+                }).done(function (url) {
+                    if (url && typeof url === 'string') {
+                        safeImg($('#category-icon-image-preview'), url, { style: 'max-width: 50px; max-height: 50px;' });
+                        $('#category-remove-icon-image').show();
                     }
                 });
+            } else {
+                $('#category-icon-image-preview').empty();
+                $('#category-remove-icon-image').hide();
             }
         }
 

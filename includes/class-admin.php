@@ -136,13 +136,28 @@ class LRob_Carte_Admin {
         if (!current_user_can('manage_options')) return;
 
         if (isset($_POST['lrob_import_nonce']) && wp_verify_nonce($_POST['lrob_import_nonce'], 'lrob_import') && isset($_FILES['import_file'])) {
-            $importer = new LRob_Carte_Import_Export();
-            $result = $importer->import($_FILES['import_file']);
 
-            if ($result['success']) {
-                echo '<div class="notice notice-success"><p>' . $result['message'] . '</p></div>';
+            // Defensive file checks
+            $file = $_FILES['import_file'];
+            if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+                echo '<div class="notice notice-error"><p>' . __('Invalid uploaded file.', 'lrob-la-carte') . '</p></div>';
             } else {
-                echo '<div class="notice notice-error"><p>' . $result['message'] . '</p></div>';
+                // Check file extension and mime defensively. Adjust 'json' to whatever importer expects.
+                $filetype = wp_check_filetype_and_ext($file['tmp_name'], $file['name']);
+                $ext = isset($filetype['ext']) ? $filetype['ext'] : '';
+                $allowed_exts = array('json'); // expected import format(s)
+                if (!in_array(strtolower($ext), $allowed_exts, true)) {
+                    echo '<div class="notice notice-error"><p>' . __('Invalid file type. Please upload a JSON file.', 'lrob-la-carte') . '</p></div>';
+                } else {
+                    $importer = new LRob_Carte_Import_Export();
+                    $result = $importer->import($file);
+
+                    if ($result['success']) {
+                        echo '<div class="notice notice-success"><p>' . esc_html($result['message']) . '</p></div>';
+                    } else {
+                        echo '<div class="notice notice-error"><p>' . esc_html($result['message']) . '</p></div>';
+                    }
+                }
             }
         }
 
@@ -230,7 +245,20 @@ class LRob_Carte_Admin {
             wp_send_json_error(array('message' => __('Category not found', 'lrob-la-carte')));
         }
 
-        wp_send_json_success($category);
+        // Sanitize returned object before sending it to the client
+        $sanitized = array();
+        foreach ((array) $category as $k => $v) {
+            if (is_numeric($v)) {
+                $sanitized[$k] = intval($v);
+            } elseif (is_string($v)) {
+                $sanitized[$k] = sanitize_text_field($v);
+            } else {
+                // fallback: convert to string and sanitize
+                $sanitized[$k] = is_null($v) ? '' : sanitize_text_field((string) $v);
+            }
+        }
+
+        wp_send_json_success($sanitized);
     }
 
     public function ajax_toggle_category() {
@@ -269,31 +297,53 @@ class LRob_Carte_Admin {
         }
 
         if (empty($_POST['updates']) || !is_array($_POST['updates'])) {
-            wp_send_json_error(array('message' => __('Données invalides', 'lrob-la-carte')));
+            wp_send_json_error(array('message' => __('Invalid data', 'lrob-la-carte')));
+        }
+
+        // Defensive cap to avoid huge updates (prevent DoS)
+        $updates = $_POST['updates'];
+        $max_updates = 500;
+        if (count($updates) > $max_updates) {
+            wp_send_json_error(array('message' => __('Too many updates', 'lrob-la-carte')));
         }
 
         global $wpdb;
         $table = $wpdb->prefix . 'lrob_categories';
 
-        foreach ($_POST['updates'] as $update) {
+        foreach ($updates as $update) {
+            if (!is_array($update)) {
+                continue;
+            }
+
+            // Validate presence of required fields
             if (empty($update['id']) || !isset($update['parent_id']) || !isset($update['position'])) {
+                continue;
+            }
+
+            $id = intval($update['id']);
+            $parent_id = intval($update['parent_id']);
+            $position = intval($update['position']);
+
+            // Prevent setting parent to self
+            if ($id === $parent_id) {
                 continue;
             }
 
             $wpdb->update(
                 $table,
                 array(
-                    'parent_id' => intval($update['parent_id']),
-                    'position' => intval($update['position'])
+                    'parent_id' => $parent_id,
+                    'position' => $position
                 ),
-                array('id' => intval($update['id'])),
+                array('id' => $id),
                 array('%d', '%d'),
                 array('%d')
             );
         }
 
-        wp_send_json_success(array('message' => __('Hiérarchie mise à jour', 'lrob-la-carte')));
+        wp_send_json_success(array('message' => __('Hierarchy updated', 'lrob-la-carte')));
     }
+
 
     public function ajax_update_category_parent() {
         check_ajax_referer('lrob_carte_nonce', 'nonce');
@@ -303,28 +353,36 @@ class LRob_Carte_Admin {
         }
 
         if (!isset($_POST['id']) || !isset($_POST['parent_id'])) {
-            wp_send_json_error(array('message' => __('Données invalides', 'lrob-la-carte')));
+            wp_send_json_error(array('message' => __('Invalid data', 'lrob-la-carte')));
         }
 
         $id = intval($_POST['id']);
         $parent_id = intval($_POST['parent_id']);
 
-        // Empêcher qu'une catégorie soit son propre parent
+        // Prevent a category from being its own parent
         if ($id === $parent_id) {
             wp_send_json_error(array('message' => __('A category cannot be its own parent', 'lrob-la-carte')));
         }
 
-        // Empêcher les boucles (vérifier que parent_id n'est pas un descendant de id)
+        // Prevent cycles by walking up the parent chain with a depth limit
         global $wpdb;
         $check_parent = $parent_id;
-        while ($check_parent > 0) {
+        $depth = 0;
+        $max_depth = 50;
+        while ($check_parent > 0 && $depth < $max_depth) {
             if ($check_parent === $id) {
-                wp_send_json_error(array('message' => __('Impossible de créer une boucle dans la hiérarchie', 'lrob-la-carte')));
+                wp_send_json_error(array('message' => __('Cannot create a loop in the category hierarchy', 'lrob-la-carte')));
             }
             $check_parent = $wpdb->get_var($wpdb->prepare(
                 "SELECT parent_id FROM {$wpdb->prefix}lrob_categories WHERE id = %d",
                 $check_parent
             ));
+            $check_parent = $check_parent ? intval($check_parent) : 0;
+            $depth++;
+        }
+
+        if ($depth >= $max_depth) {
+            wp_send_json_error(array('message' => __('Hierarchy too deep or malformed', 'lrob-la-carte')));
         }
 
         $result = $wpdb->update(
@@ -339,8 +397,9 @@ class LRob_Carte_Admin {
             wp_send_json_error(array('message' => __('Error during update', 'lrob-la-carte')));
         }
 
-        wp_send_json_success(array('message' => __('Parent mis à jour', 'lrob-la-carte')));
+        wp_send_json_success(array('message' => __('Parent updated', 'lrob-la-carte')));
     }
+
 
     public function ajax_save_product() {
         check_ajax_referer('lrob_carte_nonce', 'nonce');
@@ -464,20 +523,59 @@ class LRob_Carte_Admin {
 
         // Always add image_url property (empty string if no image)
         $product->image_url = '';
-        if ($product->image_id && $product->image_id > 0) {
+        if (!empty($product->image_id) && intval($product->image_id) > 0) {
             $image_url = wp_get_attachment_url($product->image_id);
             if ($image_url) {
-                $product->image_url = $image_url;
+                // sanitize URL
+                $product->image_url = esc_url_raw($image_url);
             }
         }
 
         $prices = LRob_Carte_Database::get_product_prices(intval($_POST['id']));
 
+        // Sanitize product fields
+        $sanitized_product = array();
+        foreach ((array) $product as $k => $v) {
+            if ($k === 'image_url') {
+                $sanitized_product[$k] = esc_url_raw($v);
+                continue;
+            }
+            if (is_numeric($v)) {
+                // keep integers as ints, floats as floats
+                if (is_float($v + 0)) {
+                    $sanitized_product[$k] = floatval($v);
+                } else {
+                    $sanitized_product[$k] = intval($v);
+                }
+            } elseif (is_string($v)) {
+                // allow small HTML in description? we sanitize as plain text here for safety
+                $sanitized_product[$k] = sanitize_text_field($v);
+            } else {
+                $sanitized_product[$k] = is_null($v) ? '' : sanitize_text_field((string) $v);
+            }
+        }
+
+        // Sanitize prices array
+        $sanitized_prices = array();
+        if (is_array($prices)) {
+            foreach ($prices as $price_obj) {
+                $p = (array) $price_obj;
+                $sanitized_price = array();
+                $sanitized_price['id'] = isset($p['id']) ? intval($p['id']) : 0;
+                $sanitized_price['label'] = isset($p['label']) ? sanitize_text_field($p['label']) : '';
+                $sanitized_price['price'] = isset($p['price']) ? floatval($p['price']) : 0.0;
+                $sanitized_price['happy_hour'] = isset($p['happy_hour']) ? intval($p['happy_hour']) : 0;
+                $sanitized_price['position'] = isset($p['position']) ? intval($p['position']) : 0;
+                $sanitized_prices[] = $sanitized_price;
+            }
+        }
+
         wp_send_json_success(array(
-            'product' => $product,
-            'prices' => $prices
+            'product' => $sanitized_product,
+            'prices' => $sanitized_prices
         ));
     }
+
 
     public function ajax_create_default_categories() {
         check_ajax_referer('lrob_carte_nonce', 'nonce');

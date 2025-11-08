@@ -9,6 +9,8 @@ class LRob_Carte_Settings {
     }
 
     public static function update($key, $value) {
+        $key   = sanitize_key($key);
+         $value = maybe_serialize($value);
         return update_option('lrob_carte_' . $key, $value);
     }
 

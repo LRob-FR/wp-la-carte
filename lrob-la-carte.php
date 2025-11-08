@@ -3,7 +3,7 @@
  * Plugin Name: LRob - La Carte
  * Plugin URI: https://www.lrob.fr/
  * Description: Menu manager for bars and restaurants
- * Version: 1.1.1
+ * Version: 1.2.0
  * Author: LRob
  * Author URI: https://www.lrob.fr/
  * Text Domain: lrob-la-carte
@@ -11,7 +11,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('LROB_CARTE_VERSION', '1.1.1');
+define('LROB_CARTE_VERSION', '1.2.0');
 define('LROB_CARTE_PATH', plugin_dir_path(__FILE__));
 define('LROB_CARTE_URL', plugin_dir_url(__FILE__));
 
@@ -45,10 +45,12 @@ class LRob_La_Carte {
     }
 
     public function check_database_version() {
+        if ( ! current_user_can('manage_options') ) {
+            return;
+        }
         $db_version = get_option('lrob_carte_db_version', '0');
-        $current_version = '1.2'; // Version with happy_hour
-
-        if (version_compare($db_version, $current_version, '<')) {
+        $current_version = '1.2';
+        if ( version_compare($db_version, $current_version, '<') ) {
             LRob_Carte_Database::migrate_database();
             update_option('lrob_carte_db_version', $current_version);
         }
@@ -82,7 +84,7 @@ class LRob_La_Carte {
 
         foreach ($categories as $cat) {
             $categories_options[] = array(
-                'label' => $cat->name,
+                'label' => sanitize_text_field($cat->name),
                 'value' => (int) $cat->id
             );
         }

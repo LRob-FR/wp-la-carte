@@ -307,6 +307,11 @@ class LRob_Carte_Database {
     public static function update_positions($table, $positions) {
         global $wpdb;
 
+        // Security: only allow plugin tables from this plugin
+        if (!in_array($table, ['categories', 'products', 'product_prices'], true)) {
+            return false;
+        }
+
         foreach ($positions as $index => $id) {
             $wpdb->update(
                 $wpdb->prefix . 'lrob_' . $table,

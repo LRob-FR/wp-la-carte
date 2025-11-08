@@ -144,6 +144,29 @@ This plugin is proprietary software developed by LRob.
 - Fixed property is_happy_hour
 - Fixed JSON Export/import
 
+### 1.2.0
+- **Security overhaul**
+  - Hardened all PHP functions: added nonce validation, strict input sanitization & output escaping.  
+  - Restricted SQL operations with `$wpdb->prepare()` and whitelisted table names.  
+  - Improved AJAX handlers security and error handling.  
+  - Prevented XSS, CSRF, and injection vectors across admin and frontend.
+
+- **JavaScript & admin improvements**
+  - Rewritten JS logic for better validation and reliability.  
+  - Removed unsafe inline operations and improved modal handling.  
+  - Cleaned redundant event bindings and optimized AJAX calls.
+
+- **CSS and UI cleanup**
+  - Complete cleanup of `style.css` and `admin.css` — unified structure and simplified code.  
+  - Removed redundant styles, excessive opacity, and hardcoded colors.  
+  - All layout variables are now defined with `--lrob-*` CSS variables for Gutenberg integration.  
+  - Improved responsive behavior and consistency between admin and frontend.
+
+- **Performance and maintainability**
+  - Reduced CSS and JS payloads.  
+  - Improved layout rendering logic and block editor previews.  
+  - Prepared structure for future Gutenberg variable bindings.
+
 
 ## Todo List
 - Make caracteristics such as allergen or badges fully customizable

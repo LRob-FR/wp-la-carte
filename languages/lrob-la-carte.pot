@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the LRob - La Carte plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: LRob La Carte 1.1.1\n"
+"Project-Id-Version: LRob La Carte 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/lrob-la-carte\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-11-08T15:38:16+00:00\n"
+"POT-Creation-Date: 2025-11-08T17:13:01+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: lrob-la-carte\n"
@@ -38,122 +38,122 @@ msgstr ""
 msgid "Categories"
 msgstr ""
 
-#: admin/views/categories.php:4
-#: admin/views/categories.php:105
+#: admin/views/categories.php:5
+#: admin/views/categories.php:120
 msgid "Add Category"
 msgstr ""
 
-#: admin/views/categories.php:7
+#: admin/views/categories.php:9
 msgid "Create Default Categories"
 msgstr ""
 
-#: admin/views/categories.php:36
+#: admin/views/categories.php:41
 msgid "Move Up"
 msgstr ""
 
-#: admin/views/categories.php:37
+#: admin/views/categories.php:42
 msgid "Move Down"
 msgstr ""
 
-#: admin/views/categories.php:62
+#: admin/views/categories.php:67
 msgid "Disabled"
 msgstr ""
 
-#: admin/views/categories.php:70
+#: admin/views/categories.php:77
 msgid "Move up one level"
 msgstr ""
 
-#: admin/views/categories.php:71
+#: admin/views/categories.php:78
 msgid "Parent level"
 msgstr ""
 
-#: admin/views/categories.php:75
+#: admin/views/categories.php:85
 msgid "Move down one level"
 msgstr ""
 
-#: admin/views/categories.php:76
+#: admin/views/categories.php:86
 msgid "Subcategory"
 msgstr ""
 
-#: admin/views/categories.php:80
+#: admin/views/categories.php:93
 msgid "Disable"
 msgstr ""
 
-#: admin/views/categories.php:80
+#: admin/views/categories.php:93
 msgid "Enable"
 msgstr ""
 
-#: admin/views/categories.php:83
+#: admin/views/categories.php:97
 msgid "Edit"
 msgstr ""
 
-#: admin/views/categories.php:86
+#: admin/views/categories.php:101
 msgid "Delete"
 msgstr ""
 
-#: admin/views/categories.php:113
+#: admin/views/categories.php:128
 msgid "Name"
 msgstr ""
 
-#: admin/views/categories.php:117
+#: admin/views/categories.php:132
 msgid "Slug"
 msgstr ""
 
-#: admin/views/categories.php:121
+#: admin/views/categories.php:136
 msgid "Parent Category"
 msgstr ""
 
-#: admin/views/categories.php:124
+#: admin/views/categories.php:139
 msgid "None (root category)"
 msgstr ""
 
-#: admin/views/categories.php:129
+#: admin/views/categories.php:147
 msgid "Create a category hierarchy (e.g. Cocktails under Drinks)"
 msgstr ""
 
-#: admin/views/categories.php:133
+#: admin/views/categories.php:152
 msgid "Status"
 msgstr ""
 
-#: admin/views/categories.php:137
+#: admin/views/categories.php:156
 msgid "Active category (visible on site)"
 msgstr ""
 
-#: admin/views/categories.php:142
+#: admin/views/categories.php:161
 msgid "Icon Type"
 msgstr ""
 
-#: admin/views/categories.php:145
-#: admin/views/categories.php:153
+#: admin/views/categories.php:164
+#: admin/views/categories.php:172
 msgid "Emoji"
 msgstr ""
 
-#: admin/views/categories.php:148
-#: admin/views/categories.php:164
+#: admin/views/categories.php:167
+#: admin/views/categories.php:185
 msgid "Custom Image"
 msgstr ""
 
-#: admin/views/categories.php:168
-#: admin/views/products.php:302
+#: admin/views/categories.php:190
+#: admin/views/products.php:293
 msgid "Choose Image"
 msgstr ""
 
-#: admin/views/categories.php:169
-#: admin/views/products.php:303
+#: admin/views/categories.php:193
+#: admin/views/products.php:294
 msgid "Remove"
 msgstr ""
 
-#: admin/views/categories.php:170
+#: admin/views/categories.php:196
 msgid "Recommended format: 64x64px, PNG with transparent background"
 msgstr ""
 
-#: admin/views/categories.php:177
-#: admin/views/products.php:358
+#: admin/views/categories.php:203
+#: admin/views/products.php:349
 msgid "Save"
 msgstr ""
 
-#: admin/views/categories.php:178
-#: admin/views/products.php:359
+#: admin/views/categories.php:204
+#: admin/views/products.php:350
 msgid "Cancel"
 msgstr ""
 
@@ -206,14 +206,14 @@ msgid "Settings will be overwritten."
 msgstr ""
 
 #: admin/views/products.php:3
-#: admin/views/products.php:144
+#: admin/views/products.php:139
 #: includes/class-admin.php:50
 #: includes/class-admin.php:51
 msgid "Products"
 msgstr ""
 
 #: admin/views/products.php:5
-#: admin/views/products.php:255
+#: admin/views/products.php:246
 msgid "Add Product"
 msgstr ""
 
@@ -221,66 +221,66 @@ msgstr ""
 msgid "No categories found. Please create categories first."
 msgstr ""
 
-#: admin/views/products.php:182
-#: admin/views/products.php:351
-#: blocks/menu-display/render.php:99
+#: admin/views/products.php:176
+#: admin/views/products.php:342
+#: blocks/menu-display/render.php:116
 msgid "Out of Stock"
 msgstr ""
 
-#: admin/views/products.php:246
+#: admin/views/products.php:238
 msgid "No products found."
 msgstr ""
 
-#: admin/views/products.php:265
+#: admin/views/products.php:256
 msgid "Category"
 msgstr ""
 
-#: admin/views/products.php:268
-#: lrob-la-carte.php:81
+#: admin/views/products.php:259
+#: lrob-la-carte.php:83
 msgid "Choose a category"
 msgstr ""
 
-#: admin/views/products.php:290
+#: admin/views/products.php:281
 msgid "Product Name"
 msgstr ""
 
-#: admin/views/products.php:294
+#: admin/views/products.php:285
 msgid "Description"
 msgstr ""
 
-#: admin/views/products.php:298
+#: admin/views/products.php:289
 msgid "Image"
 msgstr ""
 
-#: admin/views/products.php:307
+#: admin/views/products.php:298
 msgid "Price"
 msgstr ""
 
-#: admin/views/products.php:309
+#: admin/views/products.php:300
 msgid "Label (optional): specify a variant (e.g. \"Glass (12cl)\", \"Pint\", \"Bottle\"). Previously used labels will be suggested automatically."
 msgstr ""
 
-#: admin/views/products.php:312
+#: admin/views/products.php:303
 msgid "E.g. Glass (12cl)"
 msgstr ""
 
-#: admin/views/products.php:317
+#: admin/views/products.php:308
 msgid "Add Price"
 msgstr ""
 
-#: admin/views/products.php:321
+#: admin/views/products.php:312
 msgid "Allergens"
 msgstr ""
 
-#: admin/views/products.php:334
+#: admin/views/products.php:325
 msgid "Badges"
 msgstr ""
 
-#: admin/views/products.php:347
+#: admin/views/products.php:338
 msgid "Availability"
 msgstr ""
 
-#: admin/views/products.php:350
+#: admin/views/products.php:341
 msgid "Available"
 msgstr ""
 
@@ -306,31 +306,31 @@ msgstr ""
 msgid "Defines default categories. Changing mode will automatically add missing categories."
 msgstr ""
 
-#: admin/views/settings.php:35
+#: admin/views/settings.php:36
 msgid "Add missing default categories"
 msgstr ""
 
-#: admin/views/settings.php:39
+#: admin/views/settings.php:40
 msgid "Adds missing categories according to current mode without deleting existing categories."
 msgstr ""
 
-#: admin/views/settings.php:46
+#: admin/views/settings.php:47
 msgid "Primary Color"
 msgstr ""
 
-#: admin/views/settings.php:57
+#: admin/views/settings.php:58
 msgid "Secondary Color"
 msgstr ""
 
-#: admin/views/settings.php:68
+#: admin/views/settings.php:69
 msgid "Out of Stock Display"
 msgstr ""
 
-#: admin/views/settings.php:73
+#: admin/views/settings.php:74
 msgid "Show with \"Out of Stock\" badge"
 msgstr ""
 
-#: admin/views/settings.php:76
+#: admin/views/settings.php:77
 msgid "Hide Completely"
 msgstr ""
 
@@ -352,293 +352,320 @@ msgstr ""
 msgid "Categories added."
 msgstr ""
 
-#: includes/class-admin.php:156
-#: includes/class-admin.php:200
-#: includes/class-admin.php:220
-#: includes/class-admin.php:240
+#: includes/class-admin.php:143
+msgid "Invalid uploaded file."
+msgstr ""
+
+#: includes/class-admin.php:150
+msgid "Invalid file type. Please upload a JSON file."
+msgstr ""
+
+#: includes/class-admin.php:171
+#: includes/class-admin.php:215
+#: includes/class-admin.php:235
 #: includes/class-admin.php:268
-#: includes/class-admin.php:302
-#: includes/class-admin.php:349
-#: includes/class-admin.php:406
-#: includes/class-admin.php:426
-#: includes/class-admin.php:452
-#: includes/class-admin.php:486
+#: includes/class-admin.php:296
+#: includes/class-admin.php:352
+#: includes/class-admin.php:408
+#: includes/class-admin.php:465
+#: includes/class-admin.php:485
+#: includes/class-admin.php:511
+#: includes/class-admin.php:584
 msgid "Unauthorized"
 msgstr ""
 
-#: includes/class-admin.php:160
+#: includes/class-admin.php:175
 msgid "Category name is required"
 msgstr ""
 
-#: includes/class-admin.php:177
-#: includes/class-admin.php:314
+#: includes/class-admin.php:192
+#: includes/class-admin.php:364
 msgid "A category cannot be its own parent"
 msgstr ""
 
-#: includes/class-admin.php:183
-#: includes/class-admin.php:258
-#: includes/class-admin.php:339
-#: includes/class-admin.php:381
+#: includes/class-admin.php:198
+#: includes/class-admin.php:286
+#: includes/class-admin.php:397
+#: includes/class-admin.php:440
 msgid "Error during update"
 msgstr ""
 
-#: includes/class-admin.php:189
-#: includes/class-admin.php:387
+#: includes/class-admin.php:204
+#: includes/class-admin.php:446
 msgid "Error during creation"
 msgstr ""
 
-#: includes/class-admin.php:193
+#: includes/class-admin.php:208
 msgid "Category saved"
 msgstr ""
 
-#: includes/class-admin.php:204
-#: includes/class-admin.php:224
-#: includes/class-admin.php:244
-#: includes/class-admin.php:410
-#: includes/class-admin.php:456
+#: includes/class-admin.php:219
+#: includes/class-admin.php:239
+#: includes/class-admin.php:272
+#: includes/class-admin.php:469
+#: includes/class-admin.php:515
 msgid "Invalid ID"
 msgstr ""
 
-#: includes/class-admin.php:210
-#: includes/class-admin.php:416
+#: includes/class-admin.php:225
+#: includes/class-admin.php:475
 msgid "Error during deletion"
 msgstr ""
 
-#: includes/class-admin.php:213
+#: includes/class-admin.php:228
 msgid "Category deleted"
 msgstr ""
 
-#: includes/class-admin.php:230
-#: includes/class-admin.php:251
+#: includes/class-admin.php:245
+#: includes/class-admin.php:279
 msgid "Category not found"
 msgstr ""
 
-#: includes/class-admin.php:261
+#: includes/class-admin.php:289
 msgid "Status updated"
 msgstr ""
 
-#: includes/class-admin.php:272
-#: includes/class-admin.php:306
-#: includes/class-admin.php:430
-msgid "Données invalides"
+#: includes/class-admin.php:300
+#: includes/class-admin.php:356
+msgid "Invalid data"
 msgstr ""
 
-#: includes/class-admin.php:295
-msgid "Hiérarchie mise à jour"
+#: includes/class-admin.php:307
+msgid "Too many updates"
 msgstr ""
 
-#: includes/class-admin.php:322
-msgid "Impossible de créer une boucle dans la hiérarchie"
+#: includes/class-admin.php:344
+msgid "Hierarchy updated"
 msgstr ""
 
-#: includes/class-admin.php:342
-msgid "Parent mis à jour"
+#: includes/class-admin.php:374
+msgid "Cannot create a loop in the category hierarchy"
 msgstr ""
 
-#: includes/class-admin.php:353
+#: includes/class-admin.php:385
+msgid "Hierarchy too deep or malformed"
+msgstr ""
+
+#: includes/class-admin.php:400
+msgid "Parent updated"
+msgstr ""
+
+#: includes/class-admin.php:412
 msgid "Product name is required"
 msgstr ""
 
-#: includes/class-admin.php:357
+#: includes/class-admin.php:416
 msgid "Invalid category"
 msgstr ""
 
-#: includes/class-admin.php:395
+#: includes/class-admin.php:454
 msgid "Erreur lors de l'enregistrement des prix"
 msgstr ""
 
-#: includes/class-admin.php:399
+#: includes/class-admin.php:458
 msgid "Product saved"
 msgstr ""
 
-#: includes/class-admin.php:419
+#: includes/class-admin.php:478
 msgid "Product deleted"
 msgstr ""
 
-#: includes/class-admin.php:437
+#: includes/class-admin.php:489
+msgid "Données invalides"
+msgstr ""
+
+#: includes/class-admin.php:496
 msgid "Table invalide"
 msgstr ""
 
-#: includes/class-admin.php:441
+#: includes/class-admin.php:500
 msgid "Format de positions invalide"
 msgstr ""
 
-#: includes/class-admin.php:445
+#: includes/class-admin.php:504
 msgid "Positions updated"
 msgstr ""
 
-#: includes/class-admin.php:462
+#: includes/class-admin.php:521
 msgid "Product not found"
 msgstr ""
 
-#: includes/class-admin.php:493
+#: includes/class-admin.php:591
 msgid "Default categories created successfully"
 msgstr ""
 
-#: includes/class-database.php:329
+#: includes/class-database.php:334
 msgid "Starters"
 msgstr ""
 
-#: includes/class-database.php:330
+#: includes/class-database.php:335
 msgid "Main Courses"
 msgstr ""
 
-#: includes/class-database.php:331
+#: includes/class-database.php:336
 msgid "Burgers"
 msgstr ""
 
-#: includes/class-database.php:332
+#: includes/class-database.php:337
 msgid "Pizzas"
 msgstr ""
 
-#: includes/class-database.php:333
+#: includes/class-database.php:338
 msgid "Pasta"
 msgstr ""
 
-#: includes/class-database.php:334
+#: includes/class-database.php:339
 msgid "Desserts"
 msgstr ""
 
-#: includes/class-database.php:335
+#: includes/class-database.php:340
 msgid "Drinks"
 msgstr ""
 
-#: includes/class-database.php:339
+#: includes/class-database.php:344
 msgid "Beers"
 msgstr ""
 
-#: includes/class-database.php:340
+#: includes/class-database.php:345
 msgid "Wines"
 msgstr ""
 
-#: includes/class-database.php:341
+#: includes/class-database.php:346
 msgid "Cocktails"
 msgstr ""
 
-#: includes/class-database.php:342
+#: includes/class-database.php:347
 msgid "Spirits"
 msgstr ""
 
-#: includes/class-database.php:343
+#: includes/class-database.php:348
 msgid "Aperitifs"
 msgstr ""
 
-#: includes/class-database.php:344
+#: includes/class-database.php:349
 msgid "Digestifs"
 msgstr ""
 
-#: includes/class-database.php:345
+#: includes/class-database.php:350
 msgid "Soft Drinks"
 msgstr ""
 
-#: includes/class-database.php:346
+#: includes/class-database.php:351
 msgid "Coffee & Tea"
 msgstr ""
 
-#: includes/class-database.php:347
+#: includes/class-database.php:352
 msgid "Snacks"
 msgstr ""
 
-#: includes/class-import-export.php:77
+#: includes/class-import-export.php:79
 msgid "Upload error."
 msgstr ""
 
 #: includes/class-import-export.php:84
+msgid "File too large."
+msgstr ""
+
+#: includes/class-import-export.php:89
+msgid "Invalid file type."
+msgstr ""
+
+#: includes/class-import-export.php:96
 msgid "Invalid JSON file."
 msgstr ""
 
-#: includes/class-import-export.php:153
+#: includes/class-import-export.php:169
 msgid "Import successful!"
 msgstr ""
 
-#: includes/class-import-export.php:157
+#: includes/class-import-export.php:173
 msgid "Import error: "
 msgstr ""
 
-#: includes/class-settings.php:17
+#: includes/class-settings.php:19
 msgid "Gluten"
 msgstr ""
 
-#: includes/class-settings.php:18
+#: includes/class-settings.php:20
 msgid "Crustacés"
 msgstr ""
 
-#: includes/class-settings.php:19
+#: includes/class-settings.php:21
 msgid "Œufs"
 msgstr ""
 
-#: includes/class-settings.php:20
+#: includes/class-settings.php:22
 msgid "Poisson"
 msgstr ""
 
-#: includes/class-settings.php:21
+#: includes/class-settings.php:23
 msgid "Arachides"
 msgstr ""
 
-#: includes/class-settings.php:22
+#: includes/class-settings.php:24
 msgid "Soja"
 msgstr ""
 
-#: includes/class-settings.php:23
+#: includes/class-settings.php:25
 msgid "Lait"
 msgstr ""
 
-#: includes/class-settings.php:24
+#: includes/class-settings.php:26
 msgid "Fruits à coque"
 msgstr ""
 
-#: includes/class-settings.php:25
+#: includes/class-settings.php:27
 msgid "Céleri"
 msgstr ""
 
-#: includes/class-settings.php:26
+#: includes/class-settings.php:28
 msgid "Moutarde"
 msgstr ""
 
-#: includes/class-settings.php:27
+#: includes/class-settings.php:29
 msgid "Sésame"
 msgstr ""
 
-#: includes/class-settings.php:28
+#: includes/class-settings.php:30
 msgid "Sulfites"
 msgstr ""
 
-#: includes/class-settings.php:29
+#: includes/class-settings.php:31
 msgid "Lupin"
 msgstr ""
 
-#: includes/class-settings.php:30
+#: includes/class-settings.php:32
 msgid "Mollusques"
 msgstr ""
 
-#: includes/class-settings.php:36
+#: includes/class-settings.php:38
 msgid "Nouveau"
 msgstr ""
 
-#: includes/class-settings.php:37
+#: includes/class-settings.php:39
 msgid "Coup de cœur"
 msgstr ""
 
-#: includes/class-settings.php:38
+#: includes/class-settings.php:40
 msgid "Végétarien"
 msgstr ""
 
-#: includes/class-settings.php:39
+#: includes/class-settings.php:41
 msgid "Vegan"
 msgstr ""
 
-#: includes/class-settings.php:40
+#: includes/class-settings.php:42
 msgid "Bio"
 msgstr ""
 
-#: includes/class-settings.php:41
+#: includes/class-settings.php:43
 msgid "Fait maison"
 msgstr ""
 
-#: includes/class-settings.php:42
+#: includes/class-settings.php:44
 msgid "Sans gluten"
 msgstr ""
 
-#: includes/class-settings.php:43
+#: includes/class-settings.php:45
 msgid "Épicé"
 msgstr ""
