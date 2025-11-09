@@ -5,7 +5,7 @@
    - No layout/behavior changes
    ======================================================= */
 
-.lrob-carte-admin {
+:root {
     --lrob-primary: #2271b1;
     --lrob-success: #00a32a;
     --lrob-warning: #dba617;
@@ -33,7 +33,9 @@
 
     --lrob-trans-fast: .2s ease;
     --lrob-trans:      .3s ease;
+}
 
+.lrob-carte-admin {
     max-width: 1400px;
     color: var(--lrob-text);
 }

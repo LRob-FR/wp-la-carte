@@ -192,7 +192,29 @@ For more details, see [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gn
   - Reduced CSS and JS payloads.  
   - Improved layout rendering logic and block editor previews.  
   - Prepared structure for future Gutenberg variable bindings.
+  
+### 1.2.1
+- **Performance Optimizations**
+  - Admin class now loads only in admin context (not on frontend)
+  - Settings class no longer loaded on frontend
+  - Import/Export class lazy-loads only during actual import/export operations
+  - Frontend assets (JS/CSS) load only when block is present on page
+  - Admin assets load only on plugin admin pages
+  - Reduced memory footprint for non-admin requests
 
+- **Code Quality Improvements**
+  - Refactored AJAX handler registration (11 calls → 1 loop)
+  - Streamlined submenu registration (4 calls → 1 loop)
+  - Added `verify_ajax()` helper for centralized AJAX security checks
+  - Added `sanitize_object()` helper to eliminate duplicate sanitization code
+  - Removed redundant class requires from admin methods
+  - Nullsafe coalescing operator (`??=`) for singleton pattern
+  - Total: ~70+ lines reduced through DRY principles
+
+- **Technical Changes**
+  - Split admin vs frontend initialization hooks
+  - Database class always loads (required for activation hook + blocks)
+  - No breaking changes, full backward compatibility
 
 ## Todo List
 - Make caracteristics such as allergen or badges fully customizable

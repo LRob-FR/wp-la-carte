@@ -3,7 +3,7 @@
  * Plugin Name: LRob - La Carte
  * Plugin URI: https://www.lrob.fr/
  * Description: Menu manager for bars and restaurants
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: LRob
  * Author URI: https://www.lrob.fr/
  * Text Domain: lrob-la-carte
@@ -15,33 +15,33 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('LROB_CARTE_VERSION', '1.2.0');
+define('LROB_CARTE_VERSION', '1.2.1');
 define('LROB_CARTE_PATH', plugin_dir_path(__FILE__));
 define('LROB_CARTE_URL', plugin_dir_url(__FILE__));
 
+// Load database class for activation hook
 require_once LROB_CARTE_PATH . 'includes/class-database.php';
-require_once LROB_CARTE_PATH . 'includes/class-admin.php';
-require_once LROB_CARTE_PATH . 'includes/class-settings.php';
-require_once LROB_CARTE_PATH . 'includes/class-import-export.php';
+
+// Activation hook must be outside class
+register_activation_hook(__FILE__, array('LRob_Carte_Database', 'create_tables'));
 
 class LRob_La_Carte {
     private static $instance = null;
 
     public static function instance() {
-        if (null === self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
+        return self::$instance ??= new self();
     }
 
     private function __construct() {
-        register_activation_hook(__FILE__, array('LRob_Carte_Database', 'create_tables'));
-
         add_action('plugins_loaded', array($this, 'load_textdomain'));
         add_action('init', array($this, 'init'));
-        add_action('admin_init', array($this, 'check_database_version'));
-        add_action('admin_enqueue_scripts', array($this, 'admin_assets'));
-        add_action('wp_enqueue_scripts', array($this, 'frontend_assets'));
+
+        if (is_admin()) {
+            add_action('admin_init', array($this, 'check_database_version'));
+            add_action('admin_enqueue_scripts', array($this, 'admin_assets'));
+        } else {
+            add_action('wp_enqueue_scripts', array($this, 'frontend_assets'));
+        }
     }
 
     public function load_textdomain() {
@@ -49,30 +49,26 @@ class LRob_La_Carte {
     }
 
     public function check_database_version() {
-        if ( ! current_user_can('manage_options') ) {
-            return;
-        }
+        if (!current_user_can('manage_options')) return;
+
         $db_version = get_option('lrob_carte_db_version', '0');
-        $current_version = '1.2';
-        if ( version_compare($db_version, $current_version, '<') ) {
+        if (version_compare($db_version, '1.2', '<')) {
             LRob_Carte_Database::migrate_database();
-            update_option('lrob_carte_db_version', $current_version);
+            update_option('lrob_carte_db_version', '1.2');
         }
     }
 
     public function init() {
         if (is_admin()) {
+            require_once LROB_CARTE_PATH . 'includes/class-admin.php';
             new LRob_Carte_Admin();
         }
 
         add_action('enqueue_block_editor_assets', array($this, 'enqueue_block_editor_assets'));
 
-        register_block_type(
-            LROB_CARTE_PATH . 'blocks/menu-display',
-            array(
-                'render_callback' => array($this, 'render_menu_block')
-            )
-        );
+        register_block_type(LROB_CARTE_PATH . 'blocks/menu-display', array(
+            'render_callback' => array($this, 'render_menu_block')
+        ));
     }
 
     public function enqueue_block_editor_assets() {
@@ -112,14 +108,11 @@ class LRob_La_Carte {
     }
 
     public function admin_assets($hook) {
-        if (strpos($hook, 'lrob-carte') === false) return;
+        if (!str_contains($hook, 'lrob-carte')) return;
 
-        // Enqueue WordPress media library
         wp_enqueue_media();
-
         wp_enqueue_style('wp-color-picker');
         wp_enqueue_script('jquery-ui-sortable');
-
         wp_enqueue_style('lrob-carte-admin', LROB_CARTE_URL . 'admin/css/admin.css', array(), LROB_CARTE_VERSION);
         wp_enqueue_script('lrob-carte-admin', LROB_CARTE_URL . 'admin/js/admin.js', array('jquery', 'wp-color-picker', 'jquery-ui-sortable'), LROB_CARTE_VERSION, true);
 
