@@ -2,6 +2,8 @@
 
 A professional menu management plugin for bars and restaurants on WordPress.
 
+![Aperçu Front - La Carte](https://www.lrob.fr/wp-content/uploads/2025/11/La-Carte-Preview.png)
+
 ## Features
 
 - **Product Management**: Organize your menu items by categories
@@ -29,12 +31,18 @@ A professional menu management plugin for bars and restaurants on WordPress.
 
 ### Creating Categories
 
+![Categories - La Carte](https://www.lrob.fr/wp-content/uploads/2025/11/La-Carte-categories.png)
+
 1. Navigate to **Menu → Categories**
 2. Click **"Create Default Categories"** for a quick start, or
 3. Click **"Add Category"** to create custom categories
-4. Organize with drag & drop, add icons (emoji, image, or Font Awesome)
+4. Organize with drag & drop, add icons (emoji or image)
+
+![Single Category Edit - La Carte](https://www.lrob.fr/wp-content/uploads/2025/11/La-Cart-category-edit.png)
 
 ### Adding Products
+
+![Edit Product - La Carte](https://www.lrob.fr/wp-content/uploads/2025/11/La-Carte-product-edit.png)
 
 1. Go to **Menu → Products**
 2. Click **"Add Product"**
@@ -47,6 +55,8 @@ A professional menu management plugin for bars and restaurants on WordPress.
    - Availability status
 
 ### Display Your Menu
+
+![Gutenberg Edit - La Carte](https://www.lrob.fr/wp-content/uploads/2025/11/La-Carte-Gutenberg-Options-showall.png)
 
 1. Edit any page or post
 2. Add the **"Menu Display"** block
