@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: LRob - La Carte
- * Plugin URI: https://www.lrob.fr/
+ * Plugin URI: https://github.com/LRob-FR/wp-la-carte
  * Description: Menu manager for bars and restaurants
  * Version: 1.2.1
  * Author: LRob
