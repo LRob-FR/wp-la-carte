@@ -122,7 +122,7 @@ nano languages/lrob-la-carte-es_ES.po
 
 ## Support
 
-For support, please visit [LRob](https://www.lrob.fr/)
+For support, please [open an issue](https://github.com/LRob-FR/wp-la-carte/issues) or [contact LRob directly](https://www.lrob.fr/contact/)
 
 ## Credits
 
