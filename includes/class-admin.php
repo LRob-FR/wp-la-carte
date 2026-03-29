@@ -67,19 +67,19 @@ class LRob_Carte_Admin {
     public function add_menu_pages() {
         add_menu_page(
             __('La Carte', 'lrob-la-carte'),
-            __('La Carte', 'lrob-la-carte'),
-            'manage_options',
-            'lrob-carte',
-            array($this, 'render_products_page'),
-            'dashicons-food',
-            30
+                      __('La Carte', 'lrob-la-carte'),
+                      'manage_options',
+                      'lrob-carte',
+                      array($this, 'render_products_page'),
+                      'dashicons-food',
+                      30
         );
 
         $submenus = array(
             array('lrob-carte', __('Products', 'lrob-la-carte'), 'render_products_page'),
-            array('lrob-carte-categories', __('Categories', 'lrob-la-carte'), 'render_categories_page'),
-            array('lrob-carte-settings', __('Settings', 'lrob-la-carte'), 'render_settings_page'),
-            array('lrob-carte-import-export', __('Import/Export', 'lrob-la-carte'), 'render_import_export_page')
+                          array('lrob-carte-categories', __('Categories', 'lrob-la-carte'), 'render_categories_page'),
+                          array('lrob-carte-settings', __('Settings', 'lrob-la-carte'), 'render_settings_page'),
+                          array('lrob-carte-import-export', __('Import/Export', 'lrob-la-carte'), 'render_import_export_page')
         );
 
         foreach ($submenus as $submenu) {
@@ -140,10 +140,9 @@ class LRob_Carte_Admin {
             if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
                 echo '<div class="notice notice-error"><p>' . __('Invalid uploaded file.', 'lrob-la-carte') . '</p></div>';
             } else {
-                $filetype = wp_check_filetype_and_ext($file['tmp_name'], $file['name']);
-                $ext = $filetype['ext'] ?? '';
+                $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
-                if (!in_array(strtolower($ext), array('json'), true)) {
+                if ($ext !== 'json') {
                     echo '<div class="notice notice-error"><p>' . __('Invalid file type. Please upload a JSON file.', 'lrob-la-carte') . '</p></div>';
                 } else {
                     $this->load_import_export();
@@ -168,12 +167,12 @@ class LRob_Carte_Admin {
 
         $data = array(
             'parent_id' => intval($_POST['parent_id'] ?? 0),
-            'name' => sanitize_text_field($_POST['name']),
-            'slug' => !empty($_POST['slug']) ? sanitize_title($_POST['slug']) : sanitize_title($_POST['name']),
-            'icon_type' => in_array($_POST['icon_type'], array('emoji', 'image')) ? $_POST['icon_type'] : 'emoji',
-            'icon_value' => sanitize_text_field($_POST['icon_value']),
-            'position' => intval($_POST['position'] ?? 0),
-            'active' => intval($_POST['active'] ?? 1)
+                      'name' => sanitize_text_field($_POST['name']),
+                      'slug' => !empty($_POST['slug']) ? sanitize_title($_POST['slug']) : sanitize_title($_POST['name']),
+                      'icon_type' => in_array($_POST['icon_type'], array('emoji', 'image')) ? $_POST['icon_type'] : 'emoji',
+                      'icon_value' => sanitize_text_field($_POST['icon_value']),
+                      'position' => intval($_POST['position'] ?? 0),
+                      'active' => intval($_POST['active'] ?? 1)
         );
 
         if (isset($_POST['id']) && $_POST['id']) {
@@ -284,9 +283,9 @@ class LRob_Carte_Admin {
             $wpdb->update(
                 $table,
                 array('parent_id' => $parent_id, 'position' => $position),
-                array('id' => $id),
-                array('%d', '%d'),
-                array('%d')
+                          array('id' => $id),
+                          array('%d', '%d'),
+                          array('%d')
             );
         }
 
@@ -331,9 +330,9 @@ class LRob_Carte_Admin {
         $result = $wpdb->update(
             $wpdb->prefix . 'lrob_categories',
             array('parent_id' => $parent_id),
-            array('id' => $id),
-            array('%d'),
-            array('%d')
+                                array('id' => $id),
+                                array('%d'),
+                                array('%d')
         );
 
         if ($result === false) {
@@ -356,18 +355,18 @@ class LRob_Carte_Admin {
 
         $allowed_availability = array('available', 'out_of_stock', 'temporary');
         $availability = isset($_POST['availability']) && in_array($_POST['availability'], $allowed_availability)
-            ? $_POST['availability']
-            : 'available';
+        ? $_POST['availability']
+        : 'available';
 
         $data = array(
             'category_id' => intval($_POST['category_id']),
-            'name' => sanitize_text_field($_POST['name']),
-            'description' => sanitize_textarea_field($_POST['description'] ?? ''),
-            'image_id' => intval($_POST['image_id'] ?? 0),
-            'allergens' => sanitize_text_field($_POST['allergens'] ?? ''),
-            'badges' => sanitize_text_field($_POST['badges'] ?? ''),
-            'availability' => $availability,
-            'position' => intval($_POST['position'] ?? 0)
+                      'name' => sanitize_text_field($_POST['name']),
+                      'description' => sanitize_textarea_field($_POST['description'] ?? ''),
+                      'image_id' => intval($_POST['image_id'] ?? 0),
+                      'allergens' => sanitize_text_field($_POST['allergens'] ?? ''),
+                      'badges' => sanitize_text_field($_POST['badges'] ?? ''),
+                      'availability' => $availability,
+                      'position' => intval($_POST['position'] ?? 0)
         );
 
         if (isset($_POST['id']) && $_POST['id']) {
@@ -462,17 +461,17 @@ class LRob_Carte_Admin {
                 $p = (array) $price_obj;
                 $sanitized_prices[] = array(
                     'id' => intval($p['id'] ?? 0),
-                    'label' => sanitize_text_field($p['label'] ?? ''),
-                    'price' => floatval($p['price'] ?? 0.0),
-                    'happy_hour' => intval($p['happy_hour'] ?? 0),
-                    'position' => intval($p['position'] ?? 0)
+                                            'label' => sanitize_text_field($p['label'] ?? ''),
+                                            'price' => floatval($p['price'] ?? 0.0),
+                                            'happy_hour' => intval($p['happy_hour'] ?? 0),
+                                            'position' => intval($p['position'] ?? 0)
                 );
             }
         }
 
         wp_send_json_success(array(
             'product' => $this->sanitize_object($product),
-            'prices' => $sanitized_prices
+                                   'prices' => $sanitized_prices
         ));
     }
 
