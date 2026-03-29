@@ -8,26 +8,40 @@ class LRob_Carte_Import_Export {
         $data = array(
             'version' => LROB_CARTE_VERSION,
             'exported_at' => current_time('mysql'),
-            'settings' => array(
-                'mode' => get_option('lrob_carte_mode'),
-                'primary_color' => get_option('lrob_carte_primary_color'),
-                'secondary_color' => get_option('lrob_carte_secondary_color'),
-                'out_of_stock_display' => get_option('lrob_carte_out_of_stock_display'),
-            ),
-            'categories' => array(),
-            'products' => array()
+                      'settings' => array(
+                          'mode' => get_option('lrob_carte_mode'),
+                                          'primary_color' => get_option('lrob_carte_primary_color'),
+                                          'secondary_color' => get_option('lrob_carte_secondary_color'),
+                                          'out_of_stock_display' => get_option('lrob_carte_out_of_stock_display'),
+                      ),
+                      'categories' => array(),
+                      'products' => array()
         );
 
         $categories = LRob_Carte_Database::get_categories();
+
+        // Build id → slug map for parent resolution
+        $id_to_slug = array();
         foreach ($categories as $cat) {
+            $id_to_slug[(int) $cat->id] = (string) $cat->slug;
+        }
+
+        foreach ($categories as $cat) {
+            $parent_slug = '';
+            $parent_id = (int) ($cat->parent_id ?? 0);
+            if ($parent_id > 0 && isset($id_to_slug[$parent_id])) {
+                $parent_slug = $id_to_slug[$parent_id];
+            }
+
             $data['categories'][] = array(
                 'name' => (string) $cat->name,
-                'slug' => (string) $cat->slug,
-                'icon_type' => (string) $cat->icon_type,
-                'icon_value' => (string) $cat->icon_value,
-                'position' => (int) $cat->position,
-                'parent_id' => (int) ($cat->parent_id ?? 0),
-                'active' => (int) ($cat->active ?? 1)
+                                          'slug' => (string) $cat->slug,
+                                          'icon_type' => (string) $cat->icon_type,
+                                          'icon_value' => (string) $cat->icon_value,
+                                          'position' => (int) $cat->position,
+                                          'parent_id' => $parent_id,
+                                          'parent_slug' => $parent_slug,
+                                          'active' => (int) ($cat->active ?? 1)
             );
         }
 
@@ -36,13 +50,13 @@ class LRob_Carte_Import_Export {
             $prices = LRob_Carte_Database::get_product_prices($product->id);
             $product_data = array(
                 'category_slug' => $this->get_category_slug($product->category_id),
-                'name' => (string) $product->name,
-                'description' => (string) ($product->description ?? ''),
-                'allergens' => (string) ($product->allergens ?? ''),
-                'badges' => (string) ($product->badges ?? ''),
-                'availability' => (string) ($product->availability ?? 'available'),
-                'position' => (int) ($product->position ?? 0),
-                'prices' => array()
+                                  'name' => (string) $product->name,
+                                  'description' => (string) ($product->description ?? ''),
+                                  'allergens' => (string) ($product->allergens ?? ''),
+                                  'badges' => (string) ($product->badges ?? ''),
+                                  'availability' => (string) ($product->availability ?? 'available'),
+                                  'position' => (int) ($product->position ?? 0),
+                                  'prices' => array()
             );
 
             if (!empty($product->image_id)) {
@@ -55,8 +69,8 @@ class LRob_Carte_Import_Export {
             foreach ($prices as $price) {
                 $product_data['prices'][] = array(
                     'label' => (string) $price->label,
-                    'price' => (float) $price->price,
-                    'happy_hour' => (int) ($price->happy_hour ?? 0)
+                                                  'price' => (float) $price->price,
+                                                  'happy_hour' => (int) ($price->happy_hour ?? 0)
                 );
             }
 
@@ -84,8 +98,8 @@ class LRob_Carte_Import_Export {
             return array('success' => false, 'message' => __('File too large.', 'lrob-la-carte'));
         }
 
-        $ft = wp_check_filetype_and_ext($file['tmp_name'], $file['name']);
-        if (empty($ft['ext']) || strtolower($ft['ext']) !== 'json') {
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if ($ext !== 'json') {
             return array('success' => false, 'message' => __('Invalid file type.', 'lrob-la-carte'));
         }
 
@@ -108,6 +122,7 @@ class LRob_Carte_Import_Export {
 
             $category_map = array();
 
+            // First pass: insert/update all categories with parent_id=0
             foreach ($data['categories'] as $cat_data) {
                 if (!is_array($cat_data)) continue;
                 $slug = sanitize_title($cat_data['slug']);
@@ -118,12 +133,12 @@ class LRob_Carte_Import_Export {
 
                 $cat_insert_data = array(
                     'name' => sanitize_text_field($cat_data['name'] ?? ''),
-                    'slug' => $slug,
-                    'icon_type' => sanitize_text_field($cat_data['icon_type'] ?? 'emoji'),
-                    'icon_value' => sanitize_text_field($cat_data['icon_value'] ?? '🍽️'),
-                    'position' => intval($cat_data['position'] ?? 0),
-                    'parent_id' => intval($cat_data['parent_id'] ?? 0),
-                    'active' => intval($cat_data['active'] ?? 1)
+                                         'slug' => $slug,
+                                         'icon_type' => sanitize_text_field($cat_data['icon_type'] ?? 'emoji'),
+                                         'icon_value' => sanitize_text_field($cat_data['icon_value'] ?? '🍽️'),
+                                         'position' => intval($cat_data['position'] ?? 0),
+                                         'parent_id' => 0,
+                                         'active' => intval($cat_data['active'] ?? 1)
                 );
 
                 if ($existing) {
@@ -132,6 +147,27 @@ class LRob_Carte_Import_Export {
                 } else {
                     $new_id = LRob_Carte_Database::insert_category($cat_insert_data);
                     $category_map[$slug] = $new_id;
+                }
+            }
+
+            // Second pass: resolve parent_slug to real DB IDs (direct update, parent_id only)
+            foreach ($data['categories'] as $cat_data) {
+                if (!is_array($cat_data)) continue;
+                $slug = sanitize_title($cat_data['slug']);
+                $parent_slug = sanitize_title($cat_data['parent_slug'] ?? '');
+
+                if (!empty($parent_slug) && isset($category_map[$parent_slug]) && isset($category_map[$slug])) {
+                    $real_parent_id = intval($category_map[$parent_slug]);
+                    $real_cat_id = intval($category_map[$slug]);
+                    if ($real_parent_id !== $real_cat_id) {
+                        $wpdb->update(
+                            $wpdb->prefix . 'lrob_categories',
+                            array('parent_id' => $real_parent_id),
+                                      array('id' => $real_cat_id),
+                                      array('%d'),
+                                      array('%d')
+                        );
+                    }
                 }
             }
 
@@ -147,13 +183,13 @@ class LRob_Carte_Import_Export {
 
                 $product_data = array(
                     'category_id' => intval($category_map[$slug]),
-                    'name' => sanitize_text_field($prod_data['name'] ?? ''),
-                    'description' => sanitize_textarea_field($prod_data['description'] ?? ''),
-                    'image_id' => $image_id,
-                    'allergens' => sanitize_text_field($prod_data['allergens'] ?? ''),
-                    'badges' => sanitize_text_field($prod_data['badges'] ?? ''),
-                    'availability' => sanitize_text_field($prod_data['availability'] ?? 'available'),
-                    'position' => intval($prod_data['position'] ?? 0)
+                                      'name' => sanitize_text_field($prod_data['name'] ?? ''),
+                                      'description' => sanitize_textarea_field($prod_data['description'] ?? ''),
+                                      'image_id' => $image_id,
+                                      'allergens' => sanitize_text_field($prod_data['allergens'] ?? ''),
+                                      'badges' => sanitize_text_field($prod_data['badges'] ?? ''),
+                                      'availability' => sanitize_text_field($prod_data['availability'] ?? 'available'),
+                                      'position' => intval($prod_data['position'] ?? 0)
                 );
 
                 $product_id = LRob_Carte_Database::insert_product($product_data);
@@ -206,7 +242,7 @@ class LRob_Carte_Import_Export {
 
         $file_array = array(
             'name' => sanitize_file_name(basename($url)),
-            'tmp_name' => $tmp
+                            'tmp_name' => $tmp
         );
 
         $id = media_handle_sideload($file_array, 0);
