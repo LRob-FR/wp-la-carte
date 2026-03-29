@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-03-29T16:11:24+00:00\n"
+"POT-Creation-Date: 2026-03-29T17:04:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: lrob-la-carte\n"
@@ -357,127 +357,127 @@ msgstr ""
 msgid "Invalid uploaded file."
 msgstr ""
 
-#: includes/class-admin.php:147
+#: includes/class-admin.php:146
 msgid "Invalid file type. Please upload a JSON file."
 msgstr ""
 
-#: includes/class-admin.php:166
+#: includes/class-admin.php:165
 msgid "Category name is required"
 msgstr ""
 
-#: includes/class-admin.php:183
-#: includes/class-admin.php:307
+#: includes/class-admin.php:182
+#: includes/class-admin.php:306
 msgid "A category cannot be its own parent"
 msgstr ""
 
-#: includes/class-admin.php:189
-#: includes/class-admin.php:252
-#: includes/class-admin.php:340
-#: includes/class-admin.php:378
+#: includes/class-admin.php:188
+#: includes/class-admin.php:251
+#: includes/class-admin.php:339
+#: includes/class-admin.php:377
 msgid "Error during update"
 msgstr ""
 
-#: includes/class-admin.php:195
-#: includes/class-admin.php:384
+#: includes/class-admin.php:194
+#: includes/class-admin.php:383
 msgid "Error during creation"
 msgstr ""
 
-#: includes/class-admin.php:199
+#: includes/class-admin.php:198
 msgid "Category saved"
 msgstr ""
 
-#: includes/class-admin.php:206
-#: includes/class-admin.php:222
-#: includes/class-admin.php:238
-#: includes/class-admin.php:403
-#: includes/class-admin.php:440
+#: includes/class-admin.php:205
+#: includes/class-admin.php:221
+#: includes/class-admin.php:237
+#: includes/class-admin.php:402
+#: includes/class-admin.php:439
 msgid "Invalid ID"
 msgstr ""
 
-#: includes/class-admin.php:212
-#: includes/class-admin.php:409
+#: includes/class-admin.php:211
+#: includes/class-admin.php:408
 msgid "Error during deletion"
 msgstr ""
 
-#: includes/class-admin.php:215
+#: includes/class-admin.php:214
 msgid "Category deleted"
 msgstr ""
 
-#: includes/class-admin.php:228
-#: includes/class-admin.php:245
+#: includes/class-admin.php:227
+#: includes/class-admin.php:244
 msgid "Category not found"
 msgstr ""
 
-#: includes/class-admin.php:255
+#: includes/class-admin.php:254
 msgid "Status updated"
 msgstr ""
 
-#: includes/class-admin.php:262
-#: includes/class-admin.php:300
+#: includes/class-admin.php:261
+#: includes/class-admin.php:299
 msgid "Invalid data"
 msgstr ""
 
-#: includes/class-admin.php:267
+#: includes/class-admin.php:266
 msgid "Too many updates"
 msgstr ""
 
-#: includes/class-admin.php:293
+#: includes/class-admin.php:292
 msgid "Hierarchy updated"
 msgstr ""
 
-#: includes/class-admin.php:317
+#: includes/class-admin.php:316
 msgid "Cannot create a loop in the category hierarchy"
 msgstr ""
 
-#: includes/class-admin.php:328
+#: includes/class-admin.php:327
 msgid "Hierarchy too deep or malformed"
 msgstr ""
 
-#: includes/class-admin.php:343
+#: includes/class-admin.php:342
 msgid "Parent updated"
 msgstr ""
 
-#: includes/class-admin.php:350
+#: includes/class-admin.php:349
 msgid "Product name is required"
 msgstr ""
 
-#: includes/class-admin.php:354
+#: includes/class-admin.php:353
 msgid "Invalid category"
 msgstr ""
 
-#: includes/class-admin.php:392
+#: includes/class-admin.php:391
 msgid "Erreur lors de l'enregistrement des prix"
 msgstr ""
 
-#: includes/class-admin.php:396
+#: includes/class-admin.php:395
 msgid "Product saved"
 msgstr ""
 
-#: includes/class-admin.php:412
+#: includes/class-admin.php:411
 msgid "Product deleted"
 msgstr ""
 
-#: includes/class-admin.php:419
+#: includes/class-admin.php:418
 msgid "Données invalides"
 msgstr ""
 
-#: includes/class-admin.php:425
+#: includes/class-admin.php:424
 msgid "Table invalide"
 msgstr ""
 
-#: includes/class-admin.php:429
+#: includes/class-admin.php:428
 msgid "Format de positions invalide"
 msgstr ""
 
-#: includes/class-admin.php:433
+#: includes/class-admin.php:432
 msgid "Positions updated"
 msgstr ""
 
-#: includes/class-admin.php:446
+#: includes/class-admin.php:445
 msgid "Product not found"
 msgstr ""
 
-#: includes/class-admin.php:486
+#: includes/class-admin.php:485
 msgid "Default categories created successfully"
 msgstr ""
 

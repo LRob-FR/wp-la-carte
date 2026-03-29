@@ -168,8 +168,8 @@ jQuery(document).ready(function ($) {
             if (amount) {
                 prices.push({
                     label: String(label || ''),
-                    price: String(amount),
-                    happy_hour: happyHour
+                            price: String(amount),
+                            happy_hour: happyHour
                 });
             }
         });
@@ -184,15 +184,15 @@ jQuery(document).ready(function ($) {
                 action: 'lrob_save_product',
                 nonce: lrobCarte.nonce,
                 id: toId($('#product-id').val()),
-                category_id: toId($('#product-category').val()),
-                name: $('#product-name').val(),
-                description: $('#product-description').val(),
-                image_id: toId($('#product-image-id').val()),
-                allergens: allergens.join(','),
-                badges: badges.join(','),
-                availability: $('#product-availability').val(),
-                position: toId($('#product-position').val()),
-                prices: pricesCapped
+               category_id: toId($('#product-category').val()),
+               name: $('#product-name').val(),
+               description: $('#product-description').val(),
+               image_id: toId($('#product-image-id').val()),
+               allergens: allergens.join(','),
+               badges: badges.join(','),
+               availability: $('#product-availability').val(),
+               position: toId($('#product-position').val()),
+               prices: pricesCapped
             }
         }).done(function (response) {
             if (response && response.success) {
@@ -264,19 +264,19 @@ jQuery(document).ready(function ($) {
 
         if (mode === 'bar') {
             happyHourCheckbox =
-                '<label class="lrob-happy-hour-label">' +
-                '<input type="checkbox" class="price-happy-hour"' + (isHappyHour ? ' checked' : '') + '> Happy Hour' +
-                '</label>';
+            '<label class="lrob-happy-hour-label">' +
+            '<input type="checkbox" class="price-happy-hour"' + (isHappyHour ? ' checked' : '') + '> Happy Hour' +
+            '</label>';
         }
 
         // Static HTML (no untrusted data included here)
         const newRow =
-            '<div class="lrob-price-row' + (isHappyHour ? ' lrob-happy-hour-row' : '') + '">' +
-            '<input type="text" class="price-label" placeholder="Ex: Verre (12cl)" list="price-labels-suggestions">' +
-            '<input type="number" class="price-amount" placeholder="0.00" step="0.01" min="0">' +
-            happyHourCheckbox +
-            '<button type="button" class="button lrob-remove-price">−</button>' +
-            '</div>';
+        '<div class="lrob-price-row' + (isHappyHour ? ' lrob-happy-hour-row' : '') + '">' +
+        '<input type="text" class="price-label" placeholder="Ex: Verre (12cl)" list="price-labels-suggestions">' +
+        '<input type="number" class="price-amount" placeholder="0.00" step="0.01" min="0">' +
+        happyHourCheckbox +
+        '<button type="button" class="button lrob-remove-price">−</button>' +
+        '</div>';
 
         return newRow;
     }
@@ -531,42 +531,98 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    // Up/Down buttons for categories
-    $('.lrob-move-category-up').on('click', function () {
-        const $item = $(this).closest('.lrob-category-item');
-        const $prev = $item.prev('.lrob-category-item');
-        if ($prev.length) {
-            $item.insertBefore($prev);
-            updateCategoryPositions();
-        }
-    });
+    // ---- Category ordering helpers ----
 
-    $('.lrob-move-category-down').on('click', function () {
-        const $item = $(this).closest('.lrob-category-item');
-        const $next = $item.next('.lrob-category-item');
-        if ($next.length) {
-            $item.insertAfter($next);
-            updateCategoryPositions();
+    // Get a category item + all its descendants as a jQuery collection (DOM order)
+    function getCategoryGroup($item) {
+        const id = String($item.data('id'));
+        const result = [$item[0]];
+        function collectDescendants(parentId) {
+            $('#lrob-categories-list .lrob-category-item').each(function () {
+                if (String($(this).data('parent')) === parentId) {
+                    result.push(this);
+                    collectDescendants(String($(this).data('id')));
+                }
+            });
         }
-    });
+        collectDescendants(id);
+        return $(result);
+    }
 
-    function updateCategoryPositions() {
-        if (ajaxDisabled) return;
-        const positions = [];
-        $('#lrob-categories-list .lrob-category-item').each(function () {
-            positions.push(toId($(this).data('id')));
+    // Get sibling items (same parent_id), in DOM order
+    function getCategorySiblings($item) {
+        const parentId = String($item.data('parent') || '0');
+        return $('#lrob-categories-list .lrob-category-item').filter(function () {
+            return String($(this).data('parent') || '0') === parentId;
         });
+    }
 
-        const capped = positions.slice(0, 1000);
+    // Up/Down buttons for categories (hierarchy-aware)
+    $(document).on('click', '.lrob-move-category-up', function () {
+        const $item = $(this).closest('.lrob-category-item');
+        const $siblings = getCategorySiblings($item);
+        const idx = $siblings.index($item);
+        if (idx <= 0) return;
+
+        const $prevSibling = $siblings.eq(idx - 1);
+        const $prevGroup = getCategoryGroup($prevSibling);
+        const $myGroup = getCategoryGroup($item);
+
+        // Detach my group, insert before the first element of prev sibling group
+        $myGroup.detach();
+        $myGroup.first().insertBefore($prevGroup.first());
+        for (let i = 1; i < $myGroup.length; i++) {
+            $($myGroup[i]).insertAfter($($myGroup[i - 1]));
+        }
+
+        saveCategoryHierarchy();
+    });
+
+    $(document).on('click', '.lrob-move-category-down', function () {
+        const $item = $(this).closest('.lrob-category-item');
+        const $siblings = getCategorySiblings($item);
+        const idx = $siblings.index($item);
+        if (idx < 0 || idx >= $siblings.length - 1) return;
+
+        const $nextSibling = $siblings.eq(idx + 1);
+        const $nextGroup = getCategoryGroup($nextSibling);
+        const $myGroup = getCategoryGroup($item);
+
+        // Detach my group, insert after the last element of next sibling group
+        $myGroup.detach();
+        $myGroup.first().insertAfter($nextGroup.last());
+        for (let i = 1; i < $myGroup.length; i++) {
+            $($myGroup[i]).insertAfter($($myGroup[i - 1]));
+        }
+
+        saveCategoryHierarchy();
+    });
+
+    // Save full hierarchy (positions + parent_ids) in one call
+    function saveCategoryHierarchy() {
+        if (ajaxDisabled) return;
+
+        const updates = [];
+        const counters = {};
+
+        $('#lrob-categories-list .lrob-category-item').each(function () {
+            const parentId = String($(this).data('parent') || '0');
+            if (!counters[parentId]) counters[parentId] = 0;
+
+            updates.push({
+                id: toId($(this).data('id')),
+                         parent_id: parentId,
+                         position: counters[parentId]++
+            });
+        });
 
         $.ajax({
             url: lrobCarte.ajaxurl,
             type: 'POST',
             data: {
-                action: 'lrob_update_positions',
+                action: 'lrob_update_category_hierarchy',
                 nonce: lrobCarte.nonce,
-                table: 'categories',
-                positions: capped
+                updates: updates.slice(0, 500)
             }
         }).fail(function () {
             alert('Failed to update positions.');
@@ -664,13 +720,13 @@ jQuery(document).ready(function ($) {
                 action: 'lrob_save_category',
                 nonce: lrobCarte.nonce,
                 id: toId($('#category-id').val()),
-                parent_id: toId($('#category-parent').val()),
-                name: $('#category-name').val(),
-                slug: $('#category-slug').val(),
-                icon_type: iconType,
-                icon_value: iconValue,
-                position: toId($('#category-position').val()),
-                active: $('#category-active').is(':checked') ? 1 : 0
+               parent_id: toId($('#category-parent').val()),
+               name: $('#category-name').val(),
+               slug: $('#category-slug').val(),
+               icon_type: iconType,
+               icon_value: iconValue,
+               position: toId($('#category-position').val()),
+               active: $('#category-active').is(':checked') ? 1 : 0
             }
         }).done(function (response) {
             if (response && response.success) {
