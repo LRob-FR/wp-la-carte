@@ -3,7 +3,7 @@
  * Plugin Name: LRob - La Carte
  * Plugin URI: https://www.lrob.fr/
  * Description: Menu manager for bars and restaurants
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: LRob
  * Author URI: https://www.lrob.fr/
  * Text Domain: lrob-la-carte
@@ -15,7 +15,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('LROB_CARTE_VERSION', '1.3.0');
+define('LROB_CARTE_VERSION', '1.3.1');
 define('LROB_CARTE_PATH', plugin_dir_path(__FILE__));
 define('LROB_CARTE_URL', plugin_dir_url(__FILE__));
 
@@ -76,7 +76,7 @@ class LRob_La_Carte {
             'lrob-carte-block-editor',
             LROB_CARTE_URL . 'blocks/menu-display/index.js',
             array('wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n'),
-            LROB_CARTE_VERSION
+                          LROB_CARTE_VERSION
         );
 
         $categories = LRob_Carte_Database::get_categories();
@@ -85,7 +85,7 @@ class LRob_La_Carte {
         foreach ($categories as $cat) {
             $categories_options[] = array(
                 'label' => sanitize_text_field($cat->name),
-                'value' => (int) $cat->id
+                                          'value' => (int) $cat->id
             );
         }
 
@@ -97,11 +97,12 @@ class LRob_La_Carte {
             'lrob-carte-block-editor-style',
             LROB_CARTE_URL . 'blocks/menu-display/style.css',
             array(),
-            LROB_CARTE_VERSION
+                         LROB_CARTE_VERSION
         );
     }
 
     public function render_menu_block($attributes) {
+        require_once LROB_CARTE_PATH . 'includes/class-settings.php';
         ob_start();
         include LROB_CARTE_PATH . 'blocks/menu-display/render.php';
         return ob_get_clean();
@@ -118,7 +119,7 @@ class LRob_La_Carte {
 
         wp_localize_script('lrob-carte-admin', 'lrobCarte', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('lrob_carte_nonce')
+                                                                  'nonce' => wp_create_nonce('lrob_carte_nonce')
         ));
     }
 
