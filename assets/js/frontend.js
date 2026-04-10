@@ -10,28 +10,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (index !== 0) cat.style.display = 'none';
             });
 
-            navItems[0].classList.add('active');
+                navItems[0].classList.add('active');
 
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const categoryId = this.dataset.category?.replace(/[^0-9]/g, '');
-                    if (!categoryId) return;
+                navItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        const categoryId = this.dataset.category?.replace(/[^0-9]/g, '');
+                        if (!categoryId) return;
 
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    this.classList.add('active');
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        this.classList.add('active');
 
-                    rootCategories.forEach(cat => {
-                        if (cat.dataset.categoryId === categoryId) {
-                            cat.style.display = 'block';
-                            resetCategoryFilters(cat);
-                        } else {
-                            cat.style.display = 'none';
-                        }
+                        rootCategories.forEach(cat => {
+                            if (cat.dataset.categoryId === categoryId) {
+                                cat.style.display = 'block';
+                                resetCategoryFilters(cat);
+                            } else {
+                                cat.style.display = 'none';
+                            }
+                        });
+
+                        this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                     });
-
-                    this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 });
-            });
         }
 
         const subcategoryBadges = wrapper.querySelectorAll('.lrob-subcategory-badge');
@@ -105,6 +105,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const subcategoriesWrapper = rootCategory.querySelector('.lrob-carte-subcategories-wrapper');
             if (!subcategoriesWrapper) return;
 
+            // Hide/show direct products of the root category
+            const rootDirectProducts = rootCategory.querySelector(':scope > .lrob-carte-products');
+            if (rootDirectProducts) {
+                rootDirectProducts.style.display = (level1CategoryId || level2CategoryId) ? 'none' : '';
+            }
+
             const allLevel1Subcategories = subcategoriesWrapper.querySelectorAll(':scope > .lrob-carte-subcategory');
 
             if (!level1CategoryId && !level2CategoryId) {
@@ -118,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (subcatId === level1CategoryId) {
                         subcat.style.display = 'block';
                         subcat.querySelectorAll(':scope > .lrob-carte-subcategories-container > .lrob-carte-subcategory')
-                            .forEach(child => child.style.display = (child.dataset.subcategoryId === level2CategoryId) ? 'block' : 'none');
+                        .forEach(child => child.style.display = (child.dataset.subcategoryId === level2CategoryId) ? 'block' : 'none');
                     } else {
                         subcat.style.display = 'none';
                     }
