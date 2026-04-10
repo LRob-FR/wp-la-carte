@@ -267,17 +267,8 @@ if (!function_exists('lrob_render_category_drill_down')) {
 		<?php endif; ?>
 		</div>
 
-		<!-- Subcategories with their products -->
-		<?php if ($has_children): ?>
-		<div class="lrob-carte-subcategories-wrapper" data-root-category-id="<?php echo esc_attr($category->id); ?>">
 		<?php
-		foreach ($categories_by_parent[$category->id] as $child_cat) {
-			lrob_render_subcategory_section($child_cat, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, 1);
-		}
-		?>
-		</div>
-		<?php else:
-		// Root category with direct products and no children
+		// Direct products of this category (rendered even when subcategories exist)
 		$direct_products = LRob_Carte_Database::get_products((int) $category->id);
 		if (!empty($direct_products)):
 			?>
@@ -328,7 +319,18 @@ if (!function_exists('lrob_render_category_drill_down')) {
 		</div>
 		<?php endforeach; ?>
 		</div>
-		<?php endif; endif; ?>
+		<?php endif; ?>
+
+		<!-- Subcategories with their products -->
+		<?php if ($has_children): ?>
+		<div class="lrob-carte-subcategories-wrapper" data-root-category-id="<?php echo esc_attr($category->id); ?>">
+		<?php
+		foreach ($categories_by_parent[$category->id] as $child_cat) {
+			lrob_render_subcategory_section($child_cat, $categories_by_parent, $show_images, $show_descriptions, $show_allergens, $out_of_stock_display, 1);
+		}
+		?>
+		</div>
+		<?php endif; ?>
 		</div>
 		<?php
 	}
