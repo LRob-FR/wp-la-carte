@@ -18,6 +18,27 @@ jQuery(document).ready(function ($) {
     // Early guard: if missing ajax config, we keep UI actions but avoid broken calls.
     const ajaxDisabled = !hasAjaxCfg();
 
+    // ---- Admin filter state persistence (across reloads) ----
+    const ADMIN_FILTER_STATE_KEY = 'lrob_admin_filter_state';
+    function saveAdminFilterState() {
+        try {
+            const root = $('.lrob-admin-root-tab.active').data('root-category');
+            const lvl1 = $('.lrob-subcategory-badge.active[data-filter-level="1"]').data('subcategory-id');
+            const lvl2 = $('.lrob-subcategory-badge.active[data-filter-level="2"]').data('subcategory-id');
+            sessionStorage.setItem(ADMIN_FILTER_STATE_KEY, JSON.stringify({
+                root: root ? toId(root) : null,
+                                                                          lvl1: lvl1 ? toId(lvl1) : null,
+                                                                          lvl2: lvl2 ? toId(lvl2) : null
+            }));
+        } catch (e) {}
+    }
+    function loadAdminFilterState() {
+        try {
+            const raw = sessionStorage.getItem(ADMIN_FILTER_STATE_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) { return null; }
+    }
+
     // ---- WP color pickers ----
     $('.lrob-color-picker').wpColorPicker && $('.lrob-color-picker').wpColorPicker();
 
@@ -364,12 +385,36 @@ jQuery(document).ready(function ($) {
         const rootTabs = filterWrapper.find('.lrob-admin-root-tab');
         const allProducts = $('#lrob-products-grid .lrob-product-card');
 
-        // Initialize: show first root category on load
+        // Initialize: restore saved filter state, or default to first root category
         if (rootTabs.length > 0) {
-            const firstRootId = toId(rootTabs.first().data('root-category'));
-            rootTabs.first().addClass('active');
-            $('.lrob-level-1-filters[data-parent-id="' + firstRootId + '"]').show();
-            filterProductsByRootCategory(firstRootId);
+            const stored = loadAdminFilterState();
+            let initialRootId = toId(rootTabs.first().data('root-category'));
+
+            if (stored && stored.root) {
+                const $matched = filterWrapper.find('.lrob-admin-root-tab[data-root-category="' + stored.root + '"]');
+                if ($matched.length) initialRootId = toId(stored.root);
+            }
+
+            filterWrapper.find('.lrob-admin-root-tab[data-root-category="' + initialRootId + '"]').addClass('active');
+            $('.lrob-level-1-filters[data-parent-id="' + initialRootId + '"]').show();
+            filterProductsByRootCategory(initialRootId);
+
+            if (stored && stored.lvl1) {
+                const $lvl1 = $('.lrob-subcategory-badge[data-filter-level="1"][data-subcategory-id="' + stored.lvl1 + '"][data-parent-id="' + initialRootId + '"]');
+                if ($lvl1.length) {
+                    $lvl1.addClass('active');
+                    $('.lrob-level-2-filters[data-parent-id="' + stored.lvl1 + '"]').show();
+                    filterProductsByCategory(stored.lvl1, null);
+
+                    if (stored.lvl2) {
+                        const $lvl2 = $('.lrob-subcategory-badge[data-filter-level="2"][data-subcategory-id="' + stored.lvl2 + '"][data-parent-id="' + stored.lvl1 + '"]');
+                        if ($lvl2.length) {
+                            $lvl2.addClass('active');
+                            filterProductsByCategory(stored.lvl1, stored.lvl2);
+                        }
+                    }
+                }
+            }
         }
 
         // Root category tab click
@@ -383,6 +428,7 @@ jQuery(document).ready(function ($) {
             $('.lrob-level-1-filters[data-parent-id="' + rootCategoryId + '"]').show();
 
             filterProductsByRootCategory(rootCategoryId);
+            saveAdminFilterState();
         });
 
         // Level 1 subcategory badge click
@@ -404,6 +450,7 @@ jQuery(document).ready(function ($) {
                 $('.lrob-level-2-filters[data-parent-id="' + subcategoryId + '"]').show();
                 filterProductsByCategory(subcategoryId, null);
             }
+            saveAdminFilterState();
         });
 
         // Level 2 subcategory badge click
@@ -420,6 +467,7 @@ jQuery(document).ready(function ($) {
                 $(this).addClass('active');
                 filterProductsByCategory(parentId, subcategoryId);
             }
+            saveAdminFilterState();
         });
 
         function filterProductsByRootCategory(rootCategoryId) {

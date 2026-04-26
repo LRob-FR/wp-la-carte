@@ -17,6 +17,10 @@
       "type": "string",
       "default": "all"
     },
+    "defaultCategorySelection": {
+      "type": "string",
+      "default": "first"
+    },
     "selectedCategory": {
       "type": "number",
       "default": 0

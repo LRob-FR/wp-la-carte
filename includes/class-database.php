@@ -95,6 +95,85 @@ class LRob_Carte_Database {
         }
     }
 
+    /**
+     * Strip all accumulated backslashes from a value until stable.
+     * Safe for menu content (names, descriptions, labels) which never
+     * contains legitimate backslashes.
+     */
+    private static function strip_all_slashes($value) {
+        if (!is_string($value) || $value === '') {
+            return (string) $value;
+        }
+        $max = 20; // safety cap
+        while ($max-- > 0) {
+            $next = stripslashes($value);
+            if ($next === $value) break;
+            $value = $next;
+        }
+        return $value;
+    }
+
+    /**
+     * Retroactive cleanup of backslashes accumulated by saves prior to
+     * the wp_unslash() fix. Iterative to handle multi-save corruption.
+     */
+    public static function cleanup_slashes() {
+        global $wpdb;
+        $cat_tbl   = $wpdb->prefix . 'lrob_categories';
+        $prod_tbl  = $wpdb->prefix . 'lrob_products';
+        $price_tbl = $wpdb->prefix . 'lrob_product_prices';
+
+        // Categories: name and icon_value (slug is sanitized via sanitize_title which strips backslashes)
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$cat_tbl}'")) {
+            $cats = $wpdb->get_results("SELECT id, name, icon_value FROM {$cat_tbl}");
+            foreach ($cats as $c) {
+                $wpdb->update(
+                    $cat_tbl,
+                    array(
+                        'name'       => self::strip_all_slashes($c->name),
+                          'icon_value' => self::strip_all_slashes($c->icon_value),
+                    ),
+                    array('id' => $c->id),
+                              array('%s', '%s'),
+                              array('%d')
+                );
+            }
+        }
+
+        // Products: name, description, allergens, badges
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$prod_tbl}'")) {
+            $prods = $wpdb->get_results("SELECT id, name, description, allergens, badges FROM {$prod_tbl}");
+            foreach ($prods as $p) {
+                $wpdb->update(
+                    $prod_tbl,
+                    array(
+                        'name'        => self::strip_all_slashes($p->name),
+                          'description' => self::strip_all_slashes($p->description),
+                          'allergens'   => self::strip_all_slashes($p->allergens),
+                          'badges'      => self::strip_all_slashes($p->badges),
+                    ),
+                    array('id' => $p->id),
+                              array('%s', '%s', '%s', '%s'),
+                              array('%d')
+                );
+            }
+        }
+
+        // Prices: label
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$price_tbl}'")) {
+            $prices = $wpdb->get_results("SELECT id, label FROM {$price_tbl}");
+            foreach ($prices as $pr) {
+                $wpdb->update(
+                    $price_tbl,
+                    array('label' => self::strip_all_slashes($pr->label)),
+                              array('id' => $pr->id),
+                              array('%s'),
+                              array('%d')
+                );
+            }
+        }
+    }
+
     private static function insert_default_categories() {
         // Do nothing on activation
         // Categories will be created manually via the admin interface button

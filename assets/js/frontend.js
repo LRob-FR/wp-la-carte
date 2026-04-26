@@ -4,34 +4,58 @@ document.addEventListener('DOMContentLoaded', function() {
     carteWrappers.forEach(wrapper => {
         const navItems = wrapper.querySelectorAll('.lrob-carte-nav-item');
         const rootCategories = wrapper.querySelectorAll('.lrob-carte-root-category');
+        const defaultSelection = wrapper.dataset.defaultSelection === 'none' ? 'none' : 'first';
+
+        function showAllRootCategories() {
+            rootCategories.forEach(cat => {
+                cat.style.display = 'block';
+                resetCategoryFilters(cat);
+            });
+        }
+
+        function showOnlyRootCategory(categoryId) {
+            rootCategories.forEach(cat => {
+                if (cat.dataset.categoryId === categoryId) {
+                    cat.style.display = 'block';
+                    resetCategoryFilters(cat);
+                } else {
+                    cat.style.display = 'none';
+                }
+            });
+        }
 
         if (navItems.length > 0 && rootCategories.length > 1) {
-            rootCategories.forEach((cat, index) => {
-                if (index !== 0) cat.style.display = 'none';
-            });
-
-                navItems[0].classList.add('active');
-
-                navItems.forEach(item => {
-                    item.addEventListener('click', function() {
-                        const categoryId = this.dataset.category?.replace(/[^0-9]/g, '');
-                        if (!categoryId) return;
-
-                        navItems.forEach(nav => nav.classList.remove('active'));
-                        this.classList.add('active');
-
-                        rootCategories.forEach(cat => {
-                            if (cat.dataset.categoryId === categoryId) {
-                                cat.style.display = 'block';
-                                resetCategoryFilters(cat);
-                            } else {
-                                cat.style.display = 'none';
-                            }
-                        });
-
-                        this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    });
+            if (defaultSelection === 'none') {
+                showAllRootCategories();
+            } else {
+                rootCategories.forEach((cat, index) => {
+                    if (index !== 0) cat.style.display = 'none';
                 });
+                    navItems[0].classList.add('active');
+            }
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const categoryId = this.dataset.category?.replace(/[^0-9]/g, '');
+                    if (!categoryId) return;
+
+                    const wasActive = this.classList.contains('active');
+
+                    // Click on already-active item: deselect → show all (only when default is 'none')
+                    if (wasActive && defaultSelection === 'none') {
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        showAllRootCategories();
+                        return;
+                    }
+
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+
+                    showOnlyRootCategory(categoryId);
+
+                    this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                });
+            });
         }
 
         const subcategoryBadges = wrapper.querySelectorAll('.lrob-subcategory-badge');

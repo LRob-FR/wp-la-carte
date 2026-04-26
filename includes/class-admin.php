@@ -109,12 +109,12 @@ class LRob_Carte_Admin {
 
         if (isset($_POST['lrob_carte_settings_nonce']) && wp_verify_nonce($_POST['lrob_carte_settings_nonce'], 'lrob_carte_settings')) {
             $old_mode = get_option('lrob_carte_mode');
-            $new_mode = sanitize_text_field($_POST['mode']);
+            $new_mode = sanitize_text_field(wp_unslash($_POST['mode'] ?? ''));
 
             update_option('lrob_carte_mode', $new_mode);
-            update_option('lrob_carte_primary_color', sanitize_hex_color($_POST['primary_color']));
-            update_option('lrob_carte_secondary_color', sanitize_hex_color($_POST['secondary_color']));
-            update_option('lrob_carte_out_of_stock_display', sanitize_text_field($_POST['out_of_stock_display']));
+            update_option('lrob_carte_primary_color', sanitize_hex_color(wp_unslash($_POST['primary_color'] ?? '')));
+            update_option('lrob_carte_secondary_color', sanitize_hex_color(wp_unslash($_POST['secondary_color'] ?? '')));
+            update_option('lrob_carte_out_of_stock_display', sanitize_text_field(wp_unslash($_POST['out_of_stock_display'] ?? '')));
 
             if ($old_mode !== $new_mode) {
                 LRob_Carte_Database::add_missing_categories($new_mode);
@@ -165,12 +165,16 @@ class LRob_Carte_Admin {
             wp_send_json_error(array('message' => __('Category name is required', 'lrob-la-carte')));
         }
 
+        $name = sanitize_text_field(wp_unslash($_POST['name']));
+        $slug_raw = isset($_POST['slug']) ? wp_unslash($_POST['slug']) : '';
+        $icon_type = $_POST['icon_type'] ?? '';
+
         $data = array(
             'parent_id' => intval($_POST['parent_id'] ?? 0),
-                      'name' => sanitize_text_field($_POST['name']),
-                      'slug' => !empty($_POST['slug']) ? sanitize_title($_POST['slug']) : sanitize_title($_POST['name']),
-                      'icon_type' => in_array($_POST['icon_type'], array('emoji', 'image')) ? $_POST['icon_type'] : 'emoji',
-                      'icon_value' => sanitize_text_field($_POST['icon_value']),
+                      'name' => $name,
+                      'slug' => !empty($slug_raw) ? sanitize_title($slug_raw) : sanitize_title($name),
+                      'icon_type' => in_array($icon_type, array('emoji', 'image')) ? $icon_type : 'emoji',
+                      'icon_value' => sanitize_text_field(wp_unslash($_POST['icon_value'] ?? '')),
                       'position' => intval($_POST['position'] ?? 0),
                       'active' => intval($_POST['active'] ?? 1)
         );
@@ -360,11 +364,11 @@ class LRob_Carte_Admin {
 
         $data = array(
             'category_id' => intval($_POST['category_id']),
-                      'name' => sanitize_text_field($_POST['name']),
-                      'description' => sanitize_textarea_field($_POST['description'] ?? ''),
+                      'name' => sanitize_text_field(wp_unslash($_POST['name'])),
+                      'description' => sanitize_textarea_field(wp_unslash($_POST['description'] ?? '')),
                       'image_id' => intval($_POST['image_id'] ?? 0),
-                      'allergens' => sanitize_text_field($_POST['allergens'] ?? ''),
-                      'badges' => sanitize_text_field($_POST['badges'] ?? ''),
+                      'allergens' => sanitize_text_field(wp_unslash($_POST['allergens'] ?? '')),
+                      'badges' => sanitize_text_field(wp_unslash($_POST['badges'] ?? '')),
                       'availability' => $availability,
                       'position' => intval($_POST['position'] ?? 0)
         );
@@ -385,7 +389,7 @@ class LRob_Carte_Admin {
         }
 
         if (isset($_POST['prices']) && is_array($_POST['prices'])) {
-            $result = LRob_Carte_Database::save_product_prices($id, $_POST['prices']);
+            $result = LRob_Carte_Database::save_product_prices($id, wp_unslash($_POST['prices']));
 
             if ($result === false) {
                 wp_send_json_error(array('message' => __('Erreur lors de l\'enregistrement des prix', 'lrob-la-carte')));
@@ -418,7 +422,7 @@ class LRob_Carte_Admin {
             wp_send_json_error(array('message' => __('Données invalides', 'lrob-la-carte')));
         }
 
-        $table = sanitize_text_field($_POST['table']);
+        $table = sanitize_text_field(wp_unslash($_POST['table']));
 
         if (!in_array($table, array('categories', 'products'))) {
             wp_send_json_error(array('message' => __('Table invalide', 'lrob-la-carte')));

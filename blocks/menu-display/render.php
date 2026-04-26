@@ -3,6 +3,7 @@ if (!defined('ABSPATH')) exit;
 
 $display_mode       = $attributes['displayMode'] ?? 'all';
 $selected_category  = $attributes['selectedCategory'] ?? 0;
+$default_cat_select = $attributes['defaultCategorySelection'] ?? 'first';
 $layout_style       = $attributes['layoutStyle'] ?? 'compact';
 $text_color         = $attributes['textColor'] ?? '';
 $border_color       = $attributes['borderColor'] ?? '';
@@ -39,6 +40,8 @@ foreach ($all_categories as $cat) {
 
 /** minimal sanitization for class fragment to avoid odd characters */
 $layout_style = preg_replace('/[^a-z0-9_-]/i', '', (string) $layout_style) ?: 'compact';
+
+$default_cat_select = in_array($default_cat_select, array('first', 'none'), true) ? $default_cat_select : 'first';
 
 $wrapper_attributes = get_block_wrapper_attributes(array(
 	'class' => 'lrob-carte-wrapper lrob-layout-' . $layout_style
@@ -337,7 +340,7 @@ if (!function_exists('lrob_render_category_drill_down')) {
 }
 ?>
 
-<div <?php echo $wrapper_attributes; ?> style="<?php echo esc_attr($inline_style); ?>" data-carte-wrapper>
+<div <?php echo $wrapper_attributes; ?> style="<?php echo esc_attr($inline_style); ?>" data-carte-wrapper data-default-selection="<?php echo esc_attr($default_cat_select); ?>">
 
 <?php if ($display_mode === 'all' && count($parent_categories) > 1): ?>
 <div class="lrob-carte-nav">
