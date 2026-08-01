@@ -22,10 +22,13 @@ A professional menu management plugin for bars and restaurants on WordPress.
 
 ## Installation
 
-1. Download the latest release ZIP
+1. Download the latest release ZIP from [git.lrob.net/WP/la-carte/releases](https://git.lrob.net/WP/la-carte/releases)
 2. Upload to WordPress via Plugins → Add New → Upload Plugin
 3. Activate the plugin
 4. Go to Menu → Categories to create your first categories
+
+From 1.3.5 on, the plugin updates itself: new versions show up under Plugins and
+Dashboard → Updates like any other plugin, straight from this repository.
 
 ## Usage
 
@@ -122,7 +125,7 @@ nano languages/lrob-la-carte-es_ES.po
 
 ## Support
 
-For support, please [open an issue](https://github.com/LRob-FR/wp-la-carte/issues) or [contact LRob directly](https://www.lrob.fr/contact/)
+For support, please [open an issue](https://git.lrob.net/WP/la-carte/issues) or [contact LRob directly](https://www.lrob.fr/contact/)
 
 ## Credits
 
@@ -215,6 +218,10 @@ For more details, see [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gn
   - Split admin vs frontend initialization hooks
   - Database class always loads (required for activation hook + blocks)
   - No breaking changes, full backward compatibility
+
+### 1.3.5
+- **Automatic updates**: the plugin now updates itself from the WordPress dashboard. New versions appear under Plugins and Dashboard → Updates, like any other plugin.
+- Development moved to [git.lrob.net/WP/la-carte](https://git.lrob.net/WP/la-carte) — issues and releases live there from now on.
 
 ## Todo List
 - Make caracteristics such as allergen or badges fully customizable

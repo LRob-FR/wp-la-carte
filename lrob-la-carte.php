@@ -3,9 +3,10 @@
  * Plugin Name: LRob - La Carte
  * Plugin URI: https://www.lrob.fr/
  * Description: Menu manager for bars and restaurants
- * Version: 1.3.4
+ * Version: 1.3.5
  * Author: LRob
  * Author URI: https://www.lrob.fr/
+ * Update URI: https://git.lrob.net/WP/la-carte
  * Text Domain: lrob-la-carte
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -15,9 +16,12 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('LROB_CARTE_VERSION', '1.3.4');
+define('LROB_CARTE_VERSION', '1.3.5');
 define('LROB_CARTE_PATH', plugin_dir_path(__FILE__));
 define('LROB_CARTE_URL', plugin_dir_url(__FILE__));
+define('LROB_CARTE_BASENAME', plugin_basename(__FILE__));
+define('LROB_CARTE_REPO_URL', 'https://git.lrob.net/WP/la-carte');
+define('LROB_CARTE_ISSUES_URL', LROB_CARTE_REPO_URL . '/issues');
 
 // Load database class for activation hook
 require_once LROB_CARTE_PATH . 'includes/class-database.php';
@@ -35,6 +39,11 @@ class LRob_La_Carte {
     private function __construct() {
         add_action('plugins_loaded', array($this, 'load_textdomain'));
         add_action('init', array($this, 'init'));
+
+        // Self-hosted updater (Forgejo releases). Registered in every context —
+        // the update check also runs from wp-cron, outside the admin.
+        require_once LROB_CARTE_PATH . 'includes/class-updater.php';
+        (new LRob_Carte_Updater())->register();
 
         if (is_admin()) {
             add_action('admin_init', array($this, 'check_database_version'));
